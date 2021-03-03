@@ -1,0 +1,49 @@
+version: '3'
+services:
+  challenge:
+    build: ./challenge/
+    volumes:
+      - ./challenge:/service
+      - ./base_data:/base_data
+      - .:/mnt
+    ports:
+      - 3015
+    environment:
+      PORT: 3015
+    working_dir: /service
+    command: "make run"
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+  unpatched:
+    build: .
+    volumes:
+      - ./variants/unpatched:/service
+      - ./base_data:/base_data
+    ports:
+      - 3015
+    environment:
+      PORT: 3015
+  fully_patched:
+    build: .
+    volumes:
+      - ./variants/fully_patched:/service
+      - ./base_data:/base_data
+    ports:
+      - 3015
+    environment:
+      port: 3015
+  poller:
+    build: poller
+    environment:
+      PORT: 3015
+    volumes:
+      - ./poller:/poller
+    working_dir: /poller
+    command: "ruby poller.rb"
+  pov:
+    build: pov_nl_cast_to_float
+    volumes:
+      - ./pov_nl_cast_to_float:/pov_nl_cast_to_float
+      - ./pov_inspect_nl:/pov_inspect_nl

@@ -1,0 +1,4 @@
+bob:126bd4ff35c26170d3063a0710555b8c:/tmp/bob:1FFFFFFFFFFF
+alice:5a745a2112e5682485f2be6e65e92823:/tmp/alice:1FFFFFFFFFFF
+guest:guest:/tmp/guest:1FFFFFFFFFFF
+admin:72df29ee69048fdba10751d5c8e214e2:/tmp/admin:EFFFFFFFFFFF

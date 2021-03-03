@@ -1,0 +1,12 @@
+!!! 5
+%html
+  %head
+    %title quincy poller
+  %body{class: body_class, data: {body_data_key => body_data_value}}
+    %h1&= h1
+    %p&= first_para
+    %hr
+    %p&= second_para
+    %ol
+      - list_item_count.times do |i|
+        %li&= i

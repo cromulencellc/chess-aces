@@ -1,0 +1,17 @@
+add(1);
+add(2);
+add(3);
+add(4);
+add(5);
+add(6);
+add(7);
+set_successors(get(1), [get(2), get(3)]);
+set_successors(get(2), [get(4), get(5)]);
+set_successors(get(3), [get(6), get(7)]);
+for x in 
+    get_successors(get(1))
+    where get_successors(get(x)) in get_successors(get(3));
+where get_successors(get(1)) in get(2);
+get(1);
+[get(1), get(2)];
+exit;

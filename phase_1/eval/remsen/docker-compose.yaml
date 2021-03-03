@@ -1,0 +1,41 @@
+version: '3'
+services:
+  base:
+    build: ./challenge/
+    volumes:
+      - ./challenge:/service
+      - ./base_data:/base_data
+    ports:
+      - 3004
+    environment:
+      PORT: 3004
+    security_opt:
+      - seccomp:unconfined
+  unpatched:
+    build: .
+    volumes:
+      - ./variants/unpatched:/service
+      - ./base_data:/base_data
+    ports:
+      - 3002
+    environment:
+      PORT: 3002
+  fully_patched:
+    build: .
+    volumes:
+      - ./variants/fully_patched:/service
+      - ./base_data:/base_data
+    ports:
+      - 3002
+    environment:
+      port: 3002
+
+  poller:
+    build: poller
+    volumes:
+      - ./poller:/poller
+  pov:
+    build: pov
+    volumes:
+      - ./pov:/pov
+

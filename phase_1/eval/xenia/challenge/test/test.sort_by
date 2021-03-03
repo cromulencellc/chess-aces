@@ -1,0 +1,9 @@
+add(1);
+add(2);
+add(3);
+add(4);
+set_property(get(1), "key", "d");
+set_property(get(1), "key", "b");
+set_property(get(2), "key", "a");
+set_property(get(4), "key", "c");
+sort_by(has_property("key"), "key");

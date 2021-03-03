@@ -1,0 +1,43 @@
+version: '3'
+services:
+  challenge:
+    build: challenge
+    volumes:
+      - ./challenge:/service
+      - .:/mnt
+    ports:
+      - 44727
+    environment:
+      PORT: 44727
+    working_dir: /service
+    command: "make run"
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+  unpatched:
+    build: .
+    volumes:
+      - ./variants/unpatched:/service
+    ports:
+      - 44727
+    environment:
+      PORT: 44727
+  fully_patched:
+    build: .
+    volumes:
+      - ./variants/fully_patched:/service
+    ports:
+      - 44727
+    environment:
+      port: 44727
+
+  poller:
+    build: poller
+    volumes:
+      - ./poller:/poller
+
+  pov:
+    build: pov
+    volumes:
+      - ./pov:/pov

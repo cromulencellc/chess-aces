@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+
+gem "pry"
+gem "digest-crc"
+gem 'sinatra'
+gem 'nokogiri'

@@ -1,0 +1,11 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Not Found</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <h1>Not Found</h1>
+    <p>Couldn't find the path {{= path }} for method {{= request._method }}</p>
+  </body>
+</html>

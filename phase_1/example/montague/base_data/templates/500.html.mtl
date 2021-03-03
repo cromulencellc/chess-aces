@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Internal Server Error</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <h1>Internal Server Error</h1>
+    <h2>exception</h2>
+    <p>{{= except }}</p>
+    <h2>transaction</h2>
+    <p>transaction id: {{= transaction.id }}</p>
+    <h2>request</h2>
+    <dl>
+      {{ each k,v in request }}
+      <dt>{{= k }}</dt>
+      <dd>{{= v }}</dd>
+      {{ endeach }}
+    </dl>
+  </body>
+</html>

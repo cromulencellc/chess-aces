@@ -1,0 +1,6 @@
+USER guest
+PASS guest
+PORT 10,0,2,15,26,10
+RETR /vagrant/chess/remsen/data/plist.txt
+QUIT
+

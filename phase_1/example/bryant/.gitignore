@@ -1,0 +1,5 @@
+tmp
+build
+*\#*
+variants
+*.tar.bz2

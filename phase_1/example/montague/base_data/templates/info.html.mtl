@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <title>info</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <marquee>cool template, yo</marquee>
+    <h1>info</h1>
+    <h2>transaction</h2>
+    <p>transaction id:
+      <span id="txid">{{= transaction.id }}</span>
+    </p>
+    <h2>request</h2>
+    <dl>
+      {{ each k,v in request }}
+      <dt>{{= k }}</dt>
+      <dd>{{= v }}</dd>
+      {{ endeach }}
+    </dl>
+  </body>
+</html>

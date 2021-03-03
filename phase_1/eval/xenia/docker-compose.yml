@@ -1,0 +1,61 @@
+version: '3'
+services:
+
+  challenge:
+    build: ./challenge/
+    volumes:
+      - ./challenge:/service
+      - ./base_data:/base_data
+      - .:/mnt
+    ports:
+      - 3008
+    environment:
+      PORT: 3008
+    working_dir: /service
+    command: "make -f Makefile-dist run"
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  unpatched:
+    build: ./variants/unpatched
+    volumes:
+      - ./variants/unpatched:/service
+      - ./base_data:/base_data
+    ports:
+      - 3002
+    environment:
+      PORT: 3002
+    working_dir: /service
+    command: make run
+
+  fully_patched:
+    build: ./variants/fully_patched
+    volumes:
+      - ./variants/fully_patched:/service
+      - ./base_data:/base_data
+    ports:
+      - 3002
+    environment:
+      PORT: 3002
+    working_dir: /service
+    command: make run
+
+  poller:
+    build: poller
+    environment:
+      PORT: 3008
+    volumes:
+      - ./poller:/poller
+    working_dir: /poller
+    command: "python3 poller.py"
+
+  pov:
+    build: pov
+    volumes:
+      - ./pov:/pov
+      # The pov must have access to the binary we are exploiting
+      - ./challenge:/challenge
+      - ./variants:/variants
+    command: "python3 pov.py"

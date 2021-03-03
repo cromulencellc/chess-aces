@@ -1,0 +1,6 @@
+add(1);
+add(2);
+add(3);
+set_predecessors(get(1), [get(2), get(3)]);
+get_successors(get(2));
+get_predecessors(get(1));

@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+  <head>
+    <title>list {{= list.name }}</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <h1 class="list_name">{{= list.name }}</h1>
+    <p><a href="/">back to list of lists</a></p>
+    <dl>
+      <dt>id</dt>
+      <dd>
+        <tt class="list_id">{{= list.id }}</tt>
+      </dd>
+      <dt>permalink</dt>
+      <dd>
+        <a href="/lists/{{= list.id }}">/lists/{{= list.id }}</a>
+      </dd>
+    </dl>
+    <h2>tasks</h2>
+    <table class="items">
+      <thead>
+        <tr>
+          <th>complete</th>
+          <th>name</th>
+          <th>actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ each itemid,item in list.items }}
+        <tr id="item_{{= item.id }}" data-id="{{= item.id }}">
+          <td class="complete">{{= item.complete }}</td>
+          <td class="content">{{= item.content }}</td>
+          <td>
+            <form method="post"
+                  action="/lists/{{= list.id }}/items/{{= item.id }}/toggle">
+              <button type="submit">
+                toggle
+              </button>
+            </form>
+          </td>
+        </tr>
+        {{ endeach }}
+      </tbody>
+    </table>
+    <h2>new task:</h2>
+    <form method="post" action="/lists/{{= list.id }}/items">
+      <p>
+        <label for="item_content">item content:</label>
+        <input type="text" name="content", id="item_content" />
+      </p>
+      <p>
+        <button type="submit">create item</button>
+      </p>
+    </form>
+  </body>
+</html>

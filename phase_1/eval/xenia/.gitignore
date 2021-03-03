@@ -1,0 +1,6 @@
+*.o
+__pycache__
+*/__pycache__
+
+challenge/xenia.bin
+*.bin

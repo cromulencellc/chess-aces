@@ -1,0 +1,817 @@
+INFO: HOST=localhost PORT=12345 SEED=218061518676148826216940941176676309235 LENGTH=279
+DEBUG: Connecting to server...
+DEBUG: Connected to server
+DEBUG: Loading input: tests/tests/ER Eritrea.hvif
+DEBUG: Styles: 5
+DEBUG: Paths: 4
+DEBUG: Shapes: 7
+DEBUG: Testing activity: get_shape
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: get_shape
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: add_shape_path
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: get_style
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: get_color
+DEBUG: Testing activity: get_point
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: get_gradient
+DEBUG: Testing activity: create
+DEBUG: Testing activity: set_gradient_transformer
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: add_style
+DEBUG: Testing activity: set_gradient_transformer
+DEBUG: Testing activity: set_gradient
+DEBUG: Testing activity: add_style
+DEBUG: Testing activity: get_min_visibility
+DEBUG: Testing activity: select_image
+DEBUG: Testing activity: add_point
+DEBUG: Testing activity: set_shape_paths
+DEBUG: Testing activity: get_shapes
+DEBUG: Testing activity: get_transformer
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Testing activity: is_flat
+DEBUG: Testing activity: add_style
+DEBUG: Testing activity: add_point
+DEBUG: Testing activity: get_transformer
+DEBUG: Testing activity: get_max_visibility
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: set_gradient
+DEBUG: Testing activity: add_style
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Testing activity: add_style
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: get_shape
+DEBUG: Testing activity: set_hinting
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: create
+DEBUG: Testing activity: selected_image
+DEBUG: Testing activity: store
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: get_point
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: set_shape
+DEBUG: Testing activity: remove_transformer
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: create
+DEBUG: Testing activity: remove_style
+DEBUG: Testing activity: store
+DEBUG: Testing activity: remove_shape
+DEBUG: Testing activity: get_shape_style
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: is_flat
+DEBUG: Testing activity: get_shape
+DEBUG: Testing activity: remove_transformer
+DEBUG: Testing activity: add_point
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: get_max_visibility
+DEBUG: Testing activity: get_point
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: set_transformer
+DEBUG: Testing activity: remove_path
+DEBUG: Testing activity: load
+DEBUG: Loading input: tests/tests/App_Tracker.hvif
+DEBUG: Styles: 18
+DEBUG: Paths: 23
+DEBUG: Shapes: 25
+DEBUG: Testing activity: get_styles
+DEBUG: Testing activity: select_image
+DEBUG: Testing activity: get_path
+DEBUG: Testing activity: remove_step
+DEBUG: Testing activity: add_step
+DEBUG: Testing activity: set_hinting
+DEBUG: Testing activity: get_style
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: get_transformer
+DEBUG: Testing activity: remove_style
+DEBUG: Testing activity: remove_shape
+DEBUG: Testing activity: remove_shape
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: set_hinting
+DEBUG: Testing activity: set_shape
+DEBUG: Testing activity: get_shapes
+DEBUG: Testing activity: get_shape
+DEBUG: Testing activity: get_transformers
+DEBUG: Testing activity: set_gradient_transformer
+DEBUG: Testing activity: get_shape
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: get_styles
+DEBUG: Testing activity: get_paths
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: get_transformer
+DEBUG: Testing activity: remove_path
+DEBUG: Testing activity: set_path
+DEBUG: Testing activity: add_transformer
+DEBUG: Testing activity: get_paths
+DEBUG: Testing activity: remove_style
+DEBUG: Testing activity: add_point
+DEBUG: Testing activity: create
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: destroy
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: set_gradient_transformer
+DEBUG: Testing activity: get_shape_paths
+DEBUG: Testing activity: set_point
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Testing activity: create
+DEBUG: Testing activity: get_transformers
+DEBUG: Testing activity: remove_shape
+DEBUG: Testing activity: set_shape
+DEBUG: Testing activity: load
+DEBUG: Loading input: tests/tests/Misc_Phonebook.hvif
+DEBUG: Styles: 10
+DEBUG: Paths: 10
+DEBUG: Shapes: 12
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: set_path
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: selected_image
+DEBUG: Testing activity: is_flat
+DEBUG: Testing activity: get_path
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: add_step
+DEBUG: Testing activity: set_gradient_transformer
+DEBUG: Testing activity: is_flat
+DEBUG: Testing activity: set_shape
+DEBUG: Testing activity: get_styles
+DEBUG: Testing activity: get_paths
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: get_min_visibility
+DEBUG: Testing activity: remove_step
+DEBUG: Testing activity: get_paths
+DEBUG: Testing activity: get_path
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: add_point
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: add_step
+DEBUG: Testing activity: set_path
+DEBUG: Testing activity: get_point
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: get_paths
+DEBUG: Testing activity: remove_step
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: add_step
+DEBUG: Testing activity: get_style
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: remove_step
+DEBUG: Testing activity: set_hinting
+DEBUG: Testing activity: remove_transformer
+DEBUG: Testing activity: get_shape_paths
+DEBUG: Testing activity: get_min_visibility
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: get_transformers
+DEBUG: Testing activity: get_color
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: get_shape
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: add_step
+DEBUG: Testing activity: get_styles
+DEBUG: Testing activity: get_color
+DEBUG: Testing activity: store
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: remove_style
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: store
+DEBUG: Testing activity: is_flat
+DEBUG: Testing activity: remove_path
+DEBUG: Testing activity: remove_style
+DEBUG: Testing activity: is_flat
+DEBUG: Testing activity: get_shape_style
+DEBUG: Testing activity: get_style
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: remove_style
+DEBUG: Testing activity: get_path
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: set_hinting
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: add_transformer
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: set_gradient_transformer
+DEBUG: Testing activity: selected_image
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: remove_path
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: get_min_visibility
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: get_shape
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: create
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: set_color
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: remove_step
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: get_transformers
+DEBUG: Testing activity: add_step
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: set_gradient
+DEBUG: Testing activity: set_gradient_transformer
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: set_hinting
+DEBUG: Testing activity: get_gradient
+DEBUG: Testing activity: get_styles
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: set_color
+DEBUG: Testing activity: add_transformer
+DEBUG: Testing activity: remove_style
+DEBUG: Testing activity: select_image
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: get_shape_style
+DEBUG: Testing activity: has_hinting
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: remove_shape
+DEBUG: Testing activity: set_color
+DEBUG: Testing activity: get_point
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: get_shape_paths
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: set_shape_paths
+DEBUG: Testing activity: get_paths
+DEBUG: Testing activity: set_path
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: set_path
+DEBUG: Testing activity: get_path
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: add_shape_path
+DEBUG: Testing activity: set_gradient_transformer
+DEBUG: Testing activity: set_hinting
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: remove_transformer
+DEBUG: Testing activity: is_flat
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: get_transformer
+DEBUG: Testing activity: set_path
+DEBUG: Testing activity: set_shape
+DEBUG: Testing activity: set_shape
+DEBUG: Testing activity: get_shape_style
+DEBUG: Testing activity: remove_shape
+DEBUG: Testing activity: get_min_visibility
+DEBUG: Testing activity: get_shape
+DEBUG: Testing activity: selected_image
+DEBUG: Testing activity: set_hinting
+DEBUG: Testing activity: add_step
+DEBUG: Testing activity: set_point
+DEBUG: Testing activity: add_style
+DEBUG: Testing activity: get_transformers
+DEBUG: Testing activity: is_flat
+DEBUG: Testing activity: set_point
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: destroy
+DEBUG: Testing activity: set_hinting
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: selected_image
+DEBUG: Testing activity: get_max_visibility
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: get_shape_paths
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: get_shape_style
+DEBUG: Testing activity: get_style
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: get_paths
+DEBUG: Testing activity: get_gradient
+DEBUG: Testing activity: load
+DEBUG: Loading input: tests/tests/Misc_iMac.hvif
+DEBUG: Styles: 18
+DEBUG: Paths: 12
+DEBUG: Shapes: 12
+DEBUG: Testing activity: store
+DEBUG: Testing activity: get_shape_style
+DEBUG: Testing activity: get_transformers
+DEBUG: Testing activity: remove_path
+DEBUG: Testing activity: remove_transformer
+DEBUG: Testing activity: get_gradient
+DEBUG: Testing activity: get_transformers
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: set_color
+DEBUG: Testing activity: load
+DEBUG: Loading input: tests/tests/ER Eritrea.hvif
+DEBUG: Styles: 5
+DEBUG: Paths: 4
+DEBUG: Shapes: 7
+DEBUG: Testing activity: get_color
+DEBUG: Testing activity: store
+DEBUG: Testing activity: get_gradient
+DEBUG: Testing activity: destroy
+DEBUG: Testing activity: add_transformer
+DEBUG: Testing activity: get_shape_paths
+DEBUG: Disconnecting from server...
+DEBUG: Disconnected from server
+INFO: HOST=localhost PORT=12345 SEED=29541548086145830865555521660044246268 LENGTH=196
+DEBUG: Connecting to server...
+DEBUG: Connected to server
+DEBUG: Loading input: tests/tests/AW Aruba.hvif
+DEBUG: Styles: 5
+DEBUG: Paths: 2
+DEBUG: Shapes: 6
+DEBUG: Testing activity: add_shape_path
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: get_shape_style
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: get_point
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: select_image
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: remove_transformer
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: get_gradient
+DEBUG: Testing activity: get_min_visibility
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: select_image
+DEBUG: Testing activity: selected_image
+DEBUG: Testing activity: selected_image
+DEBUG: Testing activity: add_style
+DEBUG: Testing activity: load
+DEBUG: Loading input: tests/tests/CH Switzerland.hvif
+DEBUG: Styles: 3
+DEBUG: Paths: 1
+DEBUG: Shapes: 4
+DEBUG: Testing activity: get_styles
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: destroy
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: get_point
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: add_style
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: load
+DEBUG: Loading input: tests/tests/Action_Stop_1.hvif
+DEBUG: Styles: 3
+DEBUG: Paths: 1
+DEBUG: Shapes: 3
+DEBUG: Testing activity: add_shape_path
+DEBUG: Testing activity: get_max_visibility
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: get_shapes
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Testing activity: set_shape
+DEBUG: Testing activity: set_shape
+DEBUG: Testing activity: set_gradient
+DEBUG: Testing activity: get_transformers
+DEBUG: Testing activity: has_hinting
+DEBUG: Testing activity: get_style
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: get_max_visibility
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: get_path
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: remove_transformer
+DEBUG: Testing activity: set_shape_paths
+DEBUG: Testing activity: get_point
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: get_color
+DEBUG: Testing activity: remove_path
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Testing activity: set_path
+DEBUG: Testing activity: store
+DEBUG: Testing activity: get_shape
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: get_min_visibility
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: set_gradient_transformer
+DEBUG: Testing activity: store
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: get_shapes
+DEBUG: Testing activity: get_gradient
+DEBUG: Testing activity: get_path
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: set_color
+DEBUG: Testing activity: set_color
+DEBUG: Testing activity: get_transformer
+DEBUG: Testing activity: destroy
+DEBUG: Testing activity: get_point
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: get_transformers
+DEBUG: Testing activity: add_shape_path
+DEBUG: Testing activity: set_gradient
+DEBUG: Testing activity: add_shape_path
+DEBUG: Testing activity: set_point
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: get_gradient
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: set_color
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: is_flat
+DEBUG: Testing activity: add_shape_path
+DEBUG: Testing activity: set_gradient_transformer
+DEBUG: Testing activity: add_step
+DEBUG: Testing activity: get_path
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: set_gradient
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: has_hinting
+DEBUG: Testing activity: destroy
+DEBUG: Testing activity: get_transformer
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: selected_image
+DEBUG: Testing activity: add_style
+DEBUG: Testing activity: remove_shape
+DEBUG: Testing activity: set_transformer
+DEBUG: Testing activity: selected_image
+DEBUG: Testing activity: set_color
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: remove_style
+DEBUG: Testing activity: has_hinting
+DEBUG: Testing activity: get_max_visibility
+DEBUG: Testing activity: add_transformer
+DEBUG: Testing activity: get_shapes
+DEBUG: Testing activity: get_point
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: add_transformer
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: get_shape_style
+DEBUG: Testing activity: load
+DEBUG: Loading input: tests/tests/Misc_Marker.hvif
+DEBUG: Styles: 6
+DEBUG: Paths: 7
+DEBUG: Shapes: 7
+DEBUG: Testing activity: get_style
+DEBUG: Accepted a fuzzy comparison that did not completely match
+DEBUG: Testing activity: set_hinting
+DEBUG: Testing activity: add_shape_path
+DEBUG: Testing activity: get_gradient
+DEBUG: Testing activity: get_gradient_transformer
+DEBUG: Testing activity: get_color
+DEBUG: Testing activity: add_transformer
+DEBUG: Testing activity: remove_path
+DEBUG: Testing activity: has_hinting
+DEBUG: Testing activity: destroy
+DEBUG: Testing activity: store
+DEBUG: Testing activity: set_point
+DEBUG: Testing activity: select_image
+DEBUG: Testing activity: get_style
+DEBUG: Testing activity: get_styles
+DEBUG: Testing activity: get_paths
+DEBUG: Testing activity: remove_transformer
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: add_transformer
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: destroy
+DEBUG: Testing activity: remove_shape
+DEBUG: Testing activity: add_shape
+DEBUG: Testing activity: remove_point
+DEBUG: Testing activity: get_shapes
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: set_point
+DEBUG: Testing activity: get_styles
+DEBUG: Testing activity: remove_style
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: get_point
+DEBUG: Testing activity: set_max_visibility
+DEBUG: Testing activity: destroy
+DEBUG: Testing activity: is_flat
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: set_transformer
+DEBUG: Testing activity: get_path
+DEBUG: Testing activity: get_styles
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: get_path
+DEBUG: Testing activity: get_shape_paths
+DEBUG: Testing activity: get_paths
+DEBUG: Testing activity: set_transformer
+DEBUG: Testing activity: get_styles
+DEBUG: Testing activity: get_path
+DEBUG: Testing activity: get_shapes
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: select_image
+DEBUG: Testing activity: get_max_visibility
+DEBUG: Testing activity: add_step
+DEBUG: Testing activity: get_shape_paths
+DEBUG: Testing activity: get_max_visibility
+DEBUG: Testing activity: get_shapes
+DEBUG: Testing activity: get_shapes
+DEBUG: Testing activity: get_paths
+DEBUG: Testing activity: remove_style
+DEBUG: Testing activity: remove_transformer
+DEBUG: Testing activity: set_shape_paths
+DEBUG: Testing activity: set_style
+DEBUG: Testing activity: get_shape_style
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: set_gradient
+DEBUG: Testing activity: set_shape_paths
+DEBUG: Testing activity: get_shape_paths
+DEBUG: Testing activity: remove_shape_path
+DEBUG: Testing activity: add_point
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: get_transformers
+DEBUG: Testing activity: get_max_visibility
+DEBUG: Testing activity: remove_shape
+DEBUG: Testing activity: get_transformer
+DEBUG: Testing activity: has_hinting
+DEBUG: Testing activity: add_path
+DEBUG: Testing activity: add_transformer
+DEBUG: Testing activity: set_shape_style
+DEBUG: Testing activity: get_point
+DEBUG: Testing activity: add_shape_path
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: set_min_visibility
+DEBUG: Testing activity: set_step
+DEBUG: Testing activity: is_transparent
+DEBUG: Testing activity: add_path
+DEBUG: Disconnecting from server...
+DEBUG: Disconnected from server
+INFO: HOST=localhost PORT=12345 SEED=192289946174919874471122565777296190146 LENGTH=196
+INFO: HOST=localhost PORT=12345 SEED=143807660379719814650718865741591030435 LENGTH=212
+INFO: HOST=localhost PORT=12345 SEED=114838796981900884323691166652574846911 LENGTH=234
+INFO: HOST=localhost PORT=12345 SEED=111114519020039928881223744543205835296 LENGTH=221
+INFO: HOST=localhost PORT=12345 SEED=237130665190732990947091260923018332548 LENGTH=223
+INFO: HOST=localhost PORT=12345 SEED=101743738145652642478351039308587464106 LENGTH=109
+INFO: HOST=localhost PORT=12345 SEED=130297376886806199301311729433205111806 LENGTH=174
+INFO: HOST=localhost PORT=12345 SEED=174336527919988225419784136892380538569 LENGTH=102
+INFO: HOST=localhost PORT=12345 SEED=310475145267651880274557148120314078971 LENGTH=131
+INFO: HOST=localhost PORT=12345 SEED=115057936928838583409427352822752114777 LENGTH=269
+INFO: HOST=localhost PORT=12345 SEED=302169101159854616851091560830290121013 LENGTH=285
+INFO: HOST=localhost PORT=12345 SEED=210637172872602126773415686998996303650 LENGTH=186
+INFO: HOST=localhost PORT=12345 SEED=324336222009276143062301366347819542761 LENGTH=280
+INFO: HOST=localhost PORT=12345 SEED=3639037555567049864489320233213874431 LENGTH=148
+INFO: HOST=localhost PORT=12345 SEED=62534620299607352977736851956240895275 LENGTH=244
+INFO: HOST=localhost PORT=12345 SEED=85812817007381557814718683195104020332 LENGTH=283
+INFO: HOST=localhost PORT=12345 SEED=333179115957803054264495548439749697961 LENGTH=269
+INFO: HOST=localhost PORT=12345 SEED=271359319353278083390689939990715439770 LENGTH=184
+INFO: HOST=localhost PORT=12345 SEED=201538461792456139376596903156160353305 LENGTH=258
+INFO: HOST=localhost PORT=12345 SEED=150859445692654622611156754052662677540 LENGTH=187
+INFO: HOST=localhost PORT=12345 SEED=321569377867740961385219805478417952814 LENGTH=297
+INFO: HOST=localhost PORT=12345 SEED=21528471534905104886333325916697119973 LENGTH=252
+INFO: HOST=localhost PORT=12345 SEED=161318106017197359000782263206812327393 LENGTH=108
+INFO: HOST=localhost PORT=12345 SEED=21996807825531216159968779852891658225 LENGTH=221
+INFO: HOST=localhost PORT=12345 SEED=241740193620922260212178628434170748433 LENGTH=191
+INFO: HOST=localhost PORT=12345 SEED=15767707987977229645420862337612409288 LENGTH=176
+INFO: HOST=localhost PORT=12345 SEED=258995553166125584269431097908575472451 LENGTH=104
+INFO: HOST=localhost PORT=12345 SEED=39679616475646701908178271685863178906 LENGTH=174
+INFO: HOST=localhost PORT=12345 SEED=43016843845338811031262739208604837019 LENGTH=250
+INFO: HOST=localhost PORT=12345 SEED=13715630249110964045611899749920715775 LENGTH=254
+INFO: HOST=localhost PORT=12345 SEED=192446805500857485007780932596487980554 LENGTH=272
+INFO: HOST=localhost PORT=12345 SEED=262545263514485418274040845530388446425 LENGTH=205
+INFO: HOST=localhost PORT=12345 SEED=19900668791610597006643146081126295526 LENGTH=241
+INFO: HOST=localhost PORT=12345 SEED=306855252934047215712332277791374997333 LENGTH=208
+INFO: HOST=localhost PORT=12345 SEED=78978938241611868811271886490266117783 LENGTH=115
+INFO: HOST=localhost PORT=12345 SEED=335778731637634650512858642196121360704 LENGTH=236
+INFO: HOST=localhost PORT=12345 SEED=239684508815304437626485172932392204360 LENGTH=127
+INFO: HOST=localhost PORT=12345 SEED=189515188383457595497520036758834562180 LENGTH=217
+INFO: HOST=localhost PORT=12345 SEED=53165058721516383869220412415218583882 LENGTH=146
+INFO: HOST=localhost PORT=12345 SEED=231045606675550138385531976628176579135 LENGTH=217
+INFO: HOST=localhost PORT=12345 SEED=279914578208471700157519092078158264029 LENGTH=243
+INFO: HOST=localhost PORT=12345 SEED=95596147049657856836433749597018533939 LENGTH=218
+INFO: HOST=localhost PORT=12345 SEED=26491913047187073427146693432406126517 LENGTH=107
+INFO: HOST=localhost PORT=12345 SEED=138127419657100743713109131285218469830 LENGTH=272
+INFO: HOST=localhost PORT=12345 SEED=276104322928815937871378453787972472377 LENGTH=248
+INFO: HOST=localhost PORT=12345 SEED=98686344930670887392296194509078047161 LENGTH=187
+INFO: HOST=localhost PORT=12345 SEED=102181421389376006423973133727170216291 LENGTH=248
+INFO: HOST=localhost PORT=12345 SEED=188122895778597406547546903087386877026 LENGTH=288
+INFO: HOST=localhost PORT=12345 SEED=158487310613180570578175459840764709144 LENGTH=225
+INFO: HOST=localhost PORT=12345 SEED=174010267806345073519273834351456638043 LENGTH=257
+INFO: HOST=localhost PORT=12345 SEED=1005633867554409876741865234599976772 LENGTH=103
+INFO: HOST=localhost PORT=12345 SEED=309306576094622990276153786505048435671 LENGTH=221
+INFO: HOST=localhost PORT=12345 SEED=168302780137522875664961485709997171641 LENGTH=239
+INFO: HOST=localhost PORT=12345 SEED=315086556076841838027254297028770436820 LENGTH=188
+INFO: HOST=localhost PORT=12345 SEED=129769504156393890494872705620542302042 LENGTH=227
+INFO: HOST=localhost PORT=12345 SEED=101138250048402827930329180016508431480 LENGTH=182
+INFO: HOST=localhost PORT=12345 SEED=35963036395420283659336150097299124848 LENGTH=103
+INFO: HOST=localhost PORT=12345 SEED=250162500093574177894491618208218190644 LENGTH=129
+INFO: HOST=localhost PORT=12345 SEED=324338851285946743994884030330078257832 LENGTH=210
+INFO: HOST=localhost PORT=12345 SEED=237626078663518618352683942571343660452 LENGTH=183
+INFO: HOST=localhost PORT=12345 SEED=225545933098356757643935468569475631552 LENGTH=225
+INFO: HOST=localhost PORT=12345 SEED=235620699017624659947719397194716980655 LENGTH=151
+INFO: HOST=localhost PORT=12345 SEED=92191424936248723600631253538260962704 LENGTH=211
+INFO: HOST=localhost PORT=12345 SEED=160782805320818190140280852866183124814 LENGTH=206
+INFO: HOST=localhost PORT=12345 SEED=41902690797464728950679881517104365061 LENGTH=251
+INFO: HOST=localhost PORT=12345 SEED=10854521021766675579743864098262714266 LENGTH=117
+INFO: HOST=localhost PORT=12345 SEED=148711731970922984082064958710415484315 LENGTH=281
+INFO: HOST=localhost PORT=12345 SEED=82862386223285379879830207617339617279 LENGTH=277
+INFO: HOST=localhost PORT=12345 SEED=140435302333235535626102112751005399303 LENGTH=117
+INFO: HOST=localhost PORT=12345 SEED=285498800438141787976901366297059647929 LENGTH=168
+INFO: HOST=localhost PORT=12345 SEED=195335685064524206584343611825581324914 LENGTH=190
+INFO: HOST=localhost PORT=12345 SEED=130469171423150756416975017625227669804 LENGTH=176
+INFO: HOST=localhost PORT=12345 SEED=50643164332889277367317288009488977602 LENGTH=299
+INFO: HOST=localhost PORT=12345 SEED=202348543660418727849145602500616494600 LENGTH=296
+INFO: HOST=localhost PORT=12345 SEED=203528045097593615509878085120129384775 LENGTH=296
+INFO: HOST=localhost PORT=12345 SEED=221663647203806572525402603580187119857 LENGTH=218
+INFO: HOST=localhost PORT=12345 SEED=332300464581725779818609837872961311727 LENGTH=183
+INFO: HOST=localhost PORT=12345 SEED=213912098088964543569552964622198490421 LENGTH=124
+INFO: HOST=localhost PORT=12345 SEED=212863750219145971505907178953950443555 LENGTH=220
+INFO: HOST=localhost PORT=12345 SEED=51307675230506822280250393933328119044 LENGTH=223
+INFO: HOST=localhost PORT=12345 SEED=281136705858784546712675462963895834623 LENGTH=237
+INFO: HOST=localhost PORT=12345 SEED=111654888493666109507084303965038588035 LENGTH=276
+INFO: HOST=localhost PORT=12345 SEED=82513784547859943873333912210813566386 LENGTH=237
+INFO: HOST=localhost PORT=12345 SEED=332529727467589580102686339527322852918 LENGTH=159
+INFO: HOST=localhost PORT=12345 SEED=270807701327120691881453268452141942362 LENGTH=105
+INFO: HOST=localhost PORT=12345 SEED=98570025795129934680089215068491840734 LENGTH=222
+INFO: HOST=localhost PORT=12345 SEED=15476960485601985846016546094522079282 LENGTH=169
+INFO: HOST=localhost PORT=12345 SEED=272722454111375481086797309284319555154 LENGTH=258
+INFO: HOST=localhost PORT=12345 SEED=164900096758293207564330897804762660369 LENGTH=199
+INFO: HOST=localhost PORT=12345 SEED=6275927033616874147007476854816083142 LENGTH=174
+INFO: HOST=localhost PORT=12345 SEED=85531005125060869426281243071776551838 LENGTH=264
+INFO: HOST=localhost PORT=12345 SEED=209229848330819831854426995919353379450 LENGTH=105
+INFO: HOST=localhost PORT=12345 SEED=217681333010984469211644367925049640172 LENGTH=180
+INFO: HOST=localhost PORT=12345 SEED=183832146731451925342966261663939080600 LENGTH=170
+INFO: HOST=localhost PORT=12345 SEED=258353841882465433694500237635820665788 LENGTH=167
+INFO: HOST=localhost PORT=12345 SEED=277011320109765081958837645520295923101 LENGTH=122
+INFO: HOST=localhost PORT=12345 SEED=63653496671059348822494575184636424731 LENGTH=163
+INFO: HOST=localhost PORT=12345 SEED=284356536791164570407014276179674206291 LENGTH=145
+INFO: HOST=localhost PORT=12345 SEED=220285466409922516483920722495311235036 LENGTH=262
+INFO: HOST=localhost PORT=12345 SEED=247239930955884942202389988358567379660 LENGTH=226
+INFO: HOST=localhost PORT=12345 SEED=126962501630615271701358312501595978081 LENGTH=236
+INFO: HOST=localhost PORT=12345 SEED=476540198143794196209430250122686796 LENGTH=158
+INFO: HOST=localhost PORT=12345 SEED=296446748190271484004619180766498765001 LENGTH=175
+INFO: HOST=localhost PORT=12345 SEED=101571868854854225363859217541146718048 LENGTH=194
+INFO: HOST=localhost PORT=12345 SEED=44993598187591421927067076061322764761 LENGTH=121
+INFO: HOST=localhost PORT=12345 SEED=279556031053873336905200928564552891619 LENGTH=159
+INFO: HOST=localhost PORT=12345 SEED=105467206597227475638624207211615515545 LENGTH=201
+INFO: HOST=localhost PORT=12345 SEED=168164970360032134154876543959467219967 LENGTH=292
+INFO: HOST=localhost PORT=12345 SEED=109916955285132950144560954766974422912 LENGTH=272
+INFO: HOST=localhost PORT=12345 SEED=167699525357334248420260667077163121836 LENGTH=105
+INFO: HOST=localhost PORT=12345 SEED=7971690588382258765977561569306680429 LENGTH=203
+INFO: HOST=localhost PORT=12345 SEED=100811804641849498805131664484361035932 LENGTH=289
+INFO: HOST=localhost PORT=12345 SEED=188409106470436190756349586774791333161 LENGTH=296
+INFO: HOST=localhost PORT=12345 SEED=279598819052086330584567733625225551216 LENGTH=184
+INFO: HOST=localhost PORT=12345 SEED=293747793346252460603225550463981796489 LENGTH=296
+INFO: HOST=localhost PORT=12345 SEED=157605511911077583207336532146502154660 LENGTH=273
+INFO: HOST=localhost PORT=12345 SEED=83599522344091978304979508985639334851 LENGTH=230
+INFO: HOST=localhost PORT=12345 SEED=234777288889230300765526617350398274828 LENGTH=282
+INFO: HOST=localhost PORT=12345 SEED=325370591417718804954873636538921720074 LENGTH=226
+INFO: HOST=localhost PORT=12345 SEED=117539072199756806531828503863022668299 LENGTH=121
+INFO: HOST=localhost PORT=12345 SEED=76551953433678363479550139171052996400 LENGTH=260
+INFO: HOST=localhost PORT=12345 SEED=280630621295133095173743437640852432036 LENGTH=167
+INFO: HOST=localhost PORT=12345 SEED=183356514274918681933597866074985593707 LENGTH=107
+INFO: HOST=localhost PORT=12345 SEED=298123926048826344153912522592686819367 LENGTH=172
+INFO: HOST=localhost PORT=12345 SEED=187827120543356269471697652713025012882 LENGTH=118
+INFO: HOST=localhost PORT=12345 SEED=205623031016752954173209295031717454089 LENGTH=139
+INFO: HOST=localhost PORT=12345 SEED=208560352625260179742345335885153984486 LENGTH=192
+INFO: HOST=localhost PORT=12345 SEED=106054837350681036524243669288000345277 LENGTH=123
+INFO: HOST=localhost PORT=12345 SEED=257717286917013442517376030446691083894 LENGTH=241
+INFO: HOST=localhost PORT=12345 SEED=47926643693435332256097816457542093120 LENGTH=229
+INFO: HOST=localhost PORT=12345 SEED=39295280052296287574587796995910783546 LENGTH=173
+INFO: HOST=localhost PORT=12345 SEED=288030872435131623759534477185856030240 LENGTH=291
+INFO: HOST=localhost PORT=12345 SEED=117610225499961204518125873215047052909 LENGTH=275
+INFO: HOST=localhost PORT=12345 SEED=290152554304017798993970245588195388699 LENGTH=120
+INFO: HOST=localhost PORT=12345 SEED=208758888166542651065648497510944904464 LENGTH=274
+INFO: HOST=localhost PORT=12345 SEED=53274617116553032375345108728602784712 LENGTH=111
+INFO: HOST=localhost PORT=12345 SEED=324786713365593908871899600109977921205 LENGTH=230
+INFO: HOST=localhost PORT=12345 SEED=307718581342735921409290227880053832318 LENGTH=170
+INFO: HOST=localhost PORT=12345 SEED=265859224057116219785027386566047808314 LENGTH=184
+INFO: HOST=localhost PORT=12345 SEED=36534678017762844090525514823251164385 LENGTH=226
+INFO: HOST=localhost PORT=12345 SEED=271836198226226314549945500925877594737 LENGTH=259
+INFO: HOST=localhost PORT=12345 SEED=218968226587881010860909671478846169257 LENGTH=278
+INFO: HOST=localhost PORT=12345 SEED=210212585689320374705116307175486708424 LENGTH=277
+INFO: HOST=localhost PORT=12345 SEED=252575336155313174298536074370501643292 LENGTH=274
+INFO: HOST=localhost PORT=12345 SEED=271171558717327313463916148111739357980 LENGTH=215
+INFO: HOST=localhost PORT=12345 SEED=257915734289238553190775419170840112385 LENGTH=156
+INFO: HOST=localhost PORT=12345 SEED=96804858256120221768527592509189946042 LENGTH=258
+INFO: HOST=localhost PORT=12345 SEED=161886714139968938814447721091817497210 LENGTH=106
+INFO: HOST=localhost PORT=12345 SEED=309743023077222355912282951420675607 LENGTH=245
+INFO: HOST=localhost PORT=12345 SEED=339174768531478014198000056629527428244 LENGTH=176
+INFO: HOST=localhost PORT=12345 SEED=213832581796468196882484836458250911905 LENGTH=232
+INFO: HOST=localhost PORT=12345 SEED=245672964872253133574853556132205880361 LENGTH=293
+INFO: HOST=localhost PORT=12345 SEED=186444863248417148185981536136708675574 LENGTH=263
+INFO: HOST=localhost PORT=12345 SEED=74490732720924315295420210212417311605 LENGTH=213
+INFO: HOST=localhost PORT=12345 SEED=164569142898716730347360966282104087752 LENGTH=249
+INFO: HOST=localhost PORT=12345 SEED=118480988809907960806974858832231074285 LENGTH=189
+INFO: HOST=localhost PORT=12345 SEED=56805885136932288170467531644185681687 LENGTH=196
+INFO: HOST=localhost PORT=12345 SEED=88009751586918322965594229313895446725 LENGTH=109
+INFO: HOST=localhost PORT=12345 SEED=134172615059064866440157259417653712801 LENGTH=275
+INFO: HOST=localhost PORT=12345 SEED=136130852501153626053666078939359729441 LENGTH=152
+INFO: HOST=localhost PORT=12345 SEED=96367957287564029177040601559048388068 LENGTH=279
+INFO: HOST=localhost PORT=12345 SEED=257618966457188358026973197481602806324 LENGTH=204
+INFO: HOST=localhost PORT=12345 SEED=271936375797856958339238572941821613010 LENGTH=127
+INFO: HOST=localhost PORT=12345 SEED=54222111400135631816079691171597961258 LENGTH=104
+INFO: HOST=localhost PORT=12345 SEED=119608340441422190254113301571531898189 LENGTH=280
+INFO: HOST=localhost PORT=12345 SEED=102682580508184970891726586341853953689 LENGTH=253
+INFO: HOST=localhost PORT=12345 SEED=161673618607151275881458150371815576564 LENGTH=272
+INFO: HOST=localhost PORT=12345 SEED=132100087404007716808779316972358805228 LENGTH=242
+INFO: HOST=localhost PORT=12345 SEED=53964396052092756164894955198089999390 LENGTH=125
+INFO: HOST=localhost PORT=12345 SEED=237860831904552669264579905365684073585 LENGTH=184
+INFO: HOST=localhost PORT=12345 SEED=161526311817628602586683486404311918229 LENGTH=297
+INFO: HOST=localhost PORT=12345 SEED=112841087283716280818091387029221843188 LENGTH=174
+INFO: HOST=localhost PORT=12345 SEED=190246041205966997759641454674708890519 LENGTH=265
+INFO: HOST=localhost PORT=12345 SEED=294911580854111884052016489467960662038 LENGTH=112
+INFO: HOST=localhost PORT=12345 SEED=191050264796757624032107477576697896313 LENGTH=111
+INFO: HOST=localhost PORT=12345 SEED=12597479336810636148619276071950206856 LENGTH=299
+INFO: HOST=localhost PORT=12345 SEED=159709875700874669787709907622131214896 LENGTH=288
+INFO: HOST=localhost PORT=12345 SEED=316215090581550378116954233585834739009 LENGTH=294
+INFO: HOST=localhost PORT=12345 SEED=102699249392118293583299011499248497229 LENGTH=118
+INFO: HOST=localhost PORT=12345 SEED=138935547751555177369181483223754747762 LENGTH=203
+INFO: HOST=localhost PORT=12345 SEED=298836733304685358359723703082328718222 LENGTH=129
+INFO: HOST=localhost PORT=12345 SEED=97158363155137360225129409927619138312 LENGTH=270
+INFO: HOST=localhost PORT=12345 SEED=31018263247558538343628354338672032518 LENGTH=186
+INFO: HOST=localhost PORT=12345 SEED=137588403680880211485364276593998144882 LENGTH=183
+INFO: HOST=localhost PORT=12345 SEED=221527149183418166664618030576394240533 LENGTH=124
+INFO: HOST=localhost PORT=12345 SEED=220171872533787080911860828976414010700 LENGTH=268
+INFO: HOST=localhost PORT=12345 SEED=221836841912676908129123465872608272148 LENGTH=198
+INFO: HOST=localhost PORT=12345 SEED=305736488004547564451303738684876986968 LENGTH=222
+INFO: HOST=localhost PORT=12345 SEED=149429133429021201540837488711769700490 LENGTH=148
+INFO: HOST=localhost PORT=12345 SEED=73976829407563494724015392330896885914 LENGTH=162
+INFO: HOST=localhost PORT=12345 SEED=226094715302828238751545456320692929221 LENGTH=240
+INFO: HOST=localhost PORT=12345 SEED=294783768295981468376987264987621371785 LENGTH=187
+INFO: HOST=localhost PORT=12345 SEED=63775184307219239847879494543778689465 LENGTH=283
+INFO: HOST=localhost PORT=12345 SEED=33128948361054905183652770995598483129 LENGTH=135
+INFO: HOST=localhost PORT=12345 SEED=29215047188590923893335176234609570724 LENGTH=231
+INFO: HOST=localhost PORT=12345 SEED=78534603740239488702797457204546018663 LENGTH=156
+INFO: HOST=localhost PORT=12345 SEED=51244390992491910985342174840943039046 LENGTH=263
+INFO: HOST=localhost PORT=12345 SEED=266955111002169694575494016734680991679 LENGTH=128
+INFO: HOST=localhost PORT=12345 SEED=160167671466860876155349434769733569251 LENGTH=121
+INFO: HOST=localhost PORT=12345 SEED=309069828076052142671410406810688630698 LENGTH=133
+INFO: HOST=localhost PORT=12345 SEED=175896496946937738864220643510883336684 LENGTH=246
+INFO: HOST=localhost PORT=12345 SEED=302428210970609399701053975814157929893 LENGTH=175
+INFO: HOST=localhost PORT=12345 SEED=124887605565940508663714520376983151789 LENGTH=127
+INFO: HOST=localhost PORT=12345 SEED=110055306792838432136814136780483271552 LENGTH=229
+INFO: HOST=localhost PORT=12345 SEED=120600904587961430423641554395305886638 LENGTH=125
+INFO: HOST=localhost PORT=12345 SEED=82895834410168761540291426418019503227 LENGTH=126
+INFO: HOST=localhost PORT=12345 SEED=179436157341704483544915940946444295806 LENGTH=124
+INFO: HOST=localhost PORT=12345 SEED=291508224875263532945260199297049905773 LENGTH=184
+INFO: HOST=localhost PORT=12345 SEED=97503844220845081564625351093302738618 LENGTH=102
+INFO: HOST=localhost PORT=12345 SEED=6746937301882435680160854625263129963 LENGTH=189
+INFO: HOST=localhost PORT=12345 SEED=80024425157347019529057526399509201302 LENGTH=206
+INFO: HOST=localhost PORT=12345 SEED=13831510494852372265566592010433386339 LENGTH=118
+INFO: HOST=localhost PORT=12345 SEED=162087978298906022737833817364847842188 LENGTH=278
+INFO: HOST=localhost PORT=12345 SEED=116075157976807377685222965231625719106 LENGTH=153
+INFO: HOST=localhost PORT=12345 SEED=87625829231636032205285144261267908745 LENGTH=244
+INFO: HOST=localhost PORT=12345 SEED=339767481729954227665647170608034581998 LENGTH=153
+INFO: HOST=localhost PORT=12345 SEED=201497860502154183935986252926879467985 LENGTH=219
+INFO: HOST=localhost PORT=12345 SEED=301149080664115471297750829915322439222 LENGTH=215
+INFO: HOST=localhost PORT=12345 SEED=233174985625457704659817015180892995677 LENGTH=266
+INFO: HOST=localhost PORT=12345 SEED=304931914611939694759239096925949833301 LENGTH=256
+INFO: HOST=localhost PORT=12345 SEED=93926997599506671574559195996488934383 LENGTH=259
+INFO: HOST=localhost PORT=12345 SEED=184068864510069775953814868384134367128 LENGTH=159
+INFO: HOST=localhost PORT=12345 SEED=45834332011374389905446214769407633014 LENGTH=174
+INFO: HOST=localhost PORT=12345 SEED=29500087048956055563557835353891885341 LENGTH=137
+INFO: HOST=localhost PORT=12345 SEED=188063928640256908383625806765088605721 LENGTH=110
+INFO: HOST=localhost PORT=12345 SEED=139406125691347252747750413658902008239 LENGTH=291
+INFO: HOST=localhost PORT=12345 SEED=280095436154911062261121693227098703185 LENGTH=267
+INFO: HOST=localhost PORT=12345 SEED=129225137404765285354891615370492946041 LENGTH=279
+INFO: HOST=localhost PORT=12345 SEED=158334436758839727083673233534204528178 LENGTH=116
+INFO: HOST=localhost PORT=12345 SEED=146491827860651004870763721752997437373 LENGTH=132
+INFO: HOST=localhost PORT=12345 SEED=209907004353052905202283308412328638979 LENGTH=164
+INFO: HOST=localhost PORT=12345 SEED=279806928852230721504910361566318681550 LENGTH=299
+INFO: HOST=localhost PORT=12345 SEED=330385651564396547006250070479865919935 LENGTH=129
+INFO: HOST=localhost PORT=12345 SEED=111908617915797256562662728897623712350 LENGTH=116
+INFO: HOST=localhost PORT=12345 SEED=319378860717717680572223075800186895595 LENGTH=125
+INFO: HOST=localhost PORT=12345 SEED=128610774758304871149965557976120422380 LENGTH=214
+INFO: HOST=localhost PORT=12345 SEED=171221668139355694030476555237148439088 LENGTH=198
+INFO: HOST=localhost PORT=12345 SEED=198529439589616221735369705730189715058 LENGTH=298
+INFO: HOST=localhost PORT=12345 SEED=295427093690183788048323474628958089877 LENGTH=152
+INFO: HOST=localhost PORT=12345 SEED=124209835089064791146117170968435342335 LENGTH=218
+INFO: HOST=localhost PORT=12345 SEED=274371502817847108205628689387799684290 LENGTH=100
+INFO: HOST=localhost PORT=12345 SEED=36369286225172953803943929068051832503 LENGTH=123
+INFO: HOST=localhost PORT=12345 SEED=75928578039173942764301056843842782463 LENGTH=107
+INFO: HOST=localhost PORT=12345 SEED=317090300713867103078733567031909269591 LENGTH=168
+INFO: HOST=localhost PORT=12345 SEED=125039876567148303846915096741243751609 LENGTH=106
+INFO: HOST=localhost PORT=12345 SEED=27586917734934394826869083695860620368 LENGTH=215
+FATAL: Failed assertion between "\x01" and "\x02"
+INFO: HOST=localhost PORT=12345 SEED=1515157536465355987945138349084499718 LENGTH=168
+INFO: HOST=localhost PORT=12345 SEED=103574117028593841250853510843919318655 LENGTH=121
+INFO: HOST=localhost PORT=12345 SEED=322398220913101752638656302885209559154 LENGTH=110
+INFO: HOST=localhost PORT=12345 SEED=30701292217847586741214196483187803817 LENGTH=215
+INFO: HOST=localhost PORT=12345 SEED=33607460962454697632573076932407279769 LENGTH=190
+INFO: HOST=localhost PORT=12345 SEED=176628612787981896258124773785362251885 LENGTH=112
+INFO: HOST=localhost PORT=12345 SEED=141914152776028071896081453248843048462 LENGTH=205
+INFO: HOST=localhost PORT=12345 SEED=270348032937466243822240981136694976039 LENGTH=173
+INFO: HOST=localhost PORT=12345 SEED=219440664627082133064601526846639621292 LENGTH=166
+INFO: HOST=localhost PORT=12345 SEED=278349291536185294865552798018880327269 LENGTH=256
+INFO: HOST=localhost PORT=12345 SEED=111060738239242576385617759385347544068 LENGTH=189
+INFO: HOST=localhost PORT=12345 SEED=177650963939611671717306877771315208190 LENGTH=149
+INFO: HOST=localhost PORT=12345 SEED=334749949361995574921699513932528350941 LENGTH=129
+INFO: HOST=localhost PORT=12345 SEED=269035210692730007291696515384240542045 LENGTH=149
+INFO: HOST=localhost PORT=12345 SEED=110741362686638764722257486070897699894 LENGTH=244
+INFO: HOST=localhost PORT=12345 SEED=127362260442526540083907978508203793392 LENGTH=179
+INFO: HOST=localhost PORT=12345 SEED=86474692231286860538175705752294862972 LENGTH=261
+INFO: HOST=localhost PORT=12345 SEED=291272609894707798726913067699160152680 LENGTH=132
+INFO: HOST=localhost PORT=12345 SEED=77289995259174514937919463008836134783 LENGTH=242
+INFO: HOST=localhost PORT=12345 SEED=288480386011784038374920601440689888360 LENGTH=165

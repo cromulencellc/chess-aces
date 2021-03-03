@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <title>admin | montague</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <h1>admin</h1>
+    {{ if request._montague_authenticated }}
+    <h2>welcome to the admin zone</h2>
+    <p>
+      the token is:
+      <span id="token">{{= token }}</span>
+    </p>
+    {{ else }}
+    <form method="post" action="/admin">
+      <p>
+        <label for="password">password:</label>
+        <input type="password" name="password" id="password" />
+      </p>
+      <p>
+        <button type="submit">try to log in</button>
+      </p>
+    </form>
+    {{ endif }}
+  </body>
+</html>

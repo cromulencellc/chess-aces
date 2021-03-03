@@ -1,0 +1,36 @@
+html {
+    font-family: "Helvetica Neue", Helvetica;
+    background-color: #efe;
+    color: #010;
+}
+
+body {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-style: italic;
+    background-color: white;
+    color: #242;
+}
+
+tt {
+    font-family: "Fantasque Sans Mono", "Menlo", "Monaco", "Consolas", courier;
+    background-color: white;
+}
+
+tr:nth-child(odd) {
+    background-color: #dfd;
+}
+tr:nth-child(even) {
+    background-color: #f8fff8;
+}
+
+thead tr:nth-child(odd) {
+    background-color: #cfc;
+}
+
+th, td {
+    padding: 4px;
+}

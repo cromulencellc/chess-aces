@@ -1,0 +1,48 @@
+version: '3'
+services:
+  challenge:
+    build: ./challenge/
+    volumes:
+      - ./challenge:/service
+      - ./base_data:/base_data:ro
+      - .:/mnt
+    ports:
+      - 3008
+    environment:
+      PORT: 3008
+    working_dir: /service
+    command: "make run"
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+  unpatched:
+    build: .
+    volumes:
+      - ./variants/unpatched:/service
+      - ./base_data:/base_data:ro
+    ports:
+      - 3008
+    environment:
+      PORT: 3008
+  fully_patched:
+    build: .
+    volumes:
+      - ./variants/fully_patched:/service
+      - ./base_data:/base_data:r0
+    ports:
+      - 3008
+    environment:
+      PORT: 3008
+  poller:
+    build: poller
+    environment:
+      PORT: 3008
+    volumes:
+      - ./poller:/poller
+    working_dir: /poller
+    command: "python3 union-poller.py"
+  pov:
+    build: pov
+    volumes:
+      - ./pov:/pov

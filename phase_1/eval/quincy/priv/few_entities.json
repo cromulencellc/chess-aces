@@ -1,0 +1,23 @@
+{
+  "&AElig": { "codepoints": [198], "characters": "\u00C6" },
+  "&AElig;": { "codepoints": [198], "characters": "\u00C6" },
+  "&AMP": { "codepoints": [38], "characters": "\u0026" },
+  "&AMP;": { "codepoints": [38], "characters": "\u0026" },
+  "&Aacute": { "codepoints": [193], "characters": "\u00C1" },
+  "&Aacute;": { "codepoints": [193], "characters": "\u00C1" },
+  "&Abreve;": { "codepoints": [258], "characters": "\u0102" },
+  "&Acirc": { "codepoints": [194], "characters": "\u00C2" },
+  "&Acirc;": { "codepoints": [194], "characters": "\u00C2" },
+  "&Acy;": { "codepoints": [1040], "characters": "\u0410" },
+  "&Afr;": { "codepoints": [120068], "characters": "\uD835\uDD04" },
+  "&Agrave": { "codepoints": [192], "characters": "\u00C0" },
+  "&Agrave;": { "codepoints": [192], "characters": "\u00C0" },
+  "&Alpha;": { "codepoints": [913], "characters": "\u0391" },
+  "&Amacr;": { "codepoints": [256], "characters": "\u0100" },
+  "&And;": { "codepoints": [10835], "characters": "\u2A53" },
+  "&Aogon;": { "codepoints": [260], "characters": "\u0104" },
+  "&Aopf;": { "codepoints": [120120], "characters": "\uD835\uDD38" },
+  "&ApplyFunction;": { "codepoints": [8289], "characters": "\u2061" },
+  "&Aring": { "codepoints": [197], "characters": "\u00C5" },
+  "&Aring;": { "codepoints": [197], "characters": "\u00C5" }
+}

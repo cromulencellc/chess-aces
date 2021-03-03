@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head>
+    <title>list index | montague</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <h1>list index</h1>
+    <table class="lists">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>name</th>
+          <th>actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ each id,name in lists }}
+        <tr id="list_{{= id }}">
+          <td class="id">{{= id }}</td>
+          <td class="name">{{= name }}</td>
+          <td>
+            <a href="/lists/{{= id}}">show</a>
+          </td>
+        {{ endeach }}
+      </tbody>
+    </table>
+    <h2>new list:</h2>
+    <form method="post" action="/lists">
+      <p>
+        <label for="list_name">name:</label>
+        <input type="text" name="name" id="list_name" />
+      </p>
+      <p>
+        <button type="submit">create list</button>
+      </p>
+    </form>
+
+  </body>
+</html>

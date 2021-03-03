@@ -1,0 +1,39 @@
+BUILD_DIR ?= ./build
+SRC_DIR ?= ./src
+PRIV_DIR ?= ./priv
+
+TARGET ?= hamlin
+
+CC := clang
+CXX := clang++
+
+CPPFLAGS ?= -MD
+CFLAGS ?= -Wall -Werror -O3
+CXXFLAGS ?= -Wall -Werror -std=c++17 -O3
+LDFLAGS ?= -std=c++17 -lstdc++fs -O3
+
+SRCS := $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/**/*.cpp)
+OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+DEPS := $(OBJS:.o=.d)
+
+$(BUILD_DIR)/$(TARGET): $(OBJS)
+	$(CXX) $(filter-out ./build/pngtest.o,$(OBJS)) -o $@ $(LDFLAGS)
+	strip -s $@
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+.PHONY: clean docker
+
+run: $(BUILD_DIR)/$(TARGET)
+	$<
+
+clean:
+	rm -rf $(BUILD_DIR)
+
+docker:
+	docker build -t $(TARGET) .
+	docker run --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --rm -it -v `pwd`:/mnt --name base $(TARGET)
+
+-include $(DEPS)
