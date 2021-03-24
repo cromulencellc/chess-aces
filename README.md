@@ -9,7 +9,7 @@ Defense Advanced Research Projects Agency (DARPA).
 Distribution Statement "A" (Approved for Public Release, Distribution Unlimited).
 
 For more information about these challenges, please read our Phase 1 report
-at XXXX
+in `phase-1-report.pdf`
 
 ## Using These Challenges
 
