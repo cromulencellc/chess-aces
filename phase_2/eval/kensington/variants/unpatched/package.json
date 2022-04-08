@@ -1,0 +1,88 @@
+{
+  "name": "ftp-srv",
+  "version": "0.0.0",
+  "description": "Modern, extensible FTP Server",
+  "keywords": [
+    "ftp",
+    "ftp-server",
+    "ftp-srv",
+    "ftp-svr",
+    "ftpd",
+    "ftpserver",
+    "server"
+  ],
+  "license": "MIT",
+  "files": [
+    "src",
+    "bin",
+    "ftp-srv.d.ts"
+  ],
+  "main": "ftp-srv.js",
+  "bin": "./bin/index.js",
+  "types": "./ftp-srv.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/autovance/ftp-srv"
+  },
+  "scripts": {
+    "pre-release": "npm run verify",
+    "test": "mocha test/**/*.spec.js test/*.spec.js --ui bdd",
+    "verify": "eslint src/**/*.js test/**/*.js bin/**/*.js"
+  },
+  "release": {
+    "verifyConditions": "condition-circle",
+    "branch": "master",
+    "branches": [
+      "master"
+    ]
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "env": {
+      "node": true,
+      "mocha": true,
+      "es6": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    }
+  },
+  "dependencies": {
+    "better-sqlite3": "^7.1.5",
+    "bluebird": "^3.5.1",
+    "bunyan": "^1.8.12",
+    "ip": "^1.1.5",
+    "lodash": "^4.17.15",
+    "moment": "^2.22.1",
+    "uuid": "^3.2.1",
+    "yargs": "^15.4.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^10.0.0",
+    "@commitlint/config-conventional": "^8.1.0",
+    "@icetee/ftp": "^1.0.2",
+    "chai": "^4.2.0",
+    "condition-circle": "^2.0.2",
+    "eslint": "^5.14.1",
+    "lint-staged": "^8.2.1",
+    "mocha": "^8.1.1",
+    "rimraf": "^2.6.1",
+    "semantic-release": "^17.2.3",
+    "sinon": "^2.3.5"
+  },
+  "engines": {
+    "node": ">=6.x"
+  }
+}

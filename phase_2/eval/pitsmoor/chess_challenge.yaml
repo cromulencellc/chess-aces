@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'pitsmoor'
+    compose_service: 'ta3_pitsmoor'
+    role: 'server'
+    runtime:
+      type: ELF
+      path: challenge_bin/ngircd/src/ngircd/ngircd
+      container_path: /home/challenge/ngircd/src/ngircd/ngircd
+    main_source:
+      type: C
+      path: challenge_src/ngircd/src/ngircd/ngircd.c
+      container_path: /home/challenge/ngircd/src/ngircd/ngircd.c
+poller:
+  compose_service: ta3_pitsmoor_sp_s1

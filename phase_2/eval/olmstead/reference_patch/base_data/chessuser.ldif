@@ -1,0 +1,13 @@
+dn: uid=chess,ou=people,dc=chess,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: top
+cn: temp
+uid: temp
+sn: Temp
+uidNumber: 1002
+gidNumber: 1002
+userPassword: chess
+homeDirectory: /home/chess

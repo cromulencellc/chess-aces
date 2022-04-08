@@ -1,0 +1,19 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 11
+    },
+    "env": {
+        "node": true
+    },
+    "rules": {
+        "no-unused-vars": [
+            "error",
+            {"argsIgnorePattern":  "^_"}
+        ],
+        "no-constant-condition": [
+            "error",
+            {"checkLoops": false}
+        ]
+    },
+    "extends": "eslint:recommended"
+}

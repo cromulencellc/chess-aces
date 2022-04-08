@@ -1,0 +1,39 @@
+doctype html
+html
+  head
+    title Order #{order.id}
+    link(rel='stylesheet' href='/static/beacon.css')
+  body
+    h1 Order #{order.id}
+    dl
+      dt id
+      dd.id= order.id
+      dt total (cents)
+      dd.total= order.total_cents
+      dt postcode
+      dd.postcode= order.postcode
+      dt payment card
+      dd.pan= order.pan
+      dt pin
+      dd.pin= order.pin
+    h2 items
+    table
+      thead
+        tr
+          th(rowspan=2) name
+          th(rowspan=2) qty
+          th unit price
+          th item total
+          th item total
+        tr
+          th(colspan=2) cents
+          th dollars
+      tbody
+        each item in order.items
+          tr
+            td= item.name
+            td= item.qty
+            td= item.unit_price_cents
+            td= item.qty * item.unit_price_cents
+            td= (item.qty * item.unit_price_cents) / 100
+

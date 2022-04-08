@@ -1,0 +1,39 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: vsftpd
+Upstream-Contact: Chris Evans <scarybeasts@gmail.com>
+Source: http://security.appspot.com/downloads/
+
+Files: *
+Copyright: 2001-2015 Chris Evans <scarybeasts@gmail.com>
+           2001      Daniel Jacobowitz <dan@debian.org>
+License: GPL-2 with SSL exception
+
+Files: debian/*
+Copyright: 2009-2014 Daniel Baumann <mail@daniel-baumann.ch>
+           2014-2016 Jörg Frings-Fürst <debian@jff-webhosting.net>
+License: GPL-2 with SSL exception
+
+License: GPL-2 with SSL exception
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation, version 2 of the License.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ .
+ The complete text of the GNU General Public License
+ can be found in /usr/share/common-licenses/GPL-2 file.
+ .
+ There is an additional exception from the author permitting linking
+ with OpenSSL:
+ .
+ As copyright holder, I give permission for vsftpd to be linked to the OpenSSL
+ libraries. This includes permission for vsftpd binaries to be distributed
+ linked against the OpenSSL libraries. All other obligations under the GPL v2
+ remain intact.

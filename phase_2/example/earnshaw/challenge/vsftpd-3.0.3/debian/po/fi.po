@@ -1,0 +1,53 @@
+# Finnish translation of vsftpd debconf templates.
+# Copyright (C) 2009 Esko Arajärvi
+# This file is distributed under the same license as the vsftpd package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vsftpd 2.3.4-1\n"
+"Report-Msgid-Bugs-To: vsftpd@packages.debian.org\n"
+"POT-Creation-Date: 2010-09-05 21:17+0200\n"
+"PO-Revision-Date: 2009-04-07 22:19+0300\n"
+"Last-Translator: Esko Arajärvi <edu@iki.fi>\n"
+"Language-Team: Finnish <debian-l10n-finnish@lists.debian.org>\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid "Dedicated system account for the vsftpd FTP daemon:"
+msgstr "Dedikoitu järjestelmätunnus vsfptd:n FTP-taustaohjelman ajamiseen:"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid ""
+"The FTP server must use a dedicated account for its operation so that the "
+"system's security is not compromised by running it with superuser privileges."
+msgstr ""
+"FTP-palvelimen tulee käyttää dedikoitua tunnusta toiminnoissaan, jotta "
+"järjestelmän turvallisuus ei vaarannu kuten käytettäessä "
+"pääkäyttäjäoikeuksia."
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid "Please choose that account's username."
+msgstr "Valitse kyseisen tunnuksen nimi."
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:2001
+msgid "FTP root directory:"
+msgstr "FTP-juurihakemisto:"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:2001
+msgid ""
+"Please specify the directory that will be used as root for the FTP server."
+msgstr "Anna hakemisto, jota käytetään FTP-palvelimen juurena."

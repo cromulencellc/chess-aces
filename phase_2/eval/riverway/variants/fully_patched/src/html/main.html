@@ -1,0 +1,136 @@
+<html>
+<head>
+    <script src="charts.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen"/>   
+</head>
+<body>
+
+    <div class="formly" id="formly1">
+        <div class="formly-popup" id="myForm">
+          <h1>Spacecraft Config</h1>
+      
+          <form>
+          <label for="Kp"><b>Kp</b></label>
+          <input type="text" id="Kp" required></p>
+      
+          <label for="Ki"><b>Ki</b></label>
+          <input type="text" id="Ki" required></p>
+
+          <label for="Kd"><b>Kd</b></label>
+          <input type="text" id="Kd" required></p>
+
+          <label for="Kd"><b>Initial Velocity</b></label>
+          <input type="text" id="ivelocity" required></p>
+
+          <label for="Kd"><b>Final Velocity</b></label>
+          <input type="text" id="fvelocity" required></p>
+
+          <label for="Kd"><b>Initial Altitude</b></label>
+          <input type="text" id="ialtitude" required></p>
+
+          <label for="Kd"><b>Final Altitude</b></label>
+          <input type="text" id="faltitude" required></p>
+
+          <label for="Kd"><b>Max Fuel (grams)</b></label>
+          <input type="text" id="fuel_max" required></p>
+
+          <label for="Kd"><b>Max Thrust</b></label>
+          <input type="text" id="thrust_max" required></p>
+
+          <label for="Kd"><b>Fuel Rate @Max</b></label>
+          <input type="text" id="mpg" required></p>
+          </form>
+
+          <div class="formly-buttons">
+            <button type="submit" class="btn" onclick="sendConfig()">Send Config</button>
+            <button type="submit" class="btn cancel" onclick="closeForm()">Close</button>
+          </div>
+      </div>
+    </div>
+
+    <div class="formly" id="formly2">
+        <div class="formly-popup" id="SimConfigForm">
+          <h1>Simulation Config</h1>
+      
+          <form>
+
+          <label for="Kd"><b>Sim Starting Altitude</b></label>
+          <input type="text" id="sim_alt" required></p>
+
+          <label for="Kd"><b>Sim Starting Velocity</b></label>
+          <input type="text" id="sim_vel" required></p>
+
+          <label><b>Planet Model</b></label></b>
+          <select name="planet" id="planets"></select></p>
+          <label for="logging"><b>Log Simulation Data</b></label>
+          <input type="checkbox" id="logging" name="Logging" value="Logging">
+          </form>
+
+          <div class="formly-buttons">
+            <button type="submit" class="btn" onclick="sendSimConfig()">Send Config</button>
+            <button type="submit" class="btn cancel" onclick="closeSimForm()">Close</button>
+          </div>
+      </div>
+    </div>
+
+    <div class="logs" id="logs">
+        <div class="logs-popup" id="logForm">
+          <h1>Simulation Logs</h1>
+      
+          <form>
+          <select name="logs" size="10" id="simlogs"></select></p>
+          </form>
+
+          <div class="logs-buttons">
+            <button type="submit" class="btn" onclick="sendLog()">Send Log</button>
+            <button type="submit" class="btn cancel" onclick="closeLogs()">Close</button>
+          </div>
+      </div>
+    </div>
+
+<button id="run-btn" onclick="runSim();"/>Run Sim</button>
+<button id="change-btn" onclick="showSCConfig();"/>Lander Config</button>
+<button id="simconfig-btn" onclick="showSimConfig();">Sim Config</button>
+<button id="logs-btn" onclick="showLogs();"/>Sim Logs</button>
+
+<div class="row">
+    <div class="col-0">
+        <div id="parachute" class="indicator-off">Parachute Deployed</div>
+        <div id="backshell" class="indicator-off">Backshell Ejected</div>
+        <div id="powered_descent" class="indicator-off">Powered Descent</div>
+        <div id="legs_deployed" class="indicator-off">Legs Deployed</div>
+        <div id="constant_velocity" class="indicator-off">Constant Velocity</div>
+        <div id="touchdown" class="indicator-off">Touchdown</div>
+        <div id="engine_cutoff" class="indicator-off">Engine Cutoff</div>
+    </div>
+    <div class="col-1">
+        <canvas id="fuel" width="100" height = "200"></canvas>
+    </div>
+    <div class="col-2">
+        <canvas id="thrust" width="100" height = "200"></canvas>
+    </div>
+    <div class="col-3">
+        <canvas id="velocitybar" width="100" height = "200"></canvas>
+    </div>
+    <div class="col-4">
+        <canvas id="altitudebar" width="100" height = "200"></canvas>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-1">
+        <canvas id="velocity" width="500" height="500"></canvas>
+    </div>
+    <div class="col-2">
+        <canvas id="altitude" width="500" height="500"></canvas>
+    </div>
+</div>
+
+<ul id = "log"></ul>
+
+<script src="ui.js"></script>
+
+</body>
+</html>
+

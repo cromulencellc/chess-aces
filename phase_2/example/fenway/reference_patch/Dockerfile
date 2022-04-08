@@ -1,0 +1,28 @@
+#FROM chessexternal.apogee-research.com:5010/apogee_ta5/testbed_release/cs_base_phase_2:2020_11_16
+FROM registry.mlb.cromulence.com/chess/cs_base:latest
+
+ADD ./ /home/challenge
+ADD base_data /data
+
+RUN chown -R chess:chess /home
+RUN chown -R chess:chess /data
+RUN mkdir /service
+RUN chown -R chess:chess /service
+
+ENV TCP_PORT_1=3445
+ENV PORT=3445
+ENV HOST=challenge_container
+ENV CXX=clang-7
+ENV CHESS=Chess_System
+
+RUN echo -n 09vee78cnw0mjw3bLOiPPmyn15mwmlks > /data/token
+RUN chown 600 /data/token
+
+WORKDIR /home/challenge
+
+RUN make clean
+RUN make
+RUN cp -r build /service
+WORKDIR /
+
+CMD /service/build/fenway.bin

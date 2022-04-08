@@ -1,0 +1,78 @@
+Notes on the vsftpd package
+===========================
+
+If you want to allow local users to log in via FTP (not a good option
+on any public network, since FTP relies upon cleartext passwords), you
+should uncomment the "local_enable" line in /etc/vsftpd.conf.
+
+
+
+The PAM configuration file for vsftpd, unlike for some other FTP daemons,
+should not include pam_ftp.so.  pam_ftp is only for anonymous logins, and
+vsftpd has its own handling of anonymous users.
+
+
+
+Anonymous FTP by default uses the home diretory and privileges of the "ftp"
+user for its root directory.  Installing the vsftpd package for the first
+time will create this user.  If you want to use a different user account,
+change the value of "ftp_username" in /etc/vsftpd.conf.  You can also change
+the root directory by setting anon_root.
+
+
+
+If you use virtual users (via PAM and the guest_enable configuration option
+in vsftpd.conf), you may want to investigate the virtual_use_local_privs
+option.  By default (without this option), guest users (and thus all virtual
+users) are treated as anonymous users by the configuration. For instance, to
+allow guest users to upload requires setting anon_upload_enable.  However,
+with virtual_use_local_privs then write_enable is enough to allow your
+virtual users to upload.  This option is new in vsftpd 1.2.0.
+
+If you are using password-protected virtual users you should probably use
+virtual_use_local_privs, disable anonymous access, or at least be very
+careful of your filesystem layout.  Note that guest users and anonymous
+users can run as a different user (see guest_username and ftp_username), but
+both will be able to access a world-writeable directory, etc.
+
+
+
+This package includes SSL support.  For information about enabling SSL, see
+README.ssl.  Be sure to read this file before enabling SSL!
+
+To use SSL you will need a certificate.  You may wish to get a certificate
+from a certificate agency; if you only need a self-signed certificate, you
+can use the "make-ssl-cert" script from the "ssl-cert" package to
+create one, or you can create one manually using the "openssl" command.
+The default location for the certificate is /etc/ssl/private/vsftpd.pem;
+set "rsa_cert_file" in /etc/vsftpd.conf to look elsewhere.
+
+At a minimum you will need the "ssl_enable" option.  See the vsftpd.conf
+manual page for more SSL-related settings.
+
+
+On Linux systems, if capability support was disabled in the kernel or
+built as a module and not loaded, vsftpd will fail to run.  You'll see
+this error message:
+  500 OOPS: cap_set_proc
+Build and load the appropriate kernel module to continue.
+
+
+The included init script uses start-stop-daemon's --background option to run
+vsftpd in the background.  If you have "background=yes" in your configuration,
+the wrong PID will be recorded in /var/run/vsftpd/vsftpd.pid, and the init
+script may fail to restart or stop vsftpd later.  Just remove "background=yes"
+from vsftpd.conf.
+
+
+For more information on configuring vsftpd, see the vsftpd.conf(5) manual
+page, and the included FAQ.
+
+
+If vsftpd is used within a Linux Container (LXC) or with NIS logins, make sure
+you use:
+
+  isolate=NO
+  isolate_network=NO
+
+in /etc/vsftpd.conf.

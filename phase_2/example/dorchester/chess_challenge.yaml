@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'dorchester'
+    compose_service: 'ta3_dorchester'
+    role: 'server'
+    runtime:
+      path: challenge_bin/build/dorchester.bin
+      container_path: /service/build/dorchester.bin
+      type: ELF
+    main_source:
+      path: challenge_src/src/dorchester.c
+      container_path: /home/challenge/src/dorchester.c
+      type: C
+poller:
+  compose_service: 'ta3_dorchester_poller'

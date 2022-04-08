@@ -1,0 +1,34 @@
+extends _layout.pug
+
+block content
+  h1 dashboard
+
+  h2 subscriptions
+  table(id='subscriptions')
+    thead
+      tr
+        th id
+        th name
+        th subscribed at
+        th fun activities
+    tbody
+      each subscription in user.subscriptions
+        tr(id=`subscription_${subscription.id}`)
+          td.subscription_id= subscription.id
+          td.subscription_topic_name= subscription.topic.name
+          td.subscription_created_at= subscription.created_at
+          td.actions
+            a(href=`/subscriptions/${subscription.id}`) view
+            form.confirmform.unsubscribe(
+              action=`/subscriptions/${subscription.id}/delete`
+              method='post'
+              data-confirm=`Unsubscribe from ${subscription.topic.name} ?`)
+              input(type='hidden' name='_csrf' value=csrf)
+              button unsubscribe
+  h3 subscribe to another topic
+  form(action='/subscriptions' method='post')
+    input(type='hidden' name='_csrf' value=csrf)
+    label
+      | topic name
+      input(type='text' name='subscription[topic][name]' id='topic_name')
+    button subscribe

@@ -1,0 +1,4 @@
+dn: uid=hawaiijohn,ou=People,dc=chess,dc=com
+changetype: modify
+replace: sn
+sn: John

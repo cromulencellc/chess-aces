@@ -1,0 +1,38 @@
+extends _layout.pug
+
+block content
+  h1 lamartine
+
+  h2 your #1 source for converting doom maps into svg images
+
+  h2 upload a map to convert
+  p supports PWADs with a single map, limit-removing traditional or UDMF
+
+  form(method='post' 
+    action='/upload'
+    id='upload_map_form'
+    enctype='multipart/form-data')
+    input(type='hidden' name='_csrf' value=csrf)
+    input(type='file' name='map')
+    br
+    button upload map
+
+  - if (0 != already_converted.length)
+    h2 maps that have already been converted
+    table
+      thead 
+        tr 
+          th filename 
+          th actions 
+      tbody 
+        each id in already_converted
+          tr(id=`map-${id}`) 
+            td= id
+            td 
+              a(href=`/maps/${id}.html`) view
+              | 
+              a(href=`/maps/${id}.svg`) download
+
+  p
+    | This application uses assets from 
+    a(href='https://github.com/freedoom/freedoom') the freedoom project.

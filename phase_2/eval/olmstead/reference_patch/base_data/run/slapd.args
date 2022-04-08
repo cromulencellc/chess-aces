@@ -1,0 +1,1 @@
+/vagrant/chess/olmstead/challenge/openldap-2.4.56/servers/slapd/slapd -d 65535 -f /home/vagrant/ldap-data/slapd.conf 

@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.4.0'
+targets:
+  - name: 'kensington'
+    compose_service: 'ta3_kensington'
+    role: 'server'
+    runtime:
+      type: 'JavaScript'
+      container_path: '/mnt/challenge/bin/index.js'
+      path: 'challenge_bin/bin/index.js'
+    main_source:
+      type: 'JavaScript'
+      container_path: '/mnt/challenge/bin/index.js'
+      path: 'challenge_src/bin/index.js'
+poller:
+  compose_service: 'ta3_kensington_sp_s1'

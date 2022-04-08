@@ -1,0 +1,41 @@
+doctype html
+html
+  head
+    title Orders
+    link(rel='stylesheet' href='/static/beacon.css')
+  body
+    h1 Orders
+    form(method='get' action=`/orders` class='filters')
+      fieldset
+        legend
+          | Filter
+        label
+          | Total (cents) >=
+          input(type='number' name='filter[total_cents:gteq]')
+        label
+          | Total (cents) <=
+          input(type='number' name='filter[total_cents:lteq]')
+        button filter
+        a(href='/orders') Don't filter
+    table
+      thead
+        tr
+          th id
+          th postcode
+          th total
+          th &nbsp;
+      tbody
+        each order in orders
+          tr(id=`order-${order.id}`)
+            td(class='id')= order.id
+            td(class='postcode')= order.postcode
+            td(class='total')= order.total_cents / 100
+            td
+              a(href=`/orders/${order.id}`) view
+              | &nbsp;
+              span(class='toggleform')
+                a(href='#toggleform' style='display: none') authenticate
+                form(method='get' action=`/orders/${order.id}`)
+                  input(type='text' name='pin' placeholder='pin')
+                  button view authenticated
+    script(type='text/javascript' src='/static/beacon.js')

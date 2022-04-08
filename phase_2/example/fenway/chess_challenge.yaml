@@ -1,0 +1,16 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'fenway'
+    compose_service: 'ta3_fenway'
+    role: 'server'
+    runtime:
+      type: ELF
+      path: 'challenge_bin/build/fenway.bin'
+      container_path: '/service/build/fenway.bin'
+    main_source:
+      type: C
+      path: 'challenge_src/src/main.c'
+      container_path: '/home/challenge/src/main.c'
+
+poller: 
+  compose_service: ta3_fenway_poller

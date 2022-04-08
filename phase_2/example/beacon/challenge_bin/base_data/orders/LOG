@@ -1,0 +1,32 @@
+2020/12/03-21:25:25.176654 7f298c7e0700                        Version: 2.0.19
+2020/12/03-21:25:25.176709 7f298c7e0700             Options.comparator: leveldb.InternalKeyComparator
+2020/12/03-21:25:25.176719 7f298c7e0700      Options.create_if_missing: 1
+2020/12/03-21:25:25.176728 7f298c7e0700        Options.error_if_exists: 0
+2020/12/03-21:25:25.176737 7f298c7e0700        Options.paranoid_checks: 0
+2020/12/03-21:25:25.176746 7f298c7e0700     Options.verify_compactions: 1
+2020/12/03-21:25:25.176755 7f298c7e0700                    Options.env: 0x7f29e00028e0
+2020/12/03-21:25:25.176764 7f298c7e0700               Options.info_log: 0x7f296c002a60
+2020/12/03-21:25:25.176847 7f298c7e0700      Options.write_buffer_size: 62914560
+2020/12/03-21:25:25.176860 7f298c7e0700         Options.max_open_files: 1000
+2020/12/03-21:25:25.176870 7f298c7e0700            Options.block_cache: 0x7f296c001b80
+2020/12/03-21:25:25.176879 7f298c7e0700             Options.block_size: 4096
+2020/12/03-21:25:25.176905 7f298c7e0700       Options.block_size_steps: 16
+2020/12/03-21:25:25.176913 7f298c7e0700 Options.block_restart_interval: 16
+2020/12/03-21:25:25.176922 7f298c7e0700            Options.compression: 1
+2020/12/03-21:25:25.176931 7f298c7e0700          Options.filter_policy: NULL
+2020/12/03-21:25:25.176940 7f298c7e0700              Options.is_repair: false
+2020/12/03-21:25:25.176950 7f298c7e0700         Options.is_internal_db: false
+2020/12/03-21:25:25.176988 7f298c7e0700      Options.total_leveldb_mem: 0
+2020/12/03-21:25:25.177024 7f298c7e0700  Options.block_cache_threshold: 33554432
+2020/12/03-21:25:25.177033 7f298c7e0700  Options.limited_developer_mem: false
+2020/12/03-21:25:25.177045 7f298c7e0700              Options.mmap_size: 0
+2020/12/03-21:25:25.177061 7f298c7e0700       Options.delete_threshold: 1000
+2020/12/03-21:25:25.177074 7f298c7e0700       Options.fadvise_willneed: false
+2020/12/03-21:25:25.177082 7f298c7e0700      Options.tiered_slow_level: 0
+2020/12/03-21:25:25.177092 7f298c7e0700     Options.tiered_fast_prefix: /tmp/orders
+2020/12/03-21:25:25.177101 7f298c7e0700     Options.tiered_slow_prefix: /tmp/orders
+2020/12/03-21:25:25.177139 7f298c7e0700                         crc32c: hardware
+2020/12/03-21:25:25.177165 7f298c7e0700   Options.cache_object_warming: true
+2020/12/03-21:25:25.177173 7f298c7e0700                File cache size: 186642432
+2020/12/03-21:25:25.177183 7f298c7e0700               Block cache size: 188739584
+2020/12/03-21:25:25.195892 7f298c7e0700 Delete type=3 #1

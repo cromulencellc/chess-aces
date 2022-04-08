@@ -1,0 +1,16 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'hackensack'
+    compose_service: 'ta3_hackensack'
+    role: 'server'
+    runtime:
+      container_path: '/service/mosquitto.bin'
+      path: 'challenge_bin/mosquitto-2.0.4/src/mosquitto'
+      type: ELF
+    main_source:
+      type: C
+      path: 'challenge_bin/mosquitto-2.0.4/src/mosquitto.c'
+      container_path: '/home/challenge/mosquitto-2.0.4/src/mosquitto.c'
+
+poller:
+  compose_service: 'ta3_hackensack_sp_s1'

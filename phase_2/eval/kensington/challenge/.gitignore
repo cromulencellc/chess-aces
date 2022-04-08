@@ -1,0 +1,4 @@
+test_tmp/
+
+dist/
+npm-debug.log

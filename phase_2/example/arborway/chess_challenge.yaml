@@ -1,0 +1,16 @@
+chess_challenge_metadata: '0.5.0'
+challenge_root: '/home/challenge'
+targets:
+  - name: 'arborway'
+    compose_service: 'ta3_arborway'
+    role: 'server'
+    runtime:
+      type: 'ELF'
+      container_path: '/service/build/arborway.bin'
+      path: 'challenge_bin/build/arborway.bin'
+    main_source: 
+      type: 'C++'
+      container_path: '/home/challenge/src/main.cpp'
+      path: challenge_src/src/main.cpp
+poller:
+  compose_service: 'ta3_arborway_sp_s1'

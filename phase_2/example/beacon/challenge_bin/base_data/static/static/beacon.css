@@ -1,0 +1,35 @@
+body {
+     color: #220;
+     background-color: #fffffc;
+     max-width: 960px;
+     font-family: "Palatino", serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Avenir Next", Avenir, Helvetica, sans-serif, Arial;
+}
+
+img {
+    max-width: 100%;
+    min-width: 512px;
+}
+
+span.has_image {
+               margin: 0 0.5em;
+}
+
+label input {
+      margin-left: 1em;
+}
+
+span.toggleform form {
+    display: inline;
+}
+
+span.toggleform input {
+    width: 18em;
+}
+
+form.filters label {
+    margin-right: 1em;
+}

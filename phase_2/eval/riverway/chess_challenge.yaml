@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: riverway
+    compose_service: ta3_riverway
+    role: server
+    runtime:
+      type: JavaScript
+      path: challenge_bin/app.js
+      container_path: /app/app.js
+    main_source:
+      type: JavaScript
+      path: challenge_bin/app.js
+      container_path: /app/app.js
+poller:
+  compose_service: ta3_riverway_sp_s1

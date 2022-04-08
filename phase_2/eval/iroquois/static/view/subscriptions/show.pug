@@ -1,0 +1,36 @@
+extends ../_layout.pug
+
+block content
+  h1 subscription to #{subscription.topic.name}
+
+  p
+    | subscribed since&nbsp;
+    span#subscribed_since(data-epoch=Math.floor(subscription.created_at / 1000))
+      = subscription.created_at.toLocaleString('en-US')
+
+  h2 post message
+  form(action=`/subscriptions/${subscription.id}/message`
+       method='post'
+       id='post_message_form')
+    input(type='hidden' name='_csrf' value=csrf)
+    label
+      | content
+      input(type='text' name='message[content]' id='message_content')
+    button post
+
+  h2 messages
+  p (newest first)
+  table#messages
+    thead
+      tr
+        th id
+        th content
+        th created at
+    tbody
+      each message in subscription.messages
+        tr(id=`message_${message.id}`)
+          td.message_id= message.id
+          td.message_content= message.content
+          td.message_created_at(
+            data-epoch=Math.floor(message.created_at / 1000))
+            = message.created_at

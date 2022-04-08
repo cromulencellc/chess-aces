@@ -1,0 +1,62 @@
+version: '3'
+services:
+  challenge:
+    build: ./challenge/
+    volumes:
+      - ./challenge:/service
+      - ./base_data:/base_data
+      - ./static:/static
+      - .:/mnt
+    ports:
+      - 3038:3038
+      - 9229:9229
+    environment:
+      PORT: 3038
+      # STATIC_DIR: '/mnt/static/static'
+      # VIEW_DIR: '/mnt/static/view'
+    working_dir: /service
+  # unpatched:
+  #   build: .
+  #   volumes:
+  #     - ./variants/unpatched:/service
+  #     - ./base_data:/base_data
+  #   ports:
+  #     - 3028
+  #   environment:
+  #     PORT: 3028
+  # fully_patched:
+  #   build: .
+  #   volumes:
+  #     - ./variants/fully_patched:/service
+  #     - ./base_data:/base_data
+  #   ports:
+  #     - 3028
+  #   environment:
+  #     port: 3028
+  poller:
+    build: poller
+    ports:
+      - 9229
+    environment:
+      PORT: 3038
+    volumes:
+      - ./poller:/poller
+      - ./base_data:/base_data
+      - .:/mnt
+    working_dir: /poller
+  pov_flat_token:
+    build: pov_flat_token
+    environment:
+      PORT: 3038
+    volumes:
+      - ./pov_flat_token:/pov
+    working_dir: /pov
+    command: "ruby pov.rb"
+  pov_map_load_token:
+    build: pov_map_load_token
+    environment:
+      PORT: 3038
+    volumes:
+      - ./pov_map_load_token:/pov
+    working_dir: /pov
+    command: "ruby pov.rb"

@@ -1,0 +1,190 @@
+[INFO] Poller for the Olmstead Challenge
+[INFO] SEED: 8602445770250442384
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami': pid 21561
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami' (pid 21561)
+[SUCCESS] ldapwhoami succeeded
+[TEST] ldapsearch(limit fields)
+	[INFO] Adding attribute: b'st'
+	[INFO] Adding attribute: b'postalCode'
+	[INFO] Adding attribute: b'departmentNumber'
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch': pid 21562
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch' (pid 21562)
+b'# extended LDIF\n'
+[TEST] ldapsearch(or test)
+	[INFO] Adding attribute: b'l'
+	[INFO] Adding attribute: b'initials'
+	[INFO] Adding attribute: b'postalCode'
+	[INFO] Adding attribute: b'title'
+	[INFO] Adding attribute: b'roomNumber'
+	[INFO] Adding attribute: b'telephoneNumber'
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch': pid 21563
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch' (pid 21563)
+[TEST] ldapcompare
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapcompare', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', b'cn=Bob,ou=People,dc=chess,dc=com', b'departmentNumber:7Xab5y']
+[SUCCESS] compare succeeded
+[TEST] ldapsearch(or test)
+	[INFO] Adding attribute: b'description'
+	[INFO] Adding attribute: b'initials'
+	[INFO] Adding attribute: b'st'
+	[INFO] Adding attribute: b'roomNumber'
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch': pid 21565
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch' (pid 21565)
+[TEST] ldapmodify (replace)
+	[INFO] Changing b'telephoneNumber' from b'123-123-1234' to b'T2vr2Ez4T7F6'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif']
+b'modifying entry "cn=Alice,ou=People,dc=chess,dc=com"'
+	[INFO] Returning b'telephoneNumber' from b'T2vr2Ez4T7F6' to b'123-123-1234'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\nreplace: telephoneNumber\ntelephoneNumber: 123-123-1234\n'
+[SUCCESS] ldapmodify (replace) succeeded
+[TEST] ldapcompare
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapcompare', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', b'cn=Bob,ou=People,dc=chess,dc=com', b'telephoneNumber:780-361-5824']
+[SUCCESS] compare succeeded
+[TEST] ldapsearch(base case)
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch': pid 21569
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch' (pid 21569)
+b'# extended LDIF\n#\n# LDAPv3\n'
+[TEST] ldapcompare
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapcompare', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', b'cn=Bob,ou=People,dc=chess,dc=com', b'st:Some data']
+[SUCCESS] compare succeeded
+[TEST] ldapmodify (add)
+	[INFO] Adding attribute b'facsimileTelephoneNumber': b'QbdGvUtA4d'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\nadd: facsimileTelephoneNumber\nfacsimileTelephoneNumber: QbdGvUtA4d\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+	[INFO] Removing attribute: b'facsimileTelephoneNumber'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\ndelete: facsimileTelephoneNumber\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+[SUCCESS] ldapmodify (add) succeeded
+[TEST] ldapmodify (add)
+	[INFO] Adding attribute b'homePostalAddress': b'WdWoYJMMT'
+b'dn: cn=Bob,ou=People,dc=chess,dc=com\nchangetype: modify\nadd: homePostalAddress\nhomePostalAddress: WdWoYJMMT\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+	[INFO] Removing attribute: b'homePostalAddress'
+b'dn: cn=Bob,ou=People,dc=chess,dc=com\nchangetype: modify\ndelete: homePostalAddress\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+[SUCCESS] ldapmodify (add) succeeded
+[TEST] ldapmodify (add)
+	[INFO] Adding attribute b'registeredAddress': b'13KPacZGd'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\nadd: registeredAddress\nregisteredAddress: 13KPacZGd\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+	[INFO] Removing attribute: b'registeredAddress'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\ndelete: registeredAddress\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+[SUCCESS] ldapmodify (add) succeeded
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami': pid 21577
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami' (pid 21577)
+[SUCCESS] ldapwhoami succeeded
+[TEST] ldapmodify (replace)
+	[INFO] Changing b'title' from b'Receiver' to b'Dfq0zFTkFPfnebd'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif']
+b'modifying entry "cn=Bob,ou=People,dc=chess,dc=com"'
+	[INFO] Returning b'title' from b'Dfq0zFTkFPfnebd' to b'Receiver'
+b'dn: cn=Bob,ou=People,dc=chess,dc=com\nchangetype: modify\nreplace: title\ntitle: Receiver\n'
+[SUCCESS] ldapmodify (replace) succeeded
+[TEST] ldapmodify (add)
+	[INFO] Adding attribute b'homePhone': b'iIsUi4G9f'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\nadd: homePhone\nhomePhone: iIsUi4G9f\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+	[INFO] Removing attribute: b'homePhone'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\ndelete: homePhone\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+[SUCCESS] ldapmodify (add) succeeded
+[TEST] ldapcompare
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapcompare', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', b'cn=Alice,ou=People,dc=chess,dc=com', b'description:praaKN']
+[SUCCESS] compare succeeded
+[TEST] ldapmodify (add)
+	[INFO] Adding attribute b'postOfficeBox': b'ryp8mVL29'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\nadd: postOfficeBox\npostOfficeBox: ryp8mVL29\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+	[INFO] Removing attribute: b'postOfficeBox'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\ndelete: postOfficeBox\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+[SUCCESS] ldapmodify (add) succeeded
+[TEST] ldapmodify (add)
+	[INFO] Adding attribute b'postOfficeBox': b'cbEu0P4jXgwa'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\nadd: postOfficeBox\npostOfficeBox: cbEu0P4jXgwa\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+	[INFO] Removing attribute: b'postOfficeBox'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\ndelete: postOfficeBox\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+[SUCCESS] ldapmodify (add) succeeded
+[TEST] ldapmodify (replace)
+	[INFO] Changing b'departmentNumber' from b'90' to b'D8RmH6Ubq'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif']
+b'modifying entry "cn=Alice,ou=People,dc=chess,dc=com"'
+	[INFO] Returning b'departmentNumber' from b'D8RmH6Ubq' to b'90'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\nreplace: departmentNumber\ndepartmentNumber: 90\n'
+[SUCCESS] ldapmodify (replace) succeeded
+[TEST] ldapmodify (add)
+	[INFO] Adding attribute b'mobile': b'iGMoEG'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\nadd: mobile\nmobile: iGMoEG\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+	[INFO] Removing attribute: b'mobile'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\ndelete: mobile\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+[SUCCESS] ldapmodify (add) succeeded
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami': pid 21591
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami' (pid 21591)
+[SUCCESS] ldapwhoami succeeded
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami': pid 21592
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami' (pid 21592)
+[SUCCESS] ldapwhoami succeeded
+[TEST] ldapsearch(limit fields)
+	[INFO] Adding attribute: b'departmentNumber'
+	[INFO] Adding attribute: b'telephoneNumber'
+	[INFO] Adding attribute: b'postalCode'
+	[INFO] Adding attribute: b'st'
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch': pid 21593
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch' (pid 21593)
+b'# extended LDIF\n'
+[TEST] ldapsearch(and test)
+	[INFO] Adding attribute: b'l'
+	[INFO] Adding attribute: b'telephoneNumber'
+	[INFO] Adding attribute: b'departmentNumber'
+	[INFO] Adding attribute: b'postalCode'
+	[INFO] Adding attribute: b'initials'
+	[INFO] Adding attribute: b'description'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-b', 'dc=chess,dc=com', '(&(objectClass=inetOrgPerson)(l=More*)(telephoneNumber=987-987-9876)(departmentNumber=67)(postalCode=90210)(initials=BB)(description=Just*))']
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch': pid 21594
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch' (pid 21594)
+b'# extended LDIF\n'
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami': pid 21595
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami' (pid 21595)
+[SUCCESS] ldapwhoami succeeded
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami': pid 21596
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapwhoami' (pid 21596)
+[SUCCESS] ldapwhoami succeeded
+[TEST] ldapsearch(limit fields)
+	[INFO] Adding attribute: b'description'
+	[INFO] Adding attribute: b'title'
+	[INFO] Adding attribute: b'roomNumber'
+[x] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch'
+[+] Starting local process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch': pid 21597
+[*] Stopped process '/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapsearch' (pid 21597)
+b'# extended LDIF\n#\n# LDAPv3\n# base <dc=chess,dc=com> with scope subtree\n# filter: (objectclass=*)\n# requesting: description title roomNumber \n#\n\n'
+[TEST] ldapcompare
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapcompare', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', b'cn=Alice,ou=People,dc=chess,dc=com', b'departmentNumber:90']
+[SUCCESS] compare succeeded
+[TEST] ldapcompare
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapcompare', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', b'cn=Alice,ou=People,dc=chess,dc=com', b'description:5berXE']
+[SUCCESS] compare succeeded
+[TEST] ldapmodify (add)
+	[INFO] Adding attribute b'postOfficeBox': b'1616vYWBRT3VD'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\nadd: postOfficeBox\npostOfficeBox: 1616vYWBRT3VD\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+	[INFO] Removing attribute: b'postOfficeBox'
+b'dn: cn=Alice,ou=People,dc=chess,dc=com\nchangetype: modify\ndelete: postOfficeBox\n'
+['/vagrant/chess/olmstead/challenge/openldap-2.4.56/clients/tools/ldapmodify', '-h', 'localhost', '-p', '389', '-x', '-D', 'uid=chess,ou=people,dc=chess,dc=com', '-w', 'chess', '-f', '/tmp/nl.ldif', '-a']
+[SUCCESS] ldapmodify (add) succeeded
+[SUCCESS] Poller was successful

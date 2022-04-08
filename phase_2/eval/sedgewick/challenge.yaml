@@ -1,0 +1,5 @@
+chess_challenge_metadata: '0.1.0'
+targets:
+  - name: 'sedgewick'
+    compose_service: 'ta3_sedgewick'
+    role: 'server'

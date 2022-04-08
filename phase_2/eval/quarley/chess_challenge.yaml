@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: quarley
+    compose_service: 'ta3_quarley'
+    role: server
+    runtime:
+      type: ELF
+      path: challenge_bin/wt-4.5.0/build/examples/hangman/hangman.wt
+      container_path: /mnt/challenge/wt-4.5.0/build/examples/hangman/hangman.wt
+    main_source:
+      type: C++
+      path: challenge_src/wt-4.5.0/examples/hangman/hangman.C
+      container_path: /mnt/challenge/wt-4.5.0/examples/hangman/hangman.C
+poller:
+  compose_service: ta3_quarley_sp_s1

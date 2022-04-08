@@ -1,0 +1,51 @@
+Source: vsftpd
+Section: net
+Priority: extra
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Keng-Yu Lin <kengyu@lexical.tw>
+Build-Depends:
+ debhelper (>= 9),
+ dh-systemd,
+ libcap2-dev [linux-any],
+ libpam0g-dev,
+ libssl-dev,
+ libwrap0-dev
+Standards-Version: 4.0.0
+Homepage: http://vsftpd.beasts.org/
+Testsuite: autopkgtest
+Vcs-Browser: http://anonscm.debian.org/cgit/collab-maint/vsftpd.git
+Vcs-Git: git://anonscm.debian.org/collab-maint/vsftpd.git
+
+Package: vsftpd
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ adduser,
+ libpam-modules,
+ lsb-base (>= 3.0-6),
+ netbase,
+Recommends:
+ logrotate,
+ ssl-cert,
+Conflicts: ftp-server
+Replaces: ftp-server
+Provides: ftp-server
+Description: lightweight, efficient FTP server written for security
+ This package provides the "Very Secure FTP Daemon", written from
+ the ground up with security in mind.
+ .
+ It supports both anonymous and non-anonymous FTP access, PAM authentication,
+ bandwidth limiting, and the Linux sendfile() facility.
+
+Package: vsftpd-dbg
+Section: debug
+Architecture: any
+Depends:
+ ${misc:Depends},
+ vsftpd (= ${binary:Version})
+Description: lightweight, efficient FTP server written for security (debug)
+ This package provides the "Very Secure FTP Daemon", written from
+ the ground up with security in mind.
+ .
+ This package contains the debugging symbols.

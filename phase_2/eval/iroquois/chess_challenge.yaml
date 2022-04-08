@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'iroquois'
+    compose_service: 'ta3_iroquois'
+    role: 'server'
+    runtime:
+      type: ES3
+      path: 'challenge_bin/build/main.js'
+      container_path: '/mnt/challenge/build/main.js'
+    main_source:
+      type: TypeScript
+      path: 'challenge_src/src/main.ts'
+      container_path: '/mnt/challenge/src/main.ts'
+poller:
+  compose_service: ta3_iroquois_sp_s1

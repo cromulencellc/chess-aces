@@ -1,0 +1,48 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'ldapsearch'
+    compose_service: 'ta3_cornhill'
+    role: 'client'
+    runtime:
+      type: 'ELF'
+      container_path: '/home/challenge/clients/tools/ldapsearch'
+      path: 'challenge_bin/clients/tools/ldapsearch'
+    main_source:
+      type: 'C'
+      container_path: '/home/challenge/clients/tools/ldapsearch.c'
+      path: 'challenge_src/clients/tools/ldapsearch.c'
+  - name: 'ldapmodify'
+    compose_service: 'ta3_cornhill'
+    role: 'client'
+    runtime:
+      type: 'ELF'
+      container_path: '/home/challenge/clients/tools/ldapmodify'
+      path: 'challenge_bin/clients/tools/ldapmodify'
+    main_source:
+      type: 'C'
+      container_path: '/home/challenge/clients/tools/ldapmodify.c'
+      path: 'challenge_src/clients/tools/ldapmodify.c'
+  - name: 'ldapwhoami'
+    compose_service: 'ta3_cornhill'
+    role: 'client'
+    runtime:
+      type: 'ELF'
+      container_path: '/home/challenge/clients/tools/ldapwhoami'
+      path: 'challenge_bin/clients/tools/ldapwhoami'
+    main_source:
+      type: 'C'
+      container_path: '/home/challenge/clients/tools/ldapwhoami.c'
+      path: 'challenge_src/clients/tools/ldapwhoami.c'
+  - name: 'ldapcompare'
+    compose_service: 'ta3_cornhill'
+    role: 'client'
+    runtime:
+      type: 'ELF'
+      container_path: '/home/challenge/clients/tools/ldapcompare'
+      path: 'challenge_bin/clients/tools/ldapcompare'
+    main_source:
+      type: 'C'
+      container_path: '/home/challenge/clients/tools/ldapcompare.c'
+      path: 'challenge_src/clients/tools/ldapcompare.c'
+poller:
+  compose_service: 'ta3_cornhill_poller'

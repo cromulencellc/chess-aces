@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'earnshaw'
+    compose_service: 'ta3_earnshaw'
+    role: 'server'
+    runtime: 
+      type: ELF
+      path: 'challenge_bin/vsftpd'
+      container_path: '/service/build/vsftpd'
+    main_source:
+      type: C
+      path: 'challenge_src/vsftpd-3.0.3/main.c'
+      container_path: '/home/challenge/vsftpd-3.0.3/main.c'
+poller:
+  compose_service: 'ta3_earnshaw_sp_s1'

@@ -1,0 +1,33 @@
+#FROM registry.mlb.cromulence.com/chess/cs_base:latest
+FROM chessexternal.apogee-research.com:5010/apogee_ta5/testbed_release/cs_base_phase_2:2020_11_16
+
+RUN apt-get install -y libsqlite3-dev
+ADD ./ /home/challenge
+ADD base_data /data
+
+RUN chown -R chess:chess /home
+RUN chown -R chess:chess /data
+RUN mkdir /service
+RUN chown -R chess:chess /service
+
+RUN echo chess:`dd if=/dev/urandom bs=512 count=1 2>/dev/null | md5sum | cut -f 1 -d " "` | chpasswd
+
+ENV TCP_PORT_1=3004
+ENV PORT=3004
+ENV HOST=challenge_container
+ENV CXX=clang-7
+ENV CHESS=Chess_System
+
+RUN echo -n 09vee78cnw0mjw3bLOiPPmyn15mwmlks > /data/token
+RUN chown 600 /data/token
+
+WORKDIR /home/challenge
+
+RUN make clean
+RUN make
+RUN cp -r build /service
+WORKDIR /
+
+ENV WWWROOT=/data
+
+CMD /service/build/dorchester.bin

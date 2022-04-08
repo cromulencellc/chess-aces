@@ -1,0 +1,34 @@
+version: '3'
+services:
+    
+  challenge:
+    build: challenge
+    ports:
+      - 3008
+    environment:
+      PORT: 3008
+      CHESS: 1
+    working_dir: /service
+    command: /service/challenge
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  poller:
+    build: poller
+    environment:
+      PORT: 3008
+      HOST: challenge
+    volumes:
+      - ./poller:/poller
+    working_dir: /poller
+    command: "python3 poller.py"
+
+  pov:
+    build: pov
+    environment:
+      PORT: 3008
+      HOST: challenge
+    working_dir: /pov
+    command: "python3 pov.py"

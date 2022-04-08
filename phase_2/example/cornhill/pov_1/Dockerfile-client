@@ -1,0 +1,30 @@
+FROM registry.mlb.cromulence.com/chess/cs_base:latest
+
+RUN export DEBIAN_FRONTEND=noninteractive
+RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+RUN apt-get update
+RUN apt-get install -y tzdata build-essential clang-7 gdb python3 --fix-missing
+RUN apt-get install -y openssh-client net-tools vim libssh2-1-dev python-libssh2 --fix-missing
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 700 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-7 700 && \
+    update-alternatives --install /usr/bin/clang-cpp clang-cpp /usr/bin/clang-cpp-7 700
+RUN dpkg-reconfigure --frontend noninteractive tzdata
+
+ADD ./ /home/challenge
+ADD ./base_data /data
+
+RUN chown -R chess:chess /home
+
+ENV PORT=9999
+ENV HOST=challenge_container
+ENV CXX=clang-7
+ENV CHESS=Chess_System
+ENV ISCLIENT=1
+ENV TERM=linux
+ENV TERMINFO=/etc/terminfo
+
+WORKDIR /home/challenge/
+
+RUN pip3 install paramiko
+
+CMD ["python3", "./launch-pov1.py"]
