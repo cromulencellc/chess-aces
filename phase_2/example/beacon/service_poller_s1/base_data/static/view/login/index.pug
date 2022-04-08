@@ -1,0 +1,32 @@
+doctype html
+html
+  head
+    title Login
+    link(rel='stylesheet' href='/static/beacon.css')
+  body
+    h1 Login
+    form(method='post' action='/login' id='login_form')
+      label
+        | username
+        input(type='text' name='user[username]' id='login_username')
+      br
+      label
+        | password
+        input(type='password' name='user[password]' id='login_password')
+      button log in
+
+    h2 Create Account
+    form(method='post' action='/login/new' id='signup_form')
+      label
+        | username
+        input(type='text' name='user[name]' id='signup_username')
+      br
+      label
+        | password
+        input(type='password' name='user[password]' id='signup_password')
+      br
+      label
+        | password confirmation
+        input(type='password' name='user[password_confirmation]' id='signup_password_confirmation')
+      br
+      button Create Account

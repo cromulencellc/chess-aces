@@ -1,0 +1,40 @@
+FROM registry.mlb.cromulence.com/chess/cs_base:latest
+
+RUN export DEBIAN_FRONTEND=noninteractive
+RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+RUN apt-get update
+RUN apt-get install -y tzdata build-essential clang-7 gdb libwrap0-dev libssl-dev --fix-missing
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 700 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-7 700 && \
+    update-alternatives --install /usr/bin/clang-cpp clang-cpp /usr/bin/clang-cpp-7 700
+RUN dpkg-reconfigure --frontend noninteractive tzdata
+
+RUN useradd -ms /bin/bash anon
+RUN echo anon:anon | chpasswd
+
+ADD ./ /home/challenge
+ADD base_data /data
+
+RUN mkdir /service
+
+ENV TCP_PORT_1=21
+ENV PORT=21
+ENV HOST=challenge_container
+ENV CHESS=Chess_System
+
+RUN echo -n 09vee78cnw0mjw3bLOiPPmyn15mwmlks > /token
+RUN chown 600 /token
+
+WORKDIR /home/challenge/vsftpd-3.0.3
+
+RUN make clean
+RUN make
+RUN cp vsftpd /service
+RUN cp vsftpd.conf /service
+
+RUN mkdir /service/base
+RUN dd if=/dev/urandom of=/service/base/testfile count=2
+
+WORKDIR /service/base
+
+CMD ["gdb", "--command=/data/earnshaw.pov.2.sc", "/service/vsftpd"]

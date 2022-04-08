@@ -1,0 +1,15 @@
+# AUTO-GENERATED FILE - DO NOT EDIT!! Use ldapmodify.
+# CRC32 9fff7781
+dn: dc=chess
+objectClass: dcObject
+objectClass: organization
+dc: chess
+o: CHESS
+description: CHESS
+structuralObjectClass: organization
+entryUUID: 35b67f58-e92c-103a-9464-e5f85ca24597
+creatorsName: cn=admin,dc=chess,dc=com
+createTimestamp: 20210112141421Z
+entryCSN: 20210112141421.320141Z#000000#000#000000
+modifiersName: cn=admin,dc=chess,dc=com
+modifyTimestamp: 20210112141421Z

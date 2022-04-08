@@ -1,0 +1,16 @@
+{
+  "name": "riverway",
+  "version": "1.0.0",
+  "description": "simulator",
+  "main": "app.js",
+  "repository": "none",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "ws": "^7.4.5"
+  },
+  "author": "swood@cromulence.com",
+  "license": "unlimited"
+}

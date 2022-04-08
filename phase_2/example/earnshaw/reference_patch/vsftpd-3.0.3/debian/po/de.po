@@ -1,0 +1,53 @@
+# German translation of vsftpd debconf templates.
+# Copyright (C) 2009 Kai Wasserbäch <debian@carbon-project.org>
+# Copyright (C) 2009 Helge Kreutzmann <debian@helgefjell.de>
+# This file is distributed under the same license as the vsftpd package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vsftpd 2.3.4-1\n"
+"Report-Msgid-Bugs-To: vsftpd@packages.debian.org\n"
+"POT-Creation-Date: 2010-09-05 21:17+0200\n"
+"PO-Revision-Date: 2009-04-06 19:01+0200\n"
+"Last-Translator: Daniel Baumann <mail@daniel-baumann.ch>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid "Dedicated system account for the vsftpd FTP daemon:"
+msgstr "Eigenes Systemkonto für den vsftpd FTP-Daemon:"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid ""
+"The FTP server must use a dedicated account for its operation so that the "
+"system's security is not compromised by running it with superuser privileges."
+msgstr ""
+"Der FTP-Server muss ein eigenes Konto für den Betrieb verwenden, um die "
+"Sicherheit des Systems nicht durch das Betreiben mit Superuser-Rechten zu "
+"kompromittieren."
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid "Please choose that account's username."
+msgstr "Bitte wählen Sie den Benutzernamen dieses Kontos."
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:2001
+msgid "FTP root directory:"
+msgstr "FTP-Wurzelverzeichnis:"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:2001
+msgid ""
+"Please specify the directory that will be used as root for the FTP server."
+msgstr ""
+"Bitte geben Sie das Verzeichnis an, welches als Wurzelverzeichnis für den "
+"FTP-Server verwendet werden soll."

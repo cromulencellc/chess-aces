@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'client'
+    compose_service: 'ta3_morton'
+    role: 'client'
+    runtime:
+      type: ELF
+      path: 'challenge_bin/client/mosquitto_sub'
+      container_path: '/home/mosquitto/client/mosquitto_sub'
+    main_source:
+      type: C
+      path: 'challenge_src/mosquitto_src/client/sub_client.c'
+      container_path: '/home/mosquitto/client/sub_client.c'
+poller:
+  compose_service: 'ta3_morton_sp_s1'

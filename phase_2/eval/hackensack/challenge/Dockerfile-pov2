@@ -1,0 +1,36 @@
+FROM chessexternal.apogee-research.com:5010/apogee_ta5/testbed_release/cs_base_phase_2:2020_11_16
+
+RUN apt-get install -y libjemalloc-dev
+
+ADD ./ /home/challenge
+ADD base_data /data
+
+RUN useradd -ms /bin/bash mosquitto
+RUN echo mosquitto:chess | chpasswd
+
+RUN chown -R mosquitto:mosquitto /home
+RUN chown -R mosquitto:mosquitto /data
+RUN mkdir /service
+RUN chown -R chess:chess /service
+
+RUN echo admin:`dd if=/dev/urandom bs=512 count=1 2>/dev/null | md5sum | cut -f 1 -d " "` > /data/passwords.txt
+RUN echo chess:chess >> /data/passwords.txt
+RUN echo chess2:chess2 >> /data/passwords.txt
+
+
+ENV TCP_PORT_1=1883
+ENV PORT=1883
+ENV HOST=challenge_container
+ENV CHESS=Chess_System
+
+RUN echo -n 09vee78cnw0mjw3bLOiPPmyn15mwmlks > /token
+RUN chmod 600 /token
+
+WORKDIR /home/challenge/mosquitto-2.0.4
+
+RUN make clean
+RUN make
+RUN cp ./src/mosquitto /service/mosquitto.bin
+WORKDIR /
+
+CMD ["gdb", "--command=/data/hackensack.pov.2.sc", "/service/mosquitto.bin"]

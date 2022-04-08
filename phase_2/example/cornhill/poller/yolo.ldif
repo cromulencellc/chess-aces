@@ -1,0 +1,14 @@
+# yolo, People, chess.com
+dn: uid=yolo,ou=People,dc=chess,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: yolo
+givenName: YouOnly
+sn: LiveOnce
+cn: YouOnly LiveOnce
+telephoneNumber: (808) 876-5309
+mail: yolo@example.com
+userPassword:: c2VjcmV0
+facsimileTelephoneNumber: (111) 111-1111

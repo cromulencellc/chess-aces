@@ -1,0 +1,28 @@
+doctype html
+html
+  head
+    title Tweet #{tweet.id}
+    link(rel='stylesheet' href='/static/beacon.css')
+  body
+    h1 Tweet #{tweet.id}
+    p(id=`tweet-${tweet.id}`) #{tweet.body}
+    dl
+      dt posted at
+      dd
+        time(
+          datetime=tweet.createdAt().toISOString()
+          data-epoch=Math.floor(tweet.createdAt().valueOf() / 1000))
+          = tweet.createdAt().toLocaleString(undefined)
+      dt mime type
+      dd
+        if tweet.mime_type
+          = tweet.mime_type
+        else
+          em none
+
+    if tweet.mime_type
+      div.photo
+        img(src=`/tweets/${tweet.id}/photo`)
+
+    p
+      a(href='/tweets') back to tweet list

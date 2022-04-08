@@ -1,0 +1,57 @@
+#!/bin/sh
+
+set -e
+
+. /usr/share/debconf/confmodule
+
+case "${1}" in
+	configure)
+		db_version 2.0
+
+		db_get vsftpd/username
+		_USERNAME="${RET:-ftp}"
+
+		db_get vsftpd/directory
+		_DIRECTORY="${RET:-/srv/ftp}"
+
+		db_stop
+
+		if ! getent passwd "${_USERNAME}" > /dev/null 2>&1
+		then
+			adduser --system --home ${_DIRECTORY} --no-create-home --quiet --gecos 'ftp daemon' --group ${_USERNAME}
+		elif ! getent group "${_USERNAME}" > /dev/null 2>&1
+		then
+			addgroup --system --quiet ${_USERNAME}
+			gpasswd -a ${_USERNAME} ${_USERNAME}
+		else
+			echo "vsftpd user (${_USERNAME}) already exists, doing nothing."
+		fi
+
+		if [ ! -d "${_DIRECTORY}" ]
+		then
+			mkdir -p "${_DIRECTORY}"
+			chown root:${_USERNAME} ${_DIRECTORY} -R
+		else
+			echo
+			echo "vsftpd directory (${_DIRECTORY}) already exists, doing nothing."
+		fi
+
+		if [ -f "systemd-tmpfiles" ]
+		then
+			systemd-tmpfiles --create --exclude-prefix=/dev
+		fi
+		;;
+
+	abort-upgrade|abort-remove|abort-deconfigure)
+
+		;;
+
+	*)
+		echo "postinst called with unknown argument \`${1}'" >&2
+		exit 1
+		;;
+esac
+
+#DEBHELPER#
+
+exit 0

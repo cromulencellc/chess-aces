@@ -1,0 +1,1 @@
+/home/vagrant/openldap-2.4.50/servers/slapd/.libs/lt-slapd -d 999 -F ./ -r /home/vagrant/openldap/ 

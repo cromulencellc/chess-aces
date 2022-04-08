@@ -1,0 +1,19 @@
+dn: cn=Alice,ou=People,dc=chess,dc=com
+cn: Alice
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+sn: Alice
+title: Receiver
+postalCode: 12345
+ou: People
+description: Just a person
+telephoneNumber: 123-123-1234
+st: Some data
+l: More data
+departmentNumber: 90
+initials: AA
+preferredLanguage: Whitespace
+roomNumber: 1337
+userPassword:: QWxpY2VQYXNz

@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'templeton'
+    compose_service: 'ta3_templeton'
+    role: 'server'
+    runtime:
+      type: ELF
+      path: challenge_bin/build/templeton.bin
+      container_path: /home/challenge/build/templeton.bin
+    main_source:
+      type: C
+      path: challenge_src/src/main.c
+      container_path: /home/challenge/src/main.c
+poller:
+  compose_service: ta3_templeton_sp_s1

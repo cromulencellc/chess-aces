@@ -1,0 +1,40 @@
+a:link, a:visited, a:active {
+    color: #00e;
+}
+
+a:hover {
+    color: #a0d;
+}
+
+body {
+    background-color: #fafffa;
+    color: #220;
+    max-width: 960px;
+    font-family: "Palatino", serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Avenir Next", Avenir, Helvetica, sans-serif, Arial;
+}
+
+form label input {
+    margin-left: 1em;
+}
+
+.actions form {
+    display: inline
+}
+
+.actions form button {
+    border: none;
+    text-decoration: underline;
+    color: #00e;
+    background-color: transparent;
+    font-family: Palatino, serif;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.actions form button:hover {
+    color: #a0d;
+}

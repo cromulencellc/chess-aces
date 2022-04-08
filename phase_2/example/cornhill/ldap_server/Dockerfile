@@ -1,0 +1,36 @@
+FROM chessexternal.apogee-research.com:5010/apogee_ta5/testbed_release/cs_base_phase_2:2020_11_10
+
+RUN export DEBIAN_FRONTEND=noninteractive
+RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+RUN apt-get update
+RUN apt-get install -y tzdata build-essential clang-7 gdb cloc --fix-missing
+RUN apt-get install -y groff groff-base libdb-dev --fix-missing
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-7 700 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-7 700 && \
+    update-alternatives --install /usr/bin/clang-cpp clang-cpp /usr/bin/clang-cpp-7 700
+RUN dpkg-reconfigure --frontend noninteractive tzdata
+
+ADD ./ /home/challenge
+ADD ./base_data /var/lib/ldap
+
+RUN chown -R chess:chess /home
+
+ENV TCP_PORT_1=389
+ENV PORT=389
+ENV HOST=challenge_container
+ENV CXX=clang-7
+ENV CHESS=Chess_System
+
+RUN echo -n 09vee78cnw0mjw3bLOiPPmyn15mwmlks > /token
+RUN chown 600 /token
+
+WORKDIR /home/challenge/openldap-2.4.50
+
+RUN ./configure 
+RUN make depend
+RUN make
+RUN mkdir /var/run/slapd
+
+WORKDIR /home/challenge/openldap-2.4.50/servers/slapd
+
+CMD ["./slapd", "-d", "65535", "-F", "/home/challenge/server_data/"]

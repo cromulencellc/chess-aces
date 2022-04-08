@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC   -shared -Wl,-soname,mosquitto_payload_modification.so -o mosquitto_payload_modification.so CMakeFiles/mosquitto_payload_modification.dir/mosquitto_payload_modification.c.o  -L"/mnt/c/Users/KolbyO'Malley/Documents/CHESS/morton/challenge/mosquitto_src" 

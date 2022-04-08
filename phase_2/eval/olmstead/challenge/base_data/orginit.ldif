@@ -1,0 +1,6 @@
+dn: dc=chess,dc=com
+objectClass: dcObject
+objectClass: organization
+dc: chess
+o: CHESS
+description: CHESS

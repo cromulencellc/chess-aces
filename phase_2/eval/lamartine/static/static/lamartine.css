@@ -1,0 +1,54 @@
+a:link, a:visited, a:active {
+    color: #8db3d1;
+}
+
+a:hover {
+    color: #d18da8;
+}
+
+body {
+    background: url('/static/mossbrik.png') #473323;
+    color: #c7d18d;
+    max-width: 960px;
+    font-family: "Lato", Helvetica, Arial, serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Black Ops One", Impact, Helvetica, sans-serif, Arial;
+    font-weight: 400;
+}
+
+input {
+    color: #c7d18d;
+    background-color: #473323;
+    border: 2px solid #352315;
+}
+
+div.svg_content {
+    padding: 1rem;
+    background-color: black;
+}
+
+
+@font-face {
+    font-family: 'Black Ops One';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/static/BlackOpsOne-Regular.ttf) format('truetype');
+  }
+
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/static/Lato-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Lato';
+    font-style:italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/static/Lato-Italic.ttf) format('truetype');
+}

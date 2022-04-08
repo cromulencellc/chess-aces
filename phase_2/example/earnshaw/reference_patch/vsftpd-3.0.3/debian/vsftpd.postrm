@@ -1,0 +1,80 @@
+#!/bin/sh
+
+set -e
+
+#
+# POSIX-compliant shell function
+# to check for the existence of a command
+# Return 0 if found
+#
+pathfind() {
+    OLDIFS="$IFS"
+    IFS=:
+    for p in $PATH; do
+        if [ -x "$p/$*" ]; then
+            IFS="$OLDIFS"
+            return 0
+        fi
+    done
+    IFS="$OLDIFS"
+    return 1
+}
+
+
+case "${1}" in
+	remove)
+		_USERNAME="ftp"
+		_GROUPNAME="${_USERNAME}"
+		_DIRECTORY="/srv/ftp"
+
+		pathfind deluser
+		if [ $? = 0 ] ;
+		then
+			deluser --quiet --system ${_USERNAME}
+		fi
+
+		pathfind delgroup
+		if [ $? = 0 ] ;
+		then
+			delgroup --quiet --system --only-if-empty ${_GROUPNAME} || true
+		fi
+
+		if [ -d "${_DIRECTORY}" ]
+		then
+			rmdir --ignore-fail-on-non-empty "${_DIRECTORY}" || true
+		fi
+		;;
+
+	purge)
+#
+# purge systemd files
+#
+	    rm -f /etc/systemd/system/vsftpd.service
+	    rm -f /etc/systemd/system/multi-user.target.wants/vsftpd.service
+	    rm -f /var/lib/systemd/deb-systemd-helper-enabled/multi-user.target.wants/vsftpd.service
+	    rm -f /var/lib/systemd/deb-systemd-helper-enabled/vsftpd.service.dsh-also
+	    rm -f /var/lib/systemd/deb-systemd-helper-masked/vsftpd.service
+	    if [ -d /var/lib/systemd/deb-systemd-helper-enabled/multi-user.target.wants/ ]; then
+    		rmdir --ignore-fail-on-non-empty /var/lib/systemd/deb-systemd-helper-enabled/multi-user.target.wants/
+	    fi
+	    if [ -d /var/lib/systemd/deb-systemd-helper-enabled ]; then
+    		rmdir --ignore-fail-on-non-empty /var/lib/systemd/deb-systemd-helper-enabled
+	    fi
+	    if [ -d /var/lib/systemd/deb-systemd-helper-masked ]; then
+		rmdir --ignore-fail-on-non-empty /var/lib/systemd/deb-systemd-helper-masked
+	    fi
+	    ;;
+
+	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+		;;
+
+	*)
+		echo "postrm called with unknown argument \`${1}'" >&2
+		exit 1
+		;;
+esac
+
+#DEBHELPER#
+
+exit 0

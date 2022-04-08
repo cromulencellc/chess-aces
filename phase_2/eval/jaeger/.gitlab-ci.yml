@@ -1,0 +1,116 @@
+stages:
+  - build
+  - tests
+
+emulator-docker:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    TAGS: "$CI_COMMIT_SHORT_SHA $CI_COMMIT_BRANCH"
+    DOCKERFILE: $CI_PROJECT_DIR/challenge/emulator/Dockerfile
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo $TAGS
+    - for TAG in $TAGS; do TAG_LIST="${TAG_LIST} --destination $CI_REGISTRY_IMAGE:$TAG"; done
+    - echo $TAG_LIST
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --cache=true
+      --cache-ttl=168h
+      --context $CI_PROJECT_DIR/challenge
+      $TAG_LIST
+
+poller-docker:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    TAGS: "$CI_COMMIT_SHORT_SHA $CI_COMMIT_BRANCH"
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo $TAGS
+    - for TAG in $TAGS; do TAG_LIST="${TAG_LIST} --destination $CI_REGISTRY_IMAGE/poller:$TAG"; done
+    - echo $TAG_LIST
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --cache=true
+      --cache-ttl=168h
+      --context $CI_PROJECT_DIR/poller
+      $TAG_LIST
+
+pov-docker:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    TAGS: "$CI_COMMIT_SHORT_SHA $CI_COMMIT_BRANCH"
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo $TAGS
+    - for TAG in $TAGS; do TAG_LIST="${TAG_LIST} --destination $CI_REGISTRY_IMAGE/pov:$TAG"; done
+    - echo $TAG_LIST
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --cache=true
+      --cache-ttl=168h
+      --context $CI_PROJECT_DIR/pov
+      $TAG_LIST
+      
+devices-build:
+  stage: build
+  image: registry.mlb.cromulence.com/chess/jaeger/cross-rv32im:latest
+  artifacts:
+    paths:
+      - challenge/devices
+    expire_in: 3 days
+  script:
+    - cd challenge/devices
+    - make
+
+poller-smell-test:
+  services:
+    - name: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+      alias: jaeger
+  stage: tests
+  image: $CI_REGISTRY_IMAGE/poller:$CI_COMMIT_SHORT_SHA
+  variables:
+    HOST: jaeger
+    PORT: 5000
+    CHESS: 1
+  script:
+    - cd /poller
+    - sleep 10
+    - echo $HOST
+    - echo $PORT
+    - pwd
+    - ls
+    - python3 poller.py
+
+maintenance-test:
+  stage: tests
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  script:
+    - cd /service && ./maintenance_test
+
+pov-test:
+  services:
+    - name: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+      alias: jaeger
+  stage: tests
+  image: $CI_REGISTRY_IMAGE/pov:$CI_COMMIT_SHORT_SHA
+  variables:
+    HOST: jaeger
+    PORT: 5000
+    CHESS: 1
+  script:
+    - cd /pov
+    - sleep 5
+    - echo $HOST
+    - echo $PORT
+    - pwd
+    - ls
+    - python3 pov.py

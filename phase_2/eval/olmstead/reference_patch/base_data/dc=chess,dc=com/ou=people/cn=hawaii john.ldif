@@ -1,0 +1,19 @@
+# AUTO-GENERATED FILE - DO NOT EDIT!! Use ldapmodify.
+# CRC32 a67a5e49
+dn: cn=Hawaii John
+cn: Hawaii John
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+ou: People
+structuralObjectClass: organizationalPerson
+entryUUID: dcceeee8-e935-103a-95ac-d7ed7faf49f3
+creatorsName: cn=admin,dc=chess,dc=com
+createTimestamp: 20210112152327Z
+sn: Yodog
+telephoneNumber: 123-123-1234
+telephoneNumber: 123-123-1235
+postalAddress:: MTI0IGhlbGxvIA==
+entryCSN: 20210113215346.418110Z#000000#000#000000
+modifiersName: cn=admin,dc=chess,dc=com
+modifyTimestamp: 20210113215346Z

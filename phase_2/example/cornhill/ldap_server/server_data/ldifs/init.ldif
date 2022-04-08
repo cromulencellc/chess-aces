@@ -1,0 +1,20 @@
+dn: ou=People,dc=chess,dc=com
+changetype: add
+objectclass: top
+objectclass: organizationalUnit
+ou: People
+description: Container for user entries
+
+dn: uid=hawaiijohn,ou=People,dc=chess,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetorgPerson
+uid: hawaiijohn
+givenName: Hawaii
+sn: John
+cn: hawaii john
+telephoneNumber: (408) 555-3922
+facsimileTelephoneNumber: (408) 555-4000
+mail: hawaiijohn@example.com
+userPassword: secret

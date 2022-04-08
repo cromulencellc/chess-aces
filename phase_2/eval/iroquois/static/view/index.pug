@@ -1,0 +1,37 @@
+extends _layout.pug
+
+block content
+  h1 iroquois
+
+  h2 create account
+  form(method='post' action='/users' id='new_user_form')
+    input(type='hidden' name='_csrf' value=csrf)
+    label
+      | username
+      input(type='text' name='user[name]' id='signup_name')
+    br
+    label
+      | password
+      input(type='password' name='user[password]' id='signup_password')
+    br
+    label
+      | password confirmation
+      input(
+        type='password'
+        name='user[password_confirmation]'
+        id='signup_password_confirmation')
+    br
+    button sign up
+
+  h2 log in
+  form(method='post' action='/session' id='new_session_form')
+    input(type='hidden' name='_csrf' value=csrf)
+    label
+      | username
+      input(type='text' name='username' id='login_name')
+    br
+    label
+      | password
+      input(type='password' name='password' id='login_password')
+    br
+    button log in

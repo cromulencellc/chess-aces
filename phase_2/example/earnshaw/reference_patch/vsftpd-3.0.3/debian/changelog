@@ -1,0 +1,1119 @@
+vsftpd (3.0.3-9build1) bionic; urgency=high
+
+  * No change rebuild against openssl1.1.
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Mon, 05 Feb 2018 16:55:32 +0000
+
+vsftpd (3.0.3-9) unstable; urgency=low
+
+  [Helmut Grohne]
+  * Fix FTCBFS: Let dh_auto_build pass cross compilers (Closes: #850471)
+
+  [Keng-Yu Lin]
+  * Add lsb-base (>= 3.0-6) to Depends to fix lintian error:
+    - init.d-script-needs-depends-on-lsb-base
+
+ -- Keng-Yu Lin <kengyu@lexical.tw>  Wed, 05 Jul 2017 13:55:35 +0800
+
+vsftpd (3.0.3-8) unstable; urgency=low
+
+  * Remove libeatmydata1 from Depends (Closes: #836904)
+
+ -- Keng-Yu Lin <kengyu@lexical.tw>  Wed, 21 Sep 2016 16:38:42 +0800
+
+vsftpd (3.0.3-7) unstable; urgency=low
+
+  [Chris Lamb]
+  * debian/vsftpd.init:  initscript stop and restart actions should
+    ensure the process has stopped before returning (Closes: #829247)
+
+ -- Keng-Yu Lin <kengyu@lexical.tw>  Mon, 29 Aug 2016 14:05:05 +0800
+
+vsftpd (3.0.3-6) unstable; urgency=low
+
+  * New maintainer (Closes: #824694)
+  * Update the Debian Policy to 3.9.8
+  * Add libeatmydata1 in package Depends
+  * Fixed debian/watch
+
+ -- Keng-Yu Lin <kengyu@lexical.tw>  Wed, 10 Aug 2016 20:36:28 +0800
+
+vsftpd (3.0.3-5) unstable; urgency=medium
+
+  * QA upload.
+  * Cherry-pick the Ubuntu fix for ipv6 (Closes: #819546)
+    - thanks Louis Bouchard and Jeremy Bicha
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Tue, 05 Jul 2016 08:55:01 +0200
+
+vsftpd (3.0.3-4) unstable; urgency=medium
+
+  * Orphan this package.
+  * Set maintainer to Debian QA Group (See: #824694).
+
+ -- Jörg Frings-Fürst <debian@jff-webhosting.net>  Wed, 18 May 2016 21:11:49 +0200
+
+vsftpd (3.0.3-3) unstable; urgency=low
+
+  * Fix Depends syntax in debian/tests/control.
+  * Rewrite debian/vsftpd.bug-script to fix problems
+    with attachments in bug reports (Closes: #809531).
+  * debian/patches/0013-listen.patch: In vsftpd.conf, set listen_ipv6=NO,
+    the default option from the vsftpd man page (Closes: #803999).
+  * Add year 2016 to debian/copyright.
+  * New debian/patches/0075-logfile.patch: Change mode for
+    the log files to 0640.
+  * Refresh debian/patches/0040-disable-anonymous.patch.
+  * debian/watch: Bump version to 4 (no changes required).
+
+ -- Jörg Frings-Fürst <debian@jff-webhosting.net>  Sun, 17 Jan 2016 21:06:45 +0100
+
+vsftpd (3.0.3-2) unstable; urgency=medium
+
+  * Improve UTF-8 support:
+    - Merge debian/patches/0025-unconditional_utf8_report.patch
+      into debian/patches/0007-utf8.patch.
+    - debian/patches/0007-utf8.patch:
+      + Add comment to utf8_filesystem option in vsftpd.conf (Closes: #804777).
+    - Refresh debian/patches/0014-ssl-cert.patch.
+  * New debian/patches/0065-upload_download_filename_pattern.patch:
+    - Restrict upload and download of files with certain name patterns
+      (Closes: #808595).
+      Thanks to Thomas B. Preußer <thomas.preusser@utexas.edu>.
+  * New debian/patches/0070-realpath_wrapper.patch:
+    - Filename pattern filter as used by deny_file can only match
+      existing files (Closes: #808803).
+      Thanks to Thomas B. Preußer <thomas.preusser@utexas.edu>.
+  * Add ftp to Depends in debian/tests/control to fix autopkgtest errors.
+
+ -- Jörg Frings-Fürst <debian@jff-webhosting.net>  Fri, 25 Dec 2015 19:11:50 +0100
+
+vsftpd (3.0.3-1) unstable; urgency=low
+
+  * New upstream release.
+    - Remove now unneeded patches:
+      + 0035-address_space_limit.patch
+      + 0045-seccomp-gettimeofday.patch
+    - Add 2015 to debian/copyright.
+  * Correct temp file handling with systemd (Closes: #789127):
+    - New debian/vsftpd.tmpfile.
+    - debian/vsftpd.postinst:
+      + Add create of temp directory at configure.
+
+ -- Jörg Frings-Fürst <debian@jff-webhosting.net>  Sun, 26 Jul 2015 13:55:16 +0200
+
+vsftpd (3.0.2-20) unstable; urgency=medium
+
+  * New d/patches/0060-seccomp_sandbox.patch:
+    - Set default of SECCOMP_SANDBOX to 0 (Closes: #735357).
+  * Add a note about SECCOMP_SANDBOX to vsftpd.NEWS.
+  * d/control:
+    - change XS-Testsuite to Testsuite because dpkg now handles
+      it correctly.
+
+ -- Jörg Frings-Fürst <debian@jff-webhosting.net>  Mon, 25 May 2015 21:54:39 +0200
+
+vsftpd (3.0.2-19) unstable; urgency=medium
+
+  * vsftpd.postrm:
+    - Replace fixed path with a POSIX-compliant shell function to check
+      the existence of a command.
+  * New debian/patches/0055-set_default_listen.patch (Closes: #783077):
+    - Set the default value of tunable_listen to the same value of listen from
+      the man page vsftpd.conf.
+  * Rewrite bug-script:
+    - debian/vsftpd.bug-script: replace dialog with yesno.
+    - debian/control: remove dialog from Depends.
+
+ -- Jörg Frings-Fürst <debian@jff-webhosting.net>  Tue, 21 Apr 2015 21:48:08 +0200
+
+vsftpd (3.0.2-18) unstable; urgency=high
+
+  * New debian/patches/0050-CVE-2015-1419.patch
+    - Fix config option "deny_file" not always being handled correctly
+      CVE-2015-1419 (Closes: #776922).
+    - Thanks to Marcus Meissner.
+  * Add year 2015 to debian/copyright.
+  * debian/rules:
+    - Remove override_dh_builddeb because xz compression is standard now.
+  * debian/patches:
+    - Refresh 0002-config.patch, 0004-link-local.patch, 0005-whitespaces.patch,
+      0006-greedy.patch, 0007-utf8.patch, 0010-remote-dos.patch,
+      0011-alpha.patch.
+  * Remove debian/source/options because xz compression is standard now.
+  * debian/vsftpd.postrm:
+    - Remove systemd files and directories when purging.
+
+ -- Jörg Frings-Fürst <debian@jff-webhosting.net>  Tue, 24 Feb 2015 16:42:25 +0100
+
+vsftpd (3.0.2-17) unstable; urgency=medium
+
+  * Add debian/patches/0035-address_space_limit.patch to increase the
+    address space (LP: #1348972).
+  * Add patches from Ubuntu:
+    - 0040-disable-anonymous.patch to disable anonymous login in
+      vsftpd.conf.
+      + Change also vsftpd.man.5 and confs in EXPAMPLE.
+    - 0045-seccomp-gettimeofday.patch to permit gettimeofday() in
+      seccomp sandbox.
+      Thanks to Robie Basak <robie.basak@ubuntu.com>.
+    - Delete debian/patches/0016-seccomp.patch (replace with 0045-*).
+  * Add Turkish debconf translation (Closes: #759883).
+    Thanks to Mert Dirik <mertdirik@gmail.com>.
+  * debian/control:
+    - Change at vsftpd-dbg Architecture from linux-any to any.
+    - Add Depends dialog to package vsftpd.
+  * Add debian/vsftpd.bug-script.
+  * Add debian/vsftpd.apport file from Ubuntu.
+    Thanks to Andres Rodriguez <andreserl@ubuntu.com>.
+  * debian/rules:
+    - Remove useless override_dh_installinit.
+    - Add manuelly install of the apport file because dh-apport is missing
+      in debian.
+  * debian/vsftpd.lintian-overrides:
+    - Add a comment to the override.
+
+ -- Jörg Frings-Fürst <debian@jff-webhosting.net>  Tue, 07 Oct 2014 15:56:29 +0200
+
+vsftpd (3.0.2-16) unstable; urgency=medium
+
+  * New maintainer (Closes: #756094).
+  * debian/control:
+    - Set myself as maintainer.
+    - Replace vacant Vcs to alioth.
+    - Remove field "priority" in package vsftpd-dbg.
+    - Bump Standards-Version to 3.9.6 (no changes required).
+  * debian/source/options:
+    - Set compression-level to 9 to save space.
+  * debian/vsftpd.init:
+    - Add "Default-Stop" for level 0 & 6.
+  * debian/rules:
+    - At dh_installinit add Stoplevel 0 & 6.
+  * debian/vsftpd.service:
+    - Remove obsolete target "syslog.target".
+  * debian/vsftpd.lintian-overrides:
+    - Add override "binary-without-manpage" for "/usr/bin/vsftpdwho",
+      a 3 line shell script.
+  * debian/copyright:
+    - Add myself to the list of authors for debian/*.
+    - Add Daniel Jacobowitz for *.
+  * New debian/patches/0020-manpage-hyphen.patch.
+    - Escape minus in all manpages.
+  * New debian/patches/0025-unconditional_utf8_report.patch.
+    - Remove unconditional UTF-8 report, as conditional report
+      is enabled per 0007-utf8.patch (Closes: 754449).
+      Thanks to: Bartos-Elekes Zsolt <muszi@kite.hu>!
+  * New debian/patches/0030-kfreebsd.patch (Closes: #756794).
+    - Add condition for missing libcab{2}-dev on kfreebsd*.
+      Thanks to: Steven Chamberlain <steven@pyro.eu.org>!
+  * Add DEP8 tests (Closes: #746480).
+    - Thanks to: Robie Basak <robie.basak@ubuntu.com>!
+  * debian/vsftpd.init:
+    - Add while loop to prevent error on
+      slow PID file generation  (Closes: #754762).
+      Thanks to: Stephen Powell <zlinuxman@wowway.com>!
+  * New missing debian/watch.
+
+ -- Jörg Frings-Fürst <debian@jff-webhosting.net>  Tue, 30 Sep 2014 07:30:37 +0200
+
+vsftpd (3.0.2-15) unstable; urgency=low
+
+  * Adding patch from Robie Basak <robie.basak@ubuntu.com> to permit
+    gettimeofday() in seccomp sandbox to fix log message generation.
+  * I don't care anymore, not worth it.. orphaning.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 25 Jul 2014 16:39:45 +0200
+
+vsftpd (3.0.2-14) unstable; urgency=low
+
+  * Updating year in copyright file.
+  * Building with dh --parallel.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 31 Mar 2014 21:34:28 +0200
+
+vsftpd (3.0.2-13) experimental; urgency=low
+
+  * Checking if pidfile exists in initscripts before using it (Closes:
+    #740104).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 27 Feb 2014 12:27:57 +0100
+
+vsftpd (3.0.2-12) experimental; urgency=low
+
+  * Updating to standards version 3.9.5.
+  * Using lsb logging in initscript (Closes: #730537).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 27 Nov 2013 07:40:04 +0100
+
+vsftpd (3.0.2-11) experimental; urgency=low
+
+  * Adding vcs fields.
+  * Wrapping control fields.
+  * Adding debug package.
+  * Sorting overrides alphabetically in rules.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 18 Aug 2013 16:49:36 +0200
+
+vsftpd (3.0.2-10) experimental; urgency=low
+
+  * Renaming systemd service file to correct name for dh-systemd (Closes:
+    #713857).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 25 Jun 2013 06:51:08 +0200
+
+vsftpd (3.0.2-9) experimental; urgency=low
+
+  [ Michael Stapelberg ]
+  * Using dh-systemd for proper systemd-related maintscripts.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 24 Jun 2013 12:32:08 +0200
+
+vsftpd (3.0.2-8) experimental; urgency=low
+
+  * Using ssl-cert for snakeoil certificate.
+  * Adding patch from Michal Vyskocil <mvyskocil@suse.cz> to drop
+    CLONE_NEWPID from clone call.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 13 Jun 2013 08:05:26 +0200
+
+vsftpd (3.0.2-7) experimental; urgency=low
+
+  * Streamlining user messages in initscript.
+  * Dropping obsolete sysvinit initscript start/stop numbers.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 11 Jun 2013 17:55:07 +0200
+
+vsftpd (3.0.2-6) experimental; urgency=low
+
+  * Adding patch from Jiri Skala <jskala@redhat.com> to remove exclusivity
+    between listen and listen_ipv6 (Closes: #574837).
+  * Prefixing patches with four digits for consistency.
+  * Trimming diff headers in patches.
+  * Adding simple vsftpdwho script to list running vsftpd processes
+    (Closes: #180778).
+  * Erroring out if vsftpd process has not been successfully started in
+    initscript (Closes: #337434, #470884, #629910).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 05 Jun 2013 21:38:59 +0200
+
+vsftpd (3.0.2-5) experimental; urgency=low
+
+  * Adding network dependency in lsb header of the initscript (Closes:
+    #711044).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 04 Jun 2013 17:23:49 +0200
+
+vsftpd (3.0.2-4) experimental; urgency=low
+
+  * Extending notes in readme about network isolation wrt/ LXC to NIS too
+    (Closes: #616113).
+  * Moving systemd service file from /etc to /lib (Closes: #693105).
+  * Exit with zero instead of one when vsftpd is disabled and tried to be
+    started (Closes: #696993, #699207).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 23 May 2013 00:24:24 +0200
+
+vsftpd (3.0.2-3) unstable; urgency=low
+
+  * Removing all references to my old email address.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 10 Mar 2013 21:53:31 +0100
+
+vsftpd (3.0.2-2) unstable; urgency=low
+
+  * Updating to standards version 3.9.4.
+  * Updating year in copyright file.
+  * Dropping dpkg-source compression levels.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 28 Jan 2013 07:40:40 +0100
+
+vsftpd (3.0.2-1) unstable; urgency=low
+
+  * Merging upstream version 3.0.2.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 21 Sep 2012 19:16:38 +0200
+
+vsftpd (3.0.0-4) unstable; urgency=low
+
+  * Non-maintainer upload with maintainer sat next to me at Debconf.
+  * Fixed debian/vsftpd.init syntax error (Closes: #679710).
+  * Added long description in debian/vsftpd.init.
+
+ -- Thomas Goirand <thomas@goirand.fr>  Tue, 03 Jul 2012 15:29:20 +0000
+
+vsftpd (3.0.0-3) unstable; urgency=low
+
+  * Adding patch to avoid overwriting build environment (Closes:
+    #677261, #678751).
+  * Reenabling hardening buildflags.
+  * Removing preseed file.
+  * Switching to xz compression.
+  * Simplyfing initscript.
+  * Removing pre-squeeze update-inetd deconfiguration in postinst.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 30 Jun 2012 15:24:42 +0200
+
+vsftpd (3.0.0-2) unstable; urgency=low
+
+  * Temporarily build without hardening flags, doesn't build reliably
+    everywhere yet (Closes: #677261).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 12 Jun 2012 18:33:09 +0200
+
+vsftpd (3.0.0-1) unstable; urgency=low
+
+  * Adding note about lxc in readme.
+  * Merging upstream version 3.0.0.
+  * Updating copyright to format 1.0.
+  * Unifying po headers.
+  * Sourcing lsb init-functions in initscript, thanks to Vincent Bernat
+    <bernat@luffy.cx> (Closes: #670308).
+  * Adding systemd service file, thanks to Vincent Bernat
+    <bernat@luffy.cx>.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 06 Jun 2012 15:50:51 +0200
+
+vsftpd (2.3.5-3) unstable; urgency=low
+
+  [ Daniel Baumann ]
+  * Adding changelog entry from squeeze security update.
+
+  [ Jonathan Nieder ]
+  * Adding NEWS file to warn about strengthened checks for writable root
+    directory inside chroot (Closes: #656900).
+
+  [ Daniel Baumann ]
+  * Manually passing CPPFLAGS into CFLAGS when calling make in rules
+    (Closes: #655103, #657693).
+  * Updating package to standards version 3.9.3.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 04 Mar 2012 20:15:39 +0100
+
+vsftpd (2.3.5-2) unstable; urgency=low
+
+  * Updating build target in rules to actually take up the hardening
+    flags, thanks to Moritz Muehlenhoff <jmm@debian.org> (Closes:
+    #655103).
+  * Updating to debhelper version 9.
+  * Simplifying hardening in rules.
+  * Adding patch from Michael Cree <mcree@orcon.net.nz> to fix FTBFS on
+    alpha (Closes: #656182).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 21 Jan 2012 10:56:03 +0100
+
+vsftpd (2.3.5-1) unstable; urgency=low
+
+  * Merging upstream version 2.3.5.
+  * Rediffing utf8.patch.
+  * Using compression level 9 also for binary packages.
+  * Silencing getent calls in postinst (Closes: #641965).
+  * Adding Dutch debconf translations from Jeroen Schot <schot@a-
+    eskwadraat.nl> (Closes: #654859).
+  * Adding Indonesian debconf translations from Mahyuddin Susanto
+    <udienz@gmail.com> (Closes: #654170).
+  * Enabling hardening build options (Closes: #644295).
+  * Updating years in copyright.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 08 Jan 2012 10:54:36 +0100
+
+vsftpd (2.3.4-1) unstable; urgency=low
+
+  * Merging upstream version 2.3.4:
+  * Updating maintainer and uploaders fields.
+  * Removing vcs fields.
+  * Removing references to my old email address.
+  * Makging packaging distribution neutral.
+  * Updating years in copyright file.
+  * Updating to standards version 3.9.2.
+  * Compacting copyright file.
+  * Updating debconf-po files.
+  * Dropping alpha.patch, not supported anymore.
+  * Renumbering patches.
+  * Rediffing s390.patch.
+  * Simplifying architecture listing for libcap2-dev build-depends,
+    thanks to Robert Millan <rmh@debian.org> (Closes: #634725).
+  * Adding Catalan debconf translations from Innocent De Marchi
+    <tangram.peces@gmail.com> (Closes: #630075).
+  * Adding patch from Ben Hutchings <ben@decadent.org.uk> to fix a
+    remote DoS on Linux 2.6.32 (Closes: #629373).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 05 Sep 2011 15:55:00 +0200
+
+vsftpd (2.3.2-8) experimental; urgency=low
+
+  * Updating rules to only link against libcap on linux, thanks to Pino
+    Toscano <toscano.pino@tiscali.it> (Closes: #607587).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 20 Dec 2010 06:40:40 +0100
+
+vsftpd (2.3.2-7) experimental; urgency=low
+
+  * Improving user checks with getent in postinst scripts, thanks to
+    Scott Moser <smoser@ubuntu.com> (Closes: #607129).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 19 Dec 2010 20:45:15 +0100
+
+vsftpd (2.3.2-6) experimental; urgency=low
+
+  * Adding Danish debconf translations from Joe Dalton
+    <joedalton2@yahoo.dk> (Closes: #605069).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 06 Dec 2010 13:10:42 +0100
+
+vsftpd (2.3.2-5) experimental; urgency=low
+
+  * Correcting email address in previous changelog.
+  * Updating to debhelper version 8.
+  * Switching to source format 3.0 (quilt).
+  * Rediffing s390.patch.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 26 Nov 2010 17:42:55 +0100
+
+vsftpd (2.3.2-4) experimental; urgency=low
+
+  * Making greps for vsftpd username and group in postinst more robust,
+    thanks to Serge Hallyn <serge.hallyn@canonical.com> (Closes:
+    #604888).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 25 Nov 2010 14:56:44 +0100
+
+vsftpd (2.3.2-3+squeeze2) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * Disable network isolation due to a problem with cleaning up network
+    namespaces fast enough in kernels < 2.6.35 (CVE-2011-2189).
+    Thanks Ben Hutchings for the patch!
+  * Fix possible DoS via globa expressions in STAT commands by
+    limiting the matching loop (CVE-2011-0762; Closes: #622741).
+
+ -- Nico Golde <nion@debian.org>  Wed, 07 Sep 2011 20:39:59 +0000
+
+vsftpd (2.3.2-3) unstable; urgency=medium
+
+  * Adding patch from Philipp Kern <pkern@debian.org> to fix vsftpd on
+    s390 (Closes: #602726).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 09 Nov 2010 01:00:27 +0100
+
+vsftpd (2.3.2-2) experimental; urgency=low
+
+  * Adding Brazilian Portuguese debconf translations from Chanely
+    Marques <chanelym@gmail.com> (Closes: #595658).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 05 Sep 2010 21:18:38 +0200
+
+vsftpd (2.3.2-1) experimental; urgency=low
+
+  * Merging upstream version 2.3.2.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 01 Sep 2010 14:34:05 +0200
+
+vsftpd (2.3.1-1) experimental; urgency=low
+
+  * Merging upstream version 2.3.1.
+  * Removing logging.patch, went upstream.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 01 Sep 2010 14:29:49 +0200
+
+vsftpd (2.3.0-1) unstable; urgency=low
+
+  * Merging upstream version 2.3.0.
+  * Updating standards version to 3.9.1.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 14 Aug 2010 14:09:51 +0200
+
+vsftpd (2.3.0~pre2-4) unstable; urgency=low
+
+  * Updating standards version to 3.9.0.
+  * Added updated 10-logging.patch from Jean-Louis Dupond <jean-
+    louis@dupond.be> to close #579684 also for simultaneous connections.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 06 Jul 2010 00:08:41 +0200
+
+vsftpd (2.3.0~pre2-3) unstable; urgency=low
+
+  * Adding patch from Regid Ichira <gl2n30y06arv2@hotmail.com> to fix
+    logging (Closes: #579684).
+  * Updating lsb headers in init script (Closes: #579061).
+  * Updating year in copyright file.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 02 May 2010 18:29:18 +0200
+
+vsftpd (2.3.0~pre2-2) unstable; urgency=low
+
+  * Adding patch to fix manpage formatings.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 08 Apr 2010 07:19:35 +0200
+
+vsftpd (2.3.0~pre2-1) unstable; urgency=low
+
+  * Not failing if removal of server directory in postinst isn't
+    successful (Closes: #575356).
+  * Merging upstream version 2.3.0~pre2.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 27 Mar 2010 09:59:03 +0100
+
+vsftpd (2.3.0~pre1-1) unstable; urgency=low
+
+  * Merging upstream version 2.3.0~pre1.
+  * Updating README.source.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 19 Mar 2010 08:57:55 +0100
+
+vsftpd (2.2.2-4) unstable; urgency=low
+
+  * Adding explicit source version 1.0 until switch to 3.0.
+  * Updating year in copyright file.
+  * Updating to standards 3.8.4.
+  * Adding patch from Chuck Short <zulcss@ubuntu.com> to add utf8
+    support.
+  * Avoiding initscript stop links as they are not required.
+  * Creating group for vsftpd user in case the specified user exists,
+    but not its group (Closes: #572345).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 14 Mar 2010 15:59:30 +0100
+
+vsftpd (2.2.2-3) unstable; urgency=low
+
+  * Moving chroot creation out of the start sequence (Closes: #472329).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 04 Dec 2009 08:37:13 +0100
+
+vsftpd (2.2.2-2) unstable; urgency=low
+
+  * Exiting 0 when we refuse to start vsftpd because it's disabled in
+    the configuration (Closes: #557182).
+  * Conditionally build against libpcap2 whetever we are on linux or not
+    (Closes: #557153).
+  * Renumbering patches.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 22 Nov 2009 17:32:24 +0100
+
+vsftpd (2.2.2-1) unstable; urgency=low
+
+  * Correcting typo in status section of the init script (Closes:
+    #556260).
+  * Merging upstream version 2.2.2.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 19 Nov 2009 21:44:28 +0100
+
+vsftpd (2.2.2~pre1-1) unstable; urgency=low
+
+  * Applying patch from Todd A. Jacobs <tjacobs@codegnome.org> to give
+    proper return values in initscript (Closes: #555517.
+  * Cleaning up init script (intentations, variables, bashisms, etc.).
+  * Merging upstream version 2.2.2~pre1.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 14 Nov 2009 18:21:08 +0100
+
+vsftpd (2.2.1-1) unstable; urgency=low
+
+  * Correcting wrong vcs-browser field.
+  * Replacing some Germanisms from the German debconf translations.
+  * Setting last-translator for German debconf templates to me, no
+    intention do deal with debian-l10n-german in the future anymore.
+  * Fixing whitespace typo in output of status message in initscript.
+  * Merging upstream version 2.2.1.
+  * Wrapping patch headers to 80 chars.
+  * Replacing unused-libs.patch with much simpler libs.patch.
+  * Rediffing config.patch.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 06 Nov 2009 13:40:19 +0100
+
+vsftpd (2.2.0-4) unstable; urgency=low
+
+  * Adding patch from Michael Stapelberg <michael@stapelberg.de> to
+    accept IPv6 scope identifier in listen_address6 (Closes: #544993).
+  * Installing upstream example files in examples directory instead of
+    own directory.
+  * Adding patch from Jiri Skala <jskala@redhat.com> to trim white
+    spaces from option values (Closes: #419857, #536803).
+  * Adding patch from Martin Nagy <mnagy@redhat.com> to fix file listing
+    issue with wildcards (Closes: #428934).
+  * Using vsftpd group for server root ownership instead of nogroup
+    (Closes: #519390).
+  * Cosmetically improve the init script wrt/ output messages (Closes:
+    #403344).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 18 Oct 2009 12:13:02 +0200
+
+vsftpd (2.2.0-3) unstable; urgency=low
+
+  * Updating maintainer field.
+  * Updating vcs fields.
+  * Bumping versioned build-depends on quilt.
+  * Sorting depends.
+  * Adding README.source.
+  * Adding maintainer homepage to copyright.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 04 Oct 2009 10:26:18 +0200
+
+vsftpd (2.2.0-2) unstable; urgency=low
+
+  * Adding patch to not define VSF_SYSDEP_HAVE_LINUX_CLONE on alpha to
+    avoid FTBFS (Closes: #540860).
+  * Updating package to standards version 3.8.3.
+  * Wrapping and sorting build-depends.
+  * Removing debconf-updatepo call in clean target of rules.
+  * Minimizing rules file.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 20 Sep 2009 18:33:01 +0200
+
+vsftpd (2.2.0-1) unstable; urgency=low
+
+  * Improving English in messages outputted in postinst script, thanks
+    to Mark Brown <broonie@debian.org>.
+  * Using variables in postrm in order to ease reuse postrm in diverent
+    packages.
+  * Merging upstream version 2.2.0:
+    - Should fix FTBFS on alpha (Closes: #540860).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 13 Aug 2009 23:47:26 +0200
+
+vsftpd (2.2.0~pre4-2) unstable; urgency=low
+
+  * Updating depends in update target of rules.
+  * Updating default home directory to be removed in postrm script.
+  * Correcting typo of hardcoding daemon username.
+  * Renaming directory for storing local additions in the packaging
+    directory to a more common name.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 20 Jul 2009 01:32:58 +0200
+
+vsftpd (2.2.0~pre4-1) unstable; urgency=low
+
+  * Merging upstream version 2.2.0~pre4.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 19 Jul 2009 21:43:34 +0200
+
+vsftpd (2.2.0~pre3-1) unstable; urgency=low
+
+  * Merging upstream version 2.2.0~pre3.
+  * Updating year in copyright file.
+  * Moving preseed example from docs to examples.
+  * Making 'set -e' global in rules file.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 19 Jul 2009 21:38:10 +0200
+
+vsftpd (2.2.0~pre2-1) unstable; urgency=low
+
+  * Merging upstream version 2.2.0~pre2.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 17 Jul 2009 14:19:20 +0200
+
+vsftpd (2.2.0~pre1-1) unstable; urgency=low
+
+  * Removing redundant dirs debhelper file.
+  * Merging upstream version 2.2.0~pre1.
+  * Rediffing libcap.patch.
+  * Updating package to standards version 3.8.2.
+  * Adding Czech debconf translation from Vitezslav Kotrla
+    <vitezslav.kotrla@gmail.com> (Closes: #534129).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 10 Jul 2009 14:40:37 +0200
+
+vsftpd (2.1.2-1) unstable; urgency=low
+
+  * Using correct rfc-2822 date formats in changelog.
+  * Really correcting wrong charset definition in Galizian debconf
+    translations (Closes: #524251).
+  * Merging upstream version 2.1.2.
+  * Rediffing libcap.patch.
+  * Applying patch from Peter Eisentraut <petere@debian.org> to add
+    status support to init script (Closes: #527881).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 30 May 2009 10:16:14 +0200
+
+vsftpd (2.1.1~pre1-2) unstable; urgency=medium
+
+  * Correcting wrong charset definition in Galizian debconf translations
+    (Closes: #524251).
+  * Adding patch to not hardcode libcap soname (Closes: #526792).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 03 May 2009 17:49:00 +0200
+
+vsftpd (2.1.1~pre1-1) unstable; urgency=low
+
+  * Adding French debconf translations from Steve Petruzzello <dlist@bluewin.ch>
+    (Closes: #522736).
+  * Merging upstream version 2.1.1~pre1.
+  * Applying patch from debian-l10n-english to improve debconf templates
+    (Closes: #520592).
+  * Adding updated German debconf translations from Helge Kreutzmann
+    <debian@helgefjell.de> (Closes: #522958).
+  * Adding updated Swedish debconf translations from Martin Bagge
+    <brother@bsnet.se> (Closes: #522977).
+  * Adding Finnish debconf translations from Esko Arajarvi <edu@iki.fi>
+    (Closes: #522999).
+  * Adding Russian debconf translations from Yuri Kozlov <yuray@komyakino.ru>
+    (Closes: #523123).
+  * Adding updated Japanese debconf translations from Hideki Yamane
+    <henrich@debian.or.jp> (Closes: #523324).
+  * Adding Spanish debconf translations from Fernando Gonzalez de Requena
+    <fgrequena@gmail.com> (Closes: #523395).
+  * Adding Galizian debconf translations from Marce Villarino
+    <mvillarino@gmail.com> (Closes: #524251).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 20 Apr 2009 08:53:00 +0200
+
+vsftpd (2.1.0-2) unstable; urgency=medium
+
+  * Adding simplified Chinese debconf translations from Deng Xiyue
+    <manphiz-guest@users.alioth.debian.org> (Closes: #521790).
+  * Adding updated Portuguese debconf translations from Miguel Figueiredo
+    <elmig@debianpt.org> (Closes: #522495).
+  * Adding Japanese debconf translations from Hideki Yamane
+    <henrich@debian.or.jp> (Closes: #522601).
+  * Adding Italian debconf translations from Vincenzo Campanella
+    <vinz65@gmail.com> (Closes: #522603).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 05 Apr 2009 10:49:00 +0200
+
+vsftpd (2.1.0-1) unstable; urgency=low
+
+  * Merging upstream version 2.1.0 (Closes: #520779).
+  * Rediffing config.patch.
+  * Removing wifexited-const.patch, went upstream.
+  * Removing defs.patch, went upstream.
+  * Renumbering db-doc.patch.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 24 Mar 2009 06:57:00 +0100
+
+vsftpd (2.0.7-4) unstable; urgency=low
+
+  * Adding Portuguese debconf translations from Americo Monteiro
+    <a_monteiro@netcabo.pt> (Closes: #516547).
+  * Adding Swedish debconf translations from Martin Bagge <brother@bsnet.se>
+    (Closes: #516682).
+  * Simplyfing defaults handling of debconf variables in postinst script.
+  * Adding German debconf translation from Kai Wasserbaech
+    <debian@carbon-project.org> (Closes: #517845).
+  * Correcting wrong account name capitalization in German debconf translation.
+  * Starting vsftpd with --oknodo in initscript.
+  * Updating standards to 3.8.1.
+  * Also creating the security chroot directory by default (Closes: #520394).
+  * Applying patch from debian-l10n-english to improve debconf templates and
+    package description (Closes: #520592).
+  * Using consistent copyright notice in debconf translation files.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 21 Mar 2009 08:19:07 +0100
+
+vsftpd (2.0.7-3) unstable; urgency=low
+
+  * Correcting typo in install call of postinst script (Closes: #514954).
+  * Adding debconf support for username and directory (Closes: #515853).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 19 Feb 2009 11:39:00 +0100
+
+vsftpd (2.0.7-2) unstable; urgency=low
+
+  * Upgrading package to debhelper 7.
+  * Sorting build-depends.
+  * Updating libcap build-depends (Closes: #492763).
+  * Adding homepage field in control file (Closes: #471817).
+  * Sorting depends.
+  * Adding ${misc:Depends} to depends.
+  * Adding replaces for virtual ftp-server package.
+  * Removing watch file.
+  * Rediffing unused-libs.patch.
+  * Rediffing builddefs.patch.
+  * Rediffing config.patch.
+  * Rediffing wifexited-const.patch.
+  * Moving ftpusers to sub-directory.
+  * Prefixing debhelper files with package name.
+  * Rewriting copyright file in machine-interpretable format.
+  * Reordering debhelper dirs file.
+  * Reordering debhelper install file.
+  * Rewriting rules file.
+  * Moving default location for vsftpd.pem from /etc/ssl/certs to
+    /etc/ssl/private as suggested by Thijs Kinkhorst <thijs@debian.org>
+    (Closes: #488282).
+  * Applying patch from Alexandre Rossi <alexandre.rossi@gmail.com> to
+    set default log file readable by adm group like every other daemon
+    does (Closes: #408549).
+  * Applying patch from shaul Karl <shaulkarl@yahoo.com> to add a short
+    explanation how to find out the right db version in
+    EXAMPLE/VIRTUAL_USERS/README (Closes: #478282).
+  * Moving secure chroot directory from /var/run/vsftpd to
+    /var/run/vsftpd/empty to not expose the pid file unecessarily,
+    thanks to Thijs Kinkhorst <thijs@debian.org> (Closes: #472329).
+  * Updating config.patch to include use_localtime=YES in vsftpd.conf,
+    making the default behaviour of vsftpd more user friendly (Closes:
+    #458677).
+  * Allowing usernames up to 64 characters now (Closes:#404926).
+  * Rewrapping lograte configuration.
+  * Rewrapping pam configuration.
+  * Rewriting and simplyfing postinst script.
+  * Rewriting and simplyfing postrm script.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 05 Feb 2009 16:41:00 +0100
+
+vsftpd (2.0.7-1) unstable; urgency=medium
+
+  * New maintainer, taking over package from Matej.
+  * New upstream release (Closes: #497149):
+    - properly shuts down SSL connections now,
+      fixes problem for all Filezilla users (Closes: #494195).
+    - fixes race condition causing PASV connection drops under extreme load
+      (Closes: #502215).
+  * Adding vcs fields in control file.
+  * Removed useless empty line at the end of vsftpd.pam file.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 31 Jan 2009 00:47:00 +0100
+
+vsftpd (2.0.6-1.2) unstable; urgency=low
+
+  * Non-maintainer upload to fix a RC bug.
+  * debian/vsftpd.post*: use update-inetd only if available. Closes: #470636
+  * debian/vsftpd.init.d: include a sane PATH. Closes: #433893
+  * debian/vsftpd.init.d: include LSB short description. (lintian warning)
+  * debian/control: Standards-Version 3.8.0. No changes. (lintian warning)
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Fri, 26 Sep 2008 10:01:46 -0300
+
+vsftpd (2.0.6-1.1) unstable; urgency=low
+
+  * Non-maintainer upload to solve release goal.
+  * Add LSB dependency header to init.d scripts (Closes: #460211)
+
+ -- Petter Reinholdtsen <pere@debian.org>  Mon, 17 Mar 2008 09:46:02 +0100
+
+vsftpd (2.0.6-1) unstable; urgency=low
+
+  * New upstream release.  Closes: #467128.
+    - Adds a chown_upload_mode option.  Closes: #269193.
+    - Supports UTF8.  Closes: #445393.
+  * man-typo.patch: Integrated upstream.
+  * unused-libs.patch: Remove `-lnsl -ldl -lresolv -lutil' since we
+    don't use any of their symbols.
+  * debian/copyright: Add upstream copyright.
+  * debian/copyright: Update upstream e-mail.
+  * debian/control: Build-depend on quilt (>= 0.40) rather than
+    (>= 0.40-1) to placate Lintian.
+  * Conforms to Standards version 3.7.3.
+
+ -- Matej Vela <vela@debian.org>  Sat, 23 Feb 2008 11:39:37 +0100
+
+vsftpd (2.0.5-2) unstable; urgency=low
+
+  * New maintainer.  Closes: #385929.
+  * Acknowledge NMU.  Thanks, Martin!
+  * vsftpd-debian.patch: Split into individual patches.
+  * wifexited-const.patch: Quiltify fix from 2.0.5-1.1.
+  * man-typo.patch: Remove trailing `s' from `delay_failed_login' and
+    `delay_successful_login' in vsftpd.conf.5.  Closes: #382154.
+  * Switch to cdbs.
+  * Remove dependency on libpam-runtime (>= 0.76-13.1) since we have
+    0.76-22 in sarge (and an unversioned dependency is already provided
+    by libpam0g).
+  * debian/copyright: Update upstream URL.
+  * debian/vsftpd.files: Remove cruft.
+  * debian/vsftpd.init.d: Remove pidfile on stop.
+  * debian/vsftpd.postinst, debian/vsftpd.postrm: Use `set -e'.
+  * debian/watch: Add.
+  * Conforms to Standards version 3.7.2.
+
+ -- Matej Vela <vela@debian.org>  Thu, 26 Oct 2006 10:55:25 +0200
+
+vsftpd (2.0.5-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Applied patch by Martin Michlmayr to fix compilation problem on 64bit
+    architectures (closes: #386267).
+  * Added dependency on netbase because of update-inetd call (closes: #386719)
+
+ -- martin f. krafft <madduck@debian.org>  Sat, 09 Sep 2006 18:25:37 +0200
+
+vsftpd (2.0.5-1) unstable; urgency=low
+
+  * New upstream release.
+    - Added support for certificate chains (Closes: #307498).
+  * Use quilt.make to manage changes to the upstream source.
+  * Exclude libcap-dev build dependency for non-Linux architectures
+    (Closes: #375026).
+  * Mention trouble with background=yes in vsftpd.conf in the
+    README file.
+  * Create /var/run/vsftpd if necessary (Closes: #350996).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Sun, 23 Jul 2006 18:46:23 -0400
+
+vsftpd (2.0.3-1) unstable; urgency=low
+
+  * New upstream release (Closes: #300132).
+  * Search for SSL certificates in /etc by default.
+  * Improved documentation for SSL support (Closes: #266664).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Fri, 01 Apr 2005 22:47:55 -0500
+
+vsftpd (2.0.1-1) unstable; urgency=low
+
+  * New upstream release (Closes: #249977, #257773).
+    - Includes SSL support.
+  * Document that the capability module must be loaded if capabilities
+    were built as a module (Closes: #252241, #257774).
+  * Include an /etc/ftpusers to quiet a syslog warning (Closes: #249974).
+  * Conflict with other FTP daemons now that we provide /etc/ftpusers.
+  * Correct output formatting of init.d script (patch from
+    Adeodato Simó <asp16@alu.ua.es>) (Closes: #246437).
+  * Use common-auth and common-account PAM configuration files
+    (Closes: #245233).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Sun, 11 Jul 2004 23:57:34 -0400
+
+vsftpd (1.2.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Change default vsftpd.conf to run standalone (listen=YES) instead of
+    from inetd (Closes: #200159).
+  * Do not call update-inetd in postinst any more since we default to
+    standalone operation (Closes: #163163).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Sat, 15 Nov 2003 19:42:21 -0500
+
+vsftpd (1.2.0-4) unstable; urgency=high
+
+  * Tweaks for init.d script, including starting the server if listen_ipv6
+    is specified (from Paul van Tilburg) (Closes: #212210).
+  * Check for a listen configuration, but not in inetd - let the daemon
+    start on an alternate port if it's configured to.
+
+ -- Daniel Jacobowitz <dan@debian.org>  Tue, 23 Sep 2003 09:28:22 -0400
+
+vsftpd (1.2.0-3) unstable; urgency=HIGH
+
+  * Remove pam_ftp.so from the default PAM configuration.
+
+ -- Daniel Jacobowitz <dan@debian.org>  Sun, 21 Sep 2003 14:03:39 -0400
+
+vsftpd (1.2.0-2) unstable; urgency=low
+
+  * Update for new PAM scheme.
+  * Include more documentation from the source (Closes: #206312).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Tue, 26 Aug 2003 16:53:19 -0400
+
+vsftpd (1.2.0-1) unstable; urgency=low
+
+  * New upstream release.
+    - Oops - make max_per_ip and max_clients work with the two process model
+      when both connect_from_port_20 and chown_uploads are false
+      (Closes: #171350).
+    - Add ability for virtual users to use local privs non anon privs, via
+      virtual_use_local_privs=YES (Closes: #172829).
+  * Update README.Debian to describe virtual_use_local_privs.
+  * Depend on adduser (Closes: #195277).
+  * Include the FAQ.
+  * Mention chroot_local_user in the sample configuration file.
+
+ -- Daniel Jacobowitz <dan@debian.org>  Sun, 17 Aug 2003 11:47:35 -0400
+
+vsftpd (1.1.3-3) unstable; urgency=low
+
+  * Add /etc/init.d/vsftpd script for standalone mode, from Sander Smeenk.
+  * Document the interaction between guest_enable and anonymous user
+    configuration in README.Debian.
+
+ -- Daniel Jacobowitz <dan@debian.org>  Mon, 27 Jan 2003 12:21:13 -0500
+
+vsftpd (1.1.3-2) unstable; urgency=low
+
+  * Brown bag.  Fix install invocation in postinst (Closes: #168973).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Wed, 13 Nov 2002 13:51:24 -0500
+
+vsftpd (1.1.3-1) unstable; urgency=low
+
+  * New upstream release.
+    - Adds tcpwrappers support (off by default, see vsftpd.conf(5)).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Mon, 11 Nov 2002 11:30:23 -0500
+
+vsftpd (1.1.2-1) unstable; urgency=low
+
+  * New upstream release.
+    - Fixes port_promiscuous option (Closes: #167104).
+  * Create /home/ftp owned by root (Closes: #163164).
+  * Change the default value of pam_service_name to "vsftpd".
+    If you had a custom configuration in /etc/pam.d/ftpd, you should
+    either specify pam_service_name=ftp in vsftpd.conf or copy it to the
+    new file.
+  * Provide a default PAM configuration.
+  * Update Standards-Version (no changes required, yay!).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Mon, 04 Nov 2002 17:36:33 -0500
+
+vsftpd (1.1.0-2) unstable; urgency=low
+
+  * Add FTP username on initial installation (Closes: #155353).
+  * Rewrite README.Debian.
+  * Use the included vsftpd(8) manual page.
+
+ -- Daniel Jacobowitz <dan@debian.org>  Sun, 18 Aug 2002 14:59:02 -0400
+
+vsftpd (1.1.0-1) unstable; urgency=low
+
+  * New upstream release.
+    - Fix for kernel warning about MSG_PEEK.
+    - Change the meaning of anon_root and local_root (Closes: #140713).
+  * Upstream removed the kernel 2.4.0 warning, so I've also removed the
+    kernel 2.4.0 sanity check.  2.4.0 and 2.4.1 had plenty of other nasty
+    bugs besides this one, so everyone should update if they haven't yet.
+  * Update upstream URLs in debian/copyright (Closes: #142525).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Tue, 06 Aug 2002 15:06:30 -0400
+
+vsftpd (1.0.0-2) unstable; urgency=low
+
+  * Provide ftp-server, even though we do not conflict with others
+    like the other ftp-servers do (Closes: #120354).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Sun, 27 Jan 2002 20:07:08 -0500
+
+vsftpd (1.0.0-1) unstable; urgency=low
+
+  * New upstream release; no code changes from 0.9.4pre4.
+  * Change priority to extra.
+
+ -- Daniel Jacobowitz <dan@debian.org>  Wed, 14 Nov 2001 10:21:02 -0500
+
+vsftpd (0.9.4.0pre4-1) unstable; urgency=low
+
+  * New upstream release.
+  * Now uses libcap instead of direct kernel includes (Closes: #105168,
+    #89424).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Mon, 12 Nov 2001 14:12:27 -0500
+
+vsftpd (0.9.2-2) unstable; urgency=low
+
+  * Brown bag fix; 2.4.[01] check objected to 2.4.10 (Closes: #113808).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Fri, 28 Sep 2001 15:21:19 -0400
+
+vsftpd (0.9.2-1) unstable; urgency=low
+
+  * New upstream version, with nifty features like bandwidth limiting.
+
+ -- Daniel Jacobowitz <dan@debian.org>  Sat, 22 Sep 2001 12:47:38 -0400
+
+vsftpd (0.9.1-1) unstable; urgency=low
+
+  * New upstream version.
+  * Add missingok to /etc/logrotate.d/vsftpd (Closes: #89736).
+
+ -- Daniel Jacobowitz <dan@debian.org>  Thu, 31 May 2001 09:58:07 -0700
+
+vsftpd (0.0.14-2) unstable; urgency=low
+
+  * Add build dependency on libpam0g-dev.  Oops.
+
+ -- Daniel Jacobowitz <dan@debian.org>  Fri, 09 Mar 2001 01:07:26 -0500
+
+vsftpd (0.0.14-1) unstable; urgency=low
+
+  * Initial Release.
+  * Create a man page for vsftpd(8).
+  * Suggest logrotate and provide a logrotate.d entry.
+  * Abort if kernel 2.4.0 or 2.4.1 is running.
+
+ -- Daniel Jacobowitz <dan@debian.org>  Thu, 08 Mar 2001 01:24:06 -0500

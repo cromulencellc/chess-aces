@@ -1,0 +1,14 @@
+# hawaiijohn, People, chess.com
+dn: uid=hawaiijohn,ou=People,dc=chess,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: hawaiijohn
+givenName: Hawaii
+sn: John
+cn: hawaii john
+telephoneNumber: (408) 555-3922
+facsimileTelephoneNumber: (408) 555-4000
+mail: hawaiijohn@example.com
+userPassword:: c2VjcmV0

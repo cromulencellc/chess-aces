@@ -1,0 +1,45 @@
+#!/bin/bash
+
+cat <<EOF
+
+Providing additional information can help diagnose problems with vsftpd.
+Specifically, this would include:
+- The system vsftpd log file.
+- The /etc/vsftpd.conf file.
+
+If this information is not relevant for your bug report or you have privacy
+concerns, please choose no.
+
+EOF
+
+yesno "Do you want to provide additional information [Y|n]? " yep
+[ "$REPLY" = yep ] || exit 0
+
+
+REPORTBUG_VERSION=$(dpkg-query -f '${source:Version}' -W reportbug)
+LOG_FILE='/var/log/vsftpd.log'
+CONF_FILE='/etc/vsftpd.conf'
+
+# Depending on whether reportbug is new enough, we either write the output of
+# our various commands to a file and attach them to the report (this needs
+# reportbug ≥ 6.5.0) or just write them to the body of the bug report.
+if dpkg --compare-versions "$REPORTBUG_VERSION" ge "6.5.0"; then
+
+    # We don’t clean up this directory because there is no way to know when
+    # reportbug finished running, and reportbug needs the files around.
+    # Given that those are just a couple of kilobytes in size and people
+    # generally don’t file a lot of bugs, I don’t think it’s a big deal.
+    DIR=$(mktemp -d)
+
+    echo "-- BEGIN ATTACHMENTS --" >&3
+
+    #
+    # attach conf & log
+    #
+    if [ -f ${CONF_FILE} ] ; then
+	cp ${CONF_FILE} ${DIR}
+	echo ${DIR}/vsftpd.conf >&3
+    fi
+
+    echo "-- END ATTACHMENTS --" >&3
+fi

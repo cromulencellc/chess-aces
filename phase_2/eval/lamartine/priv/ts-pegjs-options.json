@@ -1,0 +1,5 @@
+{
+    "tspegjs": {
+        "customHeader": "import {Identifier, QuotedString, Keyword, Block, Assignment} from './udmf_classes'"
+    }
+}

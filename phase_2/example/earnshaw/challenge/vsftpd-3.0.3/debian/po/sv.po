@@ -1,0 +1,51 @@
+# Swedish translation of vsftpd debconf templates.
+# Copyright (C) 2009 Martin Bagge <brother@bsnet.se>
+# This file is distributed under the same license as the vsftpd package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vsftpd 2.3.4-1\n"
+"Report-Msgid-Bugs-To: vsftpd@packages.debian.org\n"
+"POT-Creation-Date: 2010-09-05 21:17+0200\n"
+"PO-Revision-Date: 2009-04-07 18:36+0100\n"
+"Last-Translator: Martin Bagge <brother@bsnet.se>\n"
+"Language-Team: swedish <debian-l10n-swedish@lists.debian.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid "Dedicated system account for the vsftpd FTP daemon:"
+msgstr "Dedikerat systemkonto för ftp-tjänsten vsftpd:"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid ""
+"The FTP server must use a dedicated account for its operation so that the "
+"system's security is not compromised by running it with superuser privileges."
+msgstr ""
+"FTP-servern måste ha ett dedikerat konto för att fungera på ett säkert sätt, "
+"att använda privilegier från en superanvändare är inte säkert."
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid "Please choose that account's username."
+msgstr "Ange kontots användarnamn."
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:2001
+msgid "FTP root directory:"
+msgstr "Rot-katalog för FTP:"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:2001
+msgid ""
+"Please specify the directory that will be used as root for the FTP server."
+msgstr "Ange katalog som ska agera rot-nivå för ftp-servern."

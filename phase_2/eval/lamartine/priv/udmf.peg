@@ -1,0 +1,45 @@
+TranslationUnit = GlobalExprList
+
+GlobalExprList = GlobalExpr+
+
+GlobalExpr = Block
+	/ AssignmentExpr
+    
+Block
+	= name:Identifier Ows "{" Ows content:ExprList "}" Ows {
+    	return new Block(name, content)
+    }
+    
+ExprList = (AssignmentExpr)+
+
+AssignmentExpr
+	= name:Identifier Ows "=" Ows value:Value ";" Ows {
+    	return new Assignment(name, value)
+    }
+    
+Identifier
+	= [A-Za-z_]+[A-Za-z0-9_]* { return new Identifier(text()) }
+    
+Value
+	= Float / Integer / QuotedString / Keyword
+    
+Integer
+	= [+-]?[1-9]+[0-9]* { return parseInt(text(), 10); }
+    / "0"[0-7]+ { return parseInt(text(), 8); }
+    / "0x"[0-9A-Fa-f]+ { return parseInt(text(), 16); }
+    
+Float
+	= [+-]?[0-9]+ "." [0-9]* ([eE][+-]?[0-9]+)? {
+    	return parseFloat(text());
+    }
+    
+QuotedString
+	= "\""([^\"\\]*("."[^\"\\]*)*)"\"" {
+    	return new QuotedString(text());
+    }
+
+Keyword
+	= [^{}();"'\n\t ]+ { return new Keyword(text()) }
+
+Ows
+	= [ \t\r\n\f]*

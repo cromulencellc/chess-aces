@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'jaeger'
+    compose_service: 'ta3_jaeger'
+    role: 'server'
+    runtime:
+      type: ELF
+      path: 'challenge_bin/challenge'
+      container_path: '/service/challenge'
+    main_source:
+      type: C
+      path: 'challenge_src/emulator/challenge/main.c'
+      container_path: '/emulator/challenge/main.c'
+poller:
+  compose_service: ta3_jaeger_sp_s1

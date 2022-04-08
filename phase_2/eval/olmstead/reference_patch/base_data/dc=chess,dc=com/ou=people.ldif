@@ -1,0 +1,14 @@
+# AUTO-GENERATED FILE - DO NOT EDIT!! Use ldapmodify.
+# CRC32 38d05a31
+dn: ou=People
+objectClass: top
+objectClass: organizationalUnit
+ou: People
+description: Container for user entries
+structuralObjectClass: organizationalUnit
+entryUUID: 7bdc674a-e92c-103a-95a9-d7ed7faf49f3
+creatorsName: cn=admin,dc=chess,dc=com
+createTimestamp: 20210112141619Z
+entryCSN: 20210112141619.009268Z#000000#000#000000
+modifiersName: cn=admin,dc=chess,dc=com
+modifyTimestamp: 20210112141619Z

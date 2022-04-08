@@ -1,0 +1,45 @@
+#!/bin/sh
+set -ex
+
+# Simple smoke test for vsftpd. Tests get and put functionality.
+# Author: Robie Basak <robie.basak@canonical.com>
+# dep8 restrictions: breaks-bestbed needs-root allow-stderr
+
+# Written in response to https://launchpad.net/bugs/1219857
+# This passed on LXC, affecting qemu only. So it is advisable to test both.
+
+# Enable writes, to test both get and put
+sed -i 's/^#\(write_enable=YES\)$/\1/' /etc/vsftpd.conf
+service vsftpd reload
+
+# Create test user
+adduser --disabled-password --gecos '' ftptest
+echo ftptest:dep8|chpasswd ftptest
+
+# Set up .netrc so that the ftp client can login in automatically
+> ~ftptest/.netrc
+chown ftptest: ~ftptest/.netrc
+chmod 600 ~ftptest/.netrc
+cat > ~ftptest/.netrc <<EOT
+machine localhost
+login ftptest
+password dep8
+EOT
+
+# Test get and put
+
+mkdir ~ftptest/local ~ftptest/remote
+echo "Hello, world! 1." > ~ftptest/local/put
+echo "Hello, world! 2." > ~ftptest/remote/get
+chown -R ftptest: ~ftptest/local ~ftptest/remote
+
+su -c 'ftp localhost' - ftptest <<EOT
+lcd local
+cd remote
+get get
+put put
+quit
+EOT
+
+cmp ~ftptest/local/put ~ftptest/remote/put
+cmp ~ftptest/local/get ~ftptest/remote/get

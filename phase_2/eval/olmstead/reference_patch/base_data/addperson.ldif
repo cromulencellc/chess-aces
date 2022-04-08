@@ -1,0 +1,7 @@
+dn: cn=Hawaii John,ou=People,dc=chess,dc=com
+cn: Hawaii John
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+sn: John
+ou: People

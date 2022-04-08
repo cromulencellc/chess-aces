@@ -1,0 +1,828 @@
+#
+# ngIRCd -- The Next Generation IRC Daemon
+# Copyright (c)2001-2014 Alexander Barton (alex@barton.de) and Contributors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# Please read the file COPYING, README and AUTHORS for more information.
+#
+
+define(VERSION_ID,esyscmd([
+	V=`git describe 2>/dev/null | sed -e 's/rel-//g' | sed -e 's/-/~/'`;
+	[ -z "$V" -a -r configure ] \
+		&& V=`grep "PACKAGE_STRING=" configure | cut -d"'" -f2 | cut -d' ' -f2`
+	( [ -n "$V" ] && echo "$V" || echo "??" ) | tr -d '\n';
+]))
+
+m4_ifdef([AM_SILENT_RULES],
+	[m4_define([ng_color_tests], [color-tests])],
+	[m4_define([ng_color_tests], [])])
+
+# -- Initialisation --
+
+AC_PREREQ([2.61])
+AC_INIT([ngIRCd],[VERSION_ID],[ngircd-ml@ngircd.barton.de],[ngircd],[http://ngircd.barton.de/])
+
+AC_CONFIG_SRCDIR([src/ngircd/ngircd.c])
+AC_CONFIG_HEADER([src/config.h])
+AC_CANONICAL_HOST
+
+AM_INIT_AUTOMAKE([-Wall 1.10 foreign ]ng_color_tests)
+
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
+# -- Templates for config.h --
+
+AH_TEMPLATE([DEBUG], [Define if debug-mode should be enabled])
+AH_TEMPLATE([HAVE_sockaddr_in_len], [Define if sockaddr_in.sin_len exists])
+AH_TEMPLATE([HAVE_socklen_t], [Define if socklen_t exists])
+AH_TEMPLATE([ICONV], [Define if libiconv can be used, e.g. for CHARCONV])
+AH_TEMPLATE([IDENTAUTH], [Define if the server should do IDENT requests])
+AH_TEMPLATE([IRCPLUS], [Define if IRC+ protocol should be used])
+AH_TEMPLATE([PAM], [Define if PAM should be used])
+AH_TEMPLATE([SNIFFER], [Define if IRC sniffer should be enabled])
+AH_TEMPLATE([STRICT_RFC], [Define if ngIRCd should behave strict RFC compliant])
+AH_TEMPLATE([SYSLOG], [Define if syslog should be used for logging])
+AH_TEMPLATE([TCPWRAP], [Define if TCP wrappers should be used])
+AH_TEMPLATE([WANT_IPV6], [Define if IPV6 protocol should be enabled])
+AH_TEMPLATE([ZLIB], [Define if zlib compression should be enabled])
+
+AH_TEMPLATE([HOST_OS], [Target operating system name])
+AH_TEMPLATE([HOST_VENDOR], [Target system vendor])
+AH_TEMPLATE([HOST_CPU], [Target CPU name])
+
+# -- C Compiler --
+
+AC_PROG_CC
+AC_PROG_CC_STDC
+
+# -- Helper programs --
+
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
+
+AC_PROG_AWK
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_MKDIR_P
+AC_PROG_RANLIB
+
+# -- Compiler Features --
+
+AC_C_CONST
+AC_C_INLINE
+__ng_PROTOTYPES__
+
+# -- Function Definitions --
+
+AC_DEFUN([GCC_STACK_PROTECT_CC],[
+	ssp_cc=yes
+	# Use -fstack-protector-all for the test to enfoce the use of the
+	# guard variable
+	AC_MSG_CHECKING([whether ${CC} accepts -fstack-protector])
+	ssp_old_cflags="$CFLAGS"
+	CFLAGS="$CFLAGS -fstack-protector-all"
+	AC_LINK_IFELSE([AC_LANG_PROGRAM([],[])],[],[ssp_cc=no])
+	echo $ssp_cc
+	CFLAGS="$ssp_old_cflags"
+	if test "X$ssp_cc" = "Xyes"; then
+		CFLAGS="$CFLAGS -fno-stack-protector"
+		AC_DEFINE([ENABLE_SSP_CC], 1, [Define if SSP C support is enabled.])
+	fi
+])
+
+AC_DEFUN([WORKING_GETADDRINFO],[
+	AC_CHECK_FUNCS([getaddrinfo],[
+		AC_MSG_CHECKING([whether getaddrinfo() works])
+		AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+int
+main(int argc, char **argv)
+{
+	struct addrinfo hints, *ai;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_flags = AI_PASSIVE;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_family = PF_UNSPEC;
+	if(getaddrinfo(NULL, "0", &hints, &ai) != 0)
+		return 1;
+	return 0;
+}
+		]])],[
+		AC_DEFINE([HAVE_WORKING_GETADDRINFO], 1, [getaddrinfo(0)])
+		AC_MSG_RESULT(yes)
+		],[
+		AC_MSG_RESULT(no)
+		],[
+		AC_MSG_RESULT(no)
+		])
+	])
+])
+
+# -- Hard coded system and compiler dependencies/features/options ... --
+
+if test "$GCC" = "yes"; then
+	# We are using the GNU C compiler. Good!
+	CFLAGS="$CFLAGS -pipe -W -Wall -Wpointer-arith -Wstrict-prototypes"
+
+	GCC_STACK_PROTECT_CC
+fi
+
+case "$host_os" in
+	hpux*)
+		# This is HP/UX, we need to define _XOPEN_SOURCE_EXTENDED
+		# (tested with HP/UX 11.11)
+		CFLAGS="$CFLAGS -D_XOPEN_SOURCE_EXTENDED"
+		;;
+esac
+
+# Add additional CFLAGS, eventually specified on the command line:
+test -n "$CFLAGS_ADD" && CFLAGS="$CFLAGS $CFLAGS_ADD"
+
+CFLAGS="$CFLAGS -DSYSCONFDIR='\"\$(sysconfdir)\"' -DDOCDIR='\"\$(docdir)\"'"
+
+# -- Headers --
+
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_HEADER_TIME
+
+# Required header files
+AC_CHECK_HEADERS([ \
+		fcntl.h \
+		netdb.h \
+		netinet/in.h \
+		stdlib.h \
+		string.h \
+		strings.h \
+		sys/socket.h \
+		sys/time.h \
+		sys/types.h \
+		unistd.h \
+	],,AC_MSG_ERROR([required C header missing!]))
+
+# Optional header files
+AC_CHECK_HEADERS_ONCE([ \
+	arpa/inet.h \
+	inttypes.h \
+	malloc.h \
+	netinet/in_systm.h \
+	netinet/ip.h \
+	stdbool.h \
+	stddef.h \
+	stdint.h \
+	varargs.h \
+])
+
+# -- Datatypes --
+
+AC_MSG_CHECKING(whether socklen_t exists)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/types.h>
+#include <sys/socket.h>
+	]],[[
+	socklen_t a, b;
+	a = 2; b = 4; a += b;
+	]])],[
+	AC_DEFINE(HAVE_socklen_t) AC_MSG_RESULT(yes)
+	],[
+	AC_MSG_RESULT(no)
+])
+
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+AC_TYPE_UID_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT8_T
+
+AC_CHECK_MEMBER([struct sockaddr_in.sin_len], AC_DEFINE(HAVE_sockaddr_in_len),,
+ [#include <arpa/inet.h>])
+
+# -- Libraries --
+
+# memmove: A/UX libUTIL
+AC_SEARCH_LIBS([memmove], [UTIL], [], [
+	AC_MSG_ERROR([unable to find the memmove() function])
+])
+# gethostbyname: Solaris libnsl
+AC_SEARCH_LIBS([gethostbyname], [bind nsl network], [], [
+	AC_MSG_ERROR([unable to find the gethostbyname() function])
+])
+# bind: SVR4 libsocket
+AC_SEARCH_LIBS([bind], [socket network], [], [
+	AC_MSG_ERROR([unable to find the bind() function])
+])
+
+# -- Functions --
+
+AC_FUNC_FORK
+AC_FUNC_STRFTIME
+
+# Required functions
+AC_CHECK_FUNCS([ \
+		alarm \
+		dup2 \
+		endpwent \
+		gethostbyaddr \
+		gethostbyname \
+		gethostname \
+		gettimeofday \
+		inet_ntoa \
+		memmove \
+		memset \
+		setsid \
+		socket \
+		strcasecmp \
+		strchr \
+		strcspn \
+		strerror \
+		strncasecmp \
+		strrchr \
+		strspn \
+		strstr \
+	],,
+	AC_MSG_ERROR([required function missing!]))
+
+# Optional functions
+AC_CHECK_FUNCS_ONCE([
+	arc4random \
+	arc4random_stir \
+	gai_strerror \
+	getnameinfo \
+	inet_aton \
+	setgroups \
+	sigaction \
+	sigprocmask \
+	snprintf \
+	strdup \
+	strlcat \
+	strlcpy \
+	strndup \
+	strsignal \
+	strtok_r \
+	unsetenv \
+	vsnprintf \
+	waitpid \
+])
+
+WORKING_GETADDRINFO
+
+# -- Configuration options --
+
+# use syslog?
+
+x_syslog_on=no
+AC_ARG_WITH(syslog,
+	AS_HELP_STRING([--without-syslog],
+		       [disable syslog (autodetected by default)]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_SEARCH_LIBS([syslog], [be], [x_syslog_on=yes], [
+				AC_MSG_ERROR([Can't enable syslog!])
+			])
+		fi
+	],
+	[	AC_SEARCH_LIBS([syslog], [be], [x_syslog_on=yes])
+	]
+)
+if test "$x_syslog_on" = "yes"; then
+	AC_DEFINE(SYSLOG, 1)
+	AC_CHECK_HEADERS(syslog.h,,AC_MSG_ERROR([required C header missing!]))
+fi
+
+# use zlib compression?
+
+x_zlib_on=no
+AC_ARG_WITH(zlib,
+	AS_HELP_STRING([--without-zlib],
+		       [disable zlib compression (autodetected by default)]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_CHECK_LIB(z, deflate)
+			AC_CHECK_FUNCS(deflate, x_zlib_on=yes,
+				AC_MSG_ERROR([Can't enable zlib!])
+			)
+		fi
+	],
+	[	AC_CHECK_LIB(z, deflate)
+		AC_CHECK_FUNCS(deflate, x_zlib_on=yes)
+	]
+)
+if test "$x_zlib_on" = "yes"; then
+	AC_DEFINE(ZLIB, 1)
+	AC_CHECK_HEADERS(zlib.h,,AC_MSG_ERROR([required C header missing!]))
+fi
+
+# detect which IO API to use:
+
+x_io_backend=none
+
+AC_ARG_WITH(select,
+	AS_HELP_STRING([--without-select],
+		       [disable select IO support (autodetected by default)]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_CHECK_FUNCS(select, x_io_select=yes,
+				AC_MSG_ERROR([Can't enable select IO support!])
+			)
+		fi
+	],
+	[
+		AC_CHECK_FUNCS(select, x_io_select=yes)
+	]
+)
+
+AC_ARG_WITH(poll,
+	AS_HELP_STRING([--without-poll],
+		       [disable poll support (autodetected by default)]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_CHECK_FUNCS(poll, [
+				AC_CHECK_HEADERS(poll.h,
+					x_io_backend=poll\(\),
+					AC_MSG_ERROR(
+					     [Can't enable poll IO support!])
+				)
+			], [
+				AC_MSG_ERROR([Can't enable poll IO support!])
+			])
+		fi
+	],
+	[
+		AC_CHECK_FUNCS(poll, [
+			AC_CHECK_HEADERS(poll.h, x_io_backend=poll\(\))
+		])
+	]
+)
+
+AC_ARG_WITH(devpoll,
+	AS_HELP_STRING([--without-devpoll],
+		       [disable /dev/poll IO support (autodetected by default)]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+
+				AC_CHECK_HEADERS(sys/devpoll.h,,AC_MSG_ERROR([required C header missing!]))
+		fi
+	],
+	[
+		AC_CHECK_HEADERS(sys/devpoll.h, x_io_backend=/dev/poll)
+	]
+)
+
+AC_ARG_WITH(epoll,
+	AS_HELP_STRING([--without-epoll],
+		       [disable epoll IO support (autodetected by default)]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_CHECK_FUNCS(epoll_create, x_io_epoll=yes,
+				AC_MSG_ERROR([Can't enable epoll IO support!])
+			)
+		fi
+	],
+	[
+		AC_CHECK_FUNCS(epoll_create, x_io_epoll=yes)
+	]
+)
+
+AC_ARG_WITH(kqueue,
+	AS_HELP_STRING([--without-kqueue],
+		       [disable kqueue IO support (autodetected by default)]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_CHECK_FUNCS(kqueue, x_io_backend=kqueue\(\),
+				AC_MSG_ERROR([Can't enable kqueue IO support!])
+			)
+		fi
+	],
+	[
+		AC_CHECK_FUNCS(kqueue, x_io_backend=kqueue\(\))
+	]
+)
+
+if test "$x_io_epoll" = "yes" -a "$x_io_select" = "yes"; then
+	# when epoll() and select() are available, we'll use both!
+	x_io_backend="epoll(), select()"
+else
+	if test "$x_io_epoll" = "yes"; then
+		# we prefere epoll() if it is available
+		x_io_backend="epoll()"
+	else
+		if test "$x_io_select" = "yes" -a "$x_io_backend" = "none"; then
+			# we'll use select, when available and no "better"
+			# interface has been detected ...
+			x_io_backend="select()"
+		fi
+	fi
+fi
+
+if test "$x_io_backend" = "none"; then
+	AC_MSG_ERROR([No useable IO API activated/found!?])
+fi
+
+# use SSL?
+
+AC_ARG_WITH(openssl,
+	AS_HELP_STRING([--with-openssl],
+		       [enable SSL support using OpenSSL]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			PKG_CHECK_MODULES([OPENSSL], [libssl libcrypto],
+				[LIBS="$LIBS $OPENSSL_LIBS" CFLAGS="$CFLAGS $OPENSSL_CFLAGS"
+				AC_DEFINE(HAVE_LIBSSL, 1)],
+				[AC_CHECK_LIB(crypto, BIO_s_mem)
+				AC_CHECK_LIB(ssl, SSL_new)]
+			)
+			AC_CHECK_FUNCS(SSL_new, x_ssl_openssl=yes,
+				AC_MSG_ERROR([Can't enable openssl])
+			)
+		fi
+	]
+)
+
+AC_ARG_WITH(gnutls,
+	AS_HELP_STRING([--with-gnutls],
+		       [enable SSL support using gnutls]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_CHECK_LIB(gnutls, gnutls_global_init)
+			AC_CHECK_FUNCS(gnutls_global_init, x_ssl_gnutls=yes,
+				AC_MSG_ERROR([Can't enable gnutls])
+			)
+		fi
+	]
+)
+
+x_ssl_lib="no"
+if test "$x_ssl_gnutls" = "yes"; then
+	if test "$x_ssl_openssl" = "yes";then
+		AC_MSG_ERROR([Cannot enable both gnutls and openssl])
+	fi
+	x_ssl_lib=gnutls
+fi
+if test "$x_ssl_openssl" = "yes"; then
+	x_ssl_lib=openssl
+fi
+
+AM_CONDITIONAL(HAVE_SSL, [test $x_ssl_lib != "no"])
+
+# use TCP wrappers?
+
+x_tcpwrap_on=no
+AC_ARG_WITH(tcp-wrappers,
+	AS_HELP_STRING([--with-tcp-wrappers],
+		       [enable TCP wrappers support]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_MSG_CHECKING(for hosts_access)
+			saved_LIBS="$LIBS"
+			LIBS="-lwrap $LIBS"
+			LIBS_END="-lwrap $LIBS_END"
+			AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <tcpd.h>
+int allow_severity = 0;
+int deny_severity = 0;
+				]],[[
+				tcpd_warn("link test");
+				]])],[
+				AC_MSG_RESULT(yes)
+				AC_DEFINE(TCPWRAP, 1)
+				x_tcpwrap_on=yes
+				],[
+				AC_MSG_RESULT(no)
+				AC_MSG_ERROR([Can't enable TCP wrappers!])
+			])
+			LIBS="$saved_LIBS"
+		fi
+	]
+)
+
+# do IDENT requests using libident?
+
+x_identauth_on=no
+AC_ARG_WITH(ident,
+	AS_HELP_STRING([--with-ident],
+		       [enable "IDENT" ("AUTH") protocol support]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_CHECK_LIB(ident, ident_id)
+			AC_CHECK_FUNCS(ident_id, x_identauth_on=yes,
+				AC_MSG_ERROR([Can't enable IDENT support!])
+			)
+		fi
+	]
+)
+if test "$x_identauth_on" = "yes"; then
+	AC_DEFINE(IDENTAUTH, 1)
+	AC_CHECK_HEADERS(ident.h,,AC_MSG_ERROR([required C header missing!]))
+fi
+
+# compile in PAM support?
+
+x_pam_on=no
+AC_ARG_WITH(pam,
+	AS_HELP_STRING([--with-pam],
+		       [enable user authentication using PAM]),
+	[	if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_CHECK_LIB(pam, pam_authenticate)
+			AC_CHECK_FUNCS(pam_authenticate, x_pam_on=yes,
+				AC_MSG_ERROR([Can't enable PAM support!])
+			)
+		fi
+	]
+)
+if test "$x_pam_on" = "yes"; then
+	AC_DEFINE(PAM, 1)
+	AC_CHECK_HEADERS(security/pam_appl.h,pam_ok=yes)
+	if test "$pam_ok" != "yes"; then
+		AC_CHECK_HEADERS(pam/pam_appl.h,pam_ok=yes,
+			AC_MSG_ERROR([required C header missing!]))
+	fi
+fi
+
+# compile in IRC+ protocol support?
+
+x_ircplus_on=yes
+AC_ARG_ENABLE(ircplus,
+	AS_HELP_STRING([--disable-ircplus],
+		       [disable IRC+ protocol]),
+	if test "$enableval" = "no"; then x_ircplus_on=no; fi
+)
+if test "$x_ircplus_on" = "yes"; then
+	AC_DEFINE(IRCPLUS, 1)
+
+	# Compile in iconv support?
+	# We only check for it when IRC+ is enabled, because the IRC+ command
+	# CHARCONV is the only function depending on it.
+	x_iconv_on=no
+	AC_ARG_WITH(iconv,
+		AS_HELP_STRING([--with-iconv],
+			       [enable character conversion using libiconv]),
+		[ if test "$withval" != "no"; then
+			if test "$withval" != "yes"; then
+				CFLAGS="-I$withval/include $CFLAGS"
+				CPPFLAGS="-I$withval/include $CPPFLAGS"
+				LDFLAGS="-L$withval/lib $LDFLAGS"
+			fi
+			AC_CHECK_LIB(iconv, iconv_open)
+			AC_CHECK_FUNCS(iconv_open, x_iconv_on=yes)
+			if test "$x_iconv_on" != "yes"; then
+				AC_CHECK_LIB(iconv, libiconv_open)
+				AC_CHECK_FUNCS(libiconv_open, x_iconv_on=yes)
+			fi
+			if test "$x_iconv_on" != "yes"; then
+				AC_MSG_ERROR([Can't enable libiconv support!])
+			fi
+		fi ]
+	)
+	if test "$x_iconv_on" = "yes"; then
+		AC_DEFINE(ICONV, 1)
+	fi
+fi
+
+# enable support for IPv6?
+x_ipv6_on=no
+AC_ARG_ENABLE(ipv6,
+	AS_HELP_STRING([--enable-ipv6],
+		       [enable IPv6 protocol support]),
+	if test "$enableval" = "yes"; then x_ipv6_on=yes; fi
+)
+if test "$x_ipv6_on" = "yes"; then
+	# getaddrinfo() and getnameinfo() are optional when not compiling
+	# with IPv6 support, but are required for IPv6 to work!
+	AC_CHECK_FUNCS([ \
+		getaddrinfo getnameinfo \
+		],,AC_MSG_ERROR([required function missing for IPv6 support!]))
+	AC_DEFINE(WANT_IPV6, 1)
+fi
+
+# compile in IRC "sniffer"?
+
+x_sniffer_on=no; x_debug_on=no
+AC_ARG_ENABLE(sniffer,
+	AS_HELP_STRING([--enable-sniffer],
+		       [enable IRC traffic sniffer (enables debug mode)]),
+	if test "$enableval" = "yes"; then
+		AC_DEFINE(SNIFFER, 1)
+		x_sniffer_on=yes; x_debug_on=yes
+	fi
+)
+
+# enable additional debugging code?
+
+AC_ARG_ENABLE(debug,
+	AS_HELP_STRING([--enable-debug],
+		       [show additional debug output]),
+	if test "$enableval" = "yes"; then x_debug_on=yes; fi
+)
+if test "$x_debug_on" = "yes"; then
+	AC_DEFINE(DEBUG, 1)
+	test "$GCC" = "yes" && CFLAGS="-pedantic $CFLAGS"
+	AC_CHECK_FUNCS(mtrace)
+fi
+
+# enable "strict RFC rules"?
+
+x_strict_rfc_on=no
+AC_ARG_ENABLE(strict-rfc,
+	AS_HELP_STRING([--enable-strict-rfc],
+		       [strict RFC conformance -- may break clients!]),
+	if test "$enableval" = "yes"; then
+		AC_DEFINE(STRICT_RFC, 1)
+		x_strict_rfc_on=yes
+	fi
+)
+
+# -- Definitions --
+
+AC_DEFINE_UNQUOTED(HOST_CPU, "$host_cpu" )
+AC_DEFINE_UNQUOTED(HOST_VENDOR, "$host_vendor" )
+AC_DEFINE_UNQUOTED(HOST_OS, "$host_os" )
+
+# Add additional CFLAGS, LDFLAGS and LIBS which were specified on the command
+# line or by some tests from above, but after running this script. Useful for
+# adding "-Werror", for example:
+test -n "$CFLAGS_END" && CFLAGS="$CFLAGS $CFLAGS_END"
+test -n "$LDFLAGS_END" && LDFLAGS="$LDFLAGS $LDFLAGS_END"
+test -n "$LIBS_END" && LIBS="$LIBS $LIBS_END"
+
+# -- Generate files --
+
+AC_CONFIG_FILES([ \
+	Makefile \
+	contrib/Debian/Makefile \
+	contrib/MacOSX/Makefile \
+	contrib/MacOSX/ngIRCd.pmdoc/Makefile \
+	contrib/MacOSX/ngIRCd.xcodeproj/Makefile \
+	contrib/Makefile \
+	doc/Makefile \
+	doc/src/Makefile \
+	man/Makefile \
+	src/ipaddr/Makefile \
+	src/Makefile \
+	src/ngircd/Makefile \
+	src/portab/Makefile \
+	src/testsuite/Makefile \
+	src/tool/Makefile \
+])
+
+AC_OUTPUT
+
+type dpkg >/dev/null 2>&1
+if test $? -eq 0; then
+	# Generate debian/ link if the dpkg command exists
+	# (read: if we are running on a debian compatible system)
+	echo "creating Debian-specific links ..."
+	if test ! -f debian/rules -a -f contrib/Debian/rules; then
+		ln -s contrib/Debian debian
+	fi
+fi
+
+# -- Result --
+
+echo
+echo "ngIRCd $PACKAGE_VERSION has been configured with the following options:"
+echo
+
+# Someone please show me a better way :)  [borrowed by OpenSSH]
+B=`eval echo ${bindir}` ; B=`eval echo ${B}`
+S=`eval echo ${sbindir}` ; S=`eval echo ${S}`
+C=`eval echo ${sysconfdir}` ; C=`eval echo ${C}`
+M=`eval echo ${mandir}` ; M=`eval echo ${M}`
+D=`eval echo ${docdir}` ; D=`eval echo ${D}`
+
+echo "               Host: ${host}"
+echo "           Compiler: ${CC}"
+test -n "$CFLAGS"	&& echo "     Compiler flags: ${CFLAGS}"
+test -n "$CPPFLAGS"	&& echo " Preprocessor flags: ${CPPFLAGS}"
+test -n "$LDFLAGS"	&& echo "       Linker flags: ${LDFLAGS}"
+test -n "$LIBS"		&& echo "          Libraries: ${LIBS}"
+echo
+echo "    'ngircd' binary: $S"
+echo " Configuration file: $C"
+echo "       Manual pages: $M"
+echo "      Documentation: $D"
+echo
+
+echo $ECHO_N "     Syslog support: $ECHO_C"
+test "$x_syslog_on" = "yes" \
+	&& echo $ECHO_N "yes   $ECHO_C" \
+	|| echo $ECHO_N "no    $ECHO_C"
+echo $ECHO_N "  Enable debug code: $ECHO_C"
+test "$x_debug_on" = "yes" \
+	&& echo "yes" \
+	|| echo "no"
+
+echo $ECHO_N "   zlib compression: $ECHO_C"
+test "$x_zlib_on" = "yes" \
+	&& echo $ECHO_N "yes   $ECHO_C" \
+	|| echo $ECHO_N "no    $ECHO_C"
+echo $ECHO_N "        IRC sniffer: $ECHO_C"
+test "$x_sniffer_on" = "yes" \
+	&& echo "yes" \
+	|| echo "no"
+
+echo $ECHO_N "   Use TCP Wrappers: $ECHO_C"
+test "$x_tcpwrap_on" = "yes" \
+	&& echo $ECHO_N "yes   $ECHO_C" \
+	|| echo $ECHO_N "no    $ECHO_C"
+echo $ECHO_N "    Strict RFC mode: $ECHO_C"
+test "$x_strict_rfc_on" = "yes" \
+	&& echo "yes" \
+	|| echo "no"
+
+echo $ECHO_N "      IDENT support: $ECHO_C"
+test "$x_identauth_on" = "yes" \
+	&& echo $ECHO_N "yes   $ECHO_C" \
+	|| echo $ECHO_N "no    $ECHO_C"
+echo $ECHO_N "      IRC+ protocol: $ECHO_C"
+test "$x_ircplus_on" = "yes" \
+	&& echo "yes" \
+	|| echo "no"
+
+echo $ECHO_N "      IPv6 protocol: $ECHO_C"
+test "$x_ipv6_on" = "yes" \
+	&& echo $ECHO_N "yes   $ECHO_C" \
+	|| echo $ECHO_N "no    $ECHO_C"
+echo $ECHO_N "        I/O backend: $ECHO_C"
+	echo "$x_io_backend"
+
+echo $ECHO_N "        PAM support: $ECHO_C"
+test "$x_pam_on" = "yes" \
+	&& echo $ECHO_N "yes   $ECHO_C" \
+	|| echo $ECHO_N "no    $ECHO_C"
+echo $ECHO_N "        SSL support: $ECHO_C"
+echo "$x_ssl_lib"
+
+echo $ECHO_N "   libiconv support: $ECHO_C"
+	echo "$x_iconv_on"
+
+echo
+
+define(_automake_regex_,[[^AUTOMAKE_OPTIONS = [a-z .\-]*/portab/ansi2knr]])
+if ! grep "_automake_regex_" src/ngircd/Makefile.am >/dev/null 2>&1; then
+	echo "WARNING:"
+	echo "This GNU automake generated build system does not support \"de-ANSI-fication\","
+	echo "therefore don't use it to generate \"official\" distribution archives!"
+	echo "(Most probably you want to use GNU automake 1.11.x for this purpose ...)"
+	echo
+fi
+
+# -eof-

@@ -1,0 +1,52 @@
+# Danish translation of vsftpd debconf templates.
+# Copyright (C) 2010 Joe Hansen <joedalton2@yahoo.dk>
+# This file is distributed under the same license as the vsftpd package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vsftpd 2.3.4-1\n"
+"Report-Msgid-Bugs-To: vsftpd@packages.debian.org\n"
+"POT-Creation-Date: 2010-09-05 21:17+0200\n"
+"PO-Revision-Date: 2010-11-27 12:42+0000\n"
+"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
+"Language-Team: Danish <debian-l10n-danish@lists.debian.org>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid "Dedicated system account for the vsftpd FTP daemon:"
+msgstr "Dedikeret systemkonto for vsftpd FTP-dæmonen:"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid ""
+"The FTP server must use a dedicated account for its operation so that the "
+"system's security is not compromised by running it with superuser privileges."
+msgstr ""
+"FTP-serveren skal bruge en dedikeret konto til sine handlinger, så at "
+"systemets sikkerhed ikke bliver kompromitteret af at køre serveren med "
+"superbrugerprivilegier."
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid "Please choose that account's username."
+msgstr "Vælg venligst den kontos brugernavn."
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:2001
+msgid "FTP root directory:"
+msgstr "FTP-rodmappe:"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:2001
+msgid ""
+"Please specify the directory that will be used as root for the FTP server."
+msgstr "Angiv venligst mappen som vil blive brugt som rod for FTP-serveren."

@@ -1,0 +1,54 @@
+# Portuguese translation of vsftpd debconf templates.
+# Copyright (C) 2009 Américo Monteiro <a_monteiro@netcabo.pt>
+# This file is distributed under the same license as the vsftpd package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vsftpd 2.3.4-1\n"
+"Report-Msgid-Bugs-To: vsftpd@packages.debian.org\n"
+"POT-Creation-Date: 2010-09-05 21:17+0200\n"
+"PO-Revision-Date: 2009-03-26 19:12+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@netcabo.pt>\n"
+"Language-Team: Portuguese <traduz@debianpt.org>\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid "Dedicated system account for the vsftpd FTP daemon:"
+msgstr "Conta dedicada do sistema para o deamon FTP vsftpd:"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid ""
+"The FTP server must use a dedicated account for its operation so that the "
+"system's security is not compromised by running it with superuser privileges."
+msgstr ""
+"O servidor FTP tem que usar uma conta dedicada para as suas operações, isto "
+"para que a segurança do sistema não seja comprometida ao corrê-lo com "
+"privilégios de superutilizador."
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:1001
+msgid "Please choose that account's username."
+msgstr "Por favor escolha o nome dessa conta."
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:2001
+msgid "FTP root directory:"
+msgstr "Directório raiz FTP:"
+
+#. Type: string
+#. Description
+#: ../vsftpd.templates:2001
+msgid ""
+"Please specify the directory that will be used as root for the FTP server."
+msgstr ""
+"Por favor especifique o directório que será usado como a raiz do servidor "
+"FTP."

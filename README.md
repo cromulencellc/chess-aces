@@ -18,9 +18,11 @@ known and unintended vulnerabilities, and may have unknown and unintended
 vulnerabiliies. They are suitable for use in research and educational contexts.
 They are NOT suitable for production use.**
 
-Challenges are separated by phase (as of this writing, only Phase 1 challenges
-are public) and usage (example challenges are used during development of the
-CHESS system, evaluation challenges are used to evaluate CHESS system progress).
+Challenges are separated by phase
+and usage. 
+Example challenges are used during development of the
+CHESS system. 
+Evaluation ("eval") challenges are used to evaluate CHESS system progress.
 
 Inside each challenge are multiple directories:
 
@@ -47,7 +49,14 @@ challenge.
 
 ## License
 
-Files in this repository are provided as-is under the MIT license unless
+Many packages in this repository are based on existing open-source
+packages, and are provided as-is based on the license for the
+original package. See these packages' `COPYING`, `LICENSE`, or other
+files for more information.
+
+Files in this repository not specifically covered by
+an existing project's license 
+are provided as-is under the MIT license unless
 otherwise stated. See LICENSE.md for more details.
 
 ## Contact

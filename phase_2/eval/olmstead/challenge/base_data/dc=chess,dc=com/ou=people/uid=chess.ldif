@@ -1,0 +1,22 @@
+# AUTO-GENERATED FILE - DO NOT EDIT!! Use ldapmodify.
+# CRC32 fbd4cace
+dn: uid=chess
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: top
+cn: chess
+uid: chess
+sn: Chess
+uidNumber: 1002
+gidNumber: 1002
+userPassword:: Y2hlc3M=
+homeDirectory: /home/chess
+structuralObjectClass: inetOrgPerson
+entryUUID: cc960d18-f687-103a-91f9-adc20c4720c9
+creatorsName: cn=admin,dc=chess,dc=com
+createTimestamp: 20210129141243Z
+entryCSN: 20210129141243.762163Z#000000#000#000000
+modifiersName: cn=admin,dc=chess,dc=com
+modifyTimestamp: 20210129141243Z

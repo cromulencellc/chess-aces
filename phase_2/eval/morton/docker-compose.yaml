@@ -1,0 +1,114 @@
+version: '3.7'
+networks:
+    cs_network:
+        external: 'false'
+        internal: 'true'
+        driver: bridge
+        ipam: {}
+services:
+    ta3_morton_server:
+        image: ta3_morton_server
+        hostname: challenge_server
+        build:
+            context: ./mqtt_broker/
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id001
+                aliases:
+                - challenge_server
+        init: true
+        environment: &id002
+        - HOST=challenge_server
+        - PORT=1883
+    ta3_morton_client:
+        image: ta3_morton_client
+        hostname: challenge_container
+        build:
+            context: ./challenge/client
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id003
+                aliases:
+                - challenge_container
+        init: true
+        stdin_open: true # docker run -i
+        tty: true        # docker run -t
+        environment: &id004
+        - HOST=challenge_server
+        - PORT=1883
+    ta3_morton_ref_patch_client:
+        image: ta3_morton_ref_patch_client
+        hostname: challenge_container
+        build:
+            context: ./reference_patch/client
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id011
+                aliases:
+                - challenge_container
+        init: true
+        stdin_open: true # docker run -i
+        tty: true        # docker run -t
+        environment: &id012
+        - HOST=challenge_server
+        - PORT=1883
+    ta3_morton_poller:
+        image: ta3_morton_poller
+        hostname: poller
+        build:
+            context: ./poller/
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id005
+        init: true
+        stdin_open: true # docker run -i
+        tty: true        # docker run -t
+        environment: &id006
+        - HOST=challenge_server
+        - PORT=1883
+    ta3_morton_pov:
+        image: ta3_morton_pov
+        build:
+            context: ./pov/
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id007
+                aliases:
+                - pov_container
+        init: true
+        environment: &id008
+        - HOST=challenge_server
+        - PORT=1883
+    ta3_morton_pov_gdb:
+        image: ta3_morton_pov_gdb
+        build:
+            context: ./pov/
+            dockerfile: Dockerfile-gdb
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id009
+                aliases:
+                - pov_gdb_container
+        init: true
+        stdin_open: true # docker run -i
+        tty: true        # docker run -t
+        environment: &id010
+        - HOST=challenge_server
+        - PORT=1883

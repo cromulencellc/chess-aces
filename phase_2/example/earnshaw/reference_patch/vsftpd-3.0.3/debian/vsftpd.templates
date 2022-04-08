@@ -1,0 +1,16 @@
+Template: vsftpd/username
+Type: string
+Default: ftp
+_Description: Dedicated system account for the vsftpd FTP daemon:
+ The FTP server must use a dedicated account for its operation so that
+ the system's security is not compromised by running it with superuser
+ privileges.
+ .
+ Please choose that account's username.
+
+Template: vsftpd/directory
+Type: string
+Default: /srv/ftp
+_Description: FTP root directory:
+ Please specify the directory that will be used as root for the
+ FTP server.

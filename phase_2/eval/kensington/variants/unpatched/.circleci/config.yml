@@ -1,0 +1,86 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.1.0
+
+commands:
+  setup_git_bot:
+    description: set up the bot git user to make changes
+    steps:
+      - run:
+          name: "Git: Botovance"
+          command: |
+            git config --global user.name "Bot Vance"
+            git config --global user.email bot@autovance.com
+
+executors:
+  node-lts:
+    parameters:
+      node-version:
+        type: string
+        default: lts
+    docker:
+      - image: cimg/node:<< parameters.node-version >>
+
+jobs:
+  lint:
+    executor: node-lts
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Lint
+          command: npm run verify
+
+  release_dry_run:
+    executor: node-lts
+    steps:
+      - checkout
+      - node/install-packages
+      - setup_git_bot
+      - deploy:
+          name: Dry Release
+          command: |
+            git branch -u "origin/${CIRCLE_BRANCH}"
+            npx semantic-release --dry-run
+
+  release:
+    executor: node-lts
+    steps:
+      - checkout
+      - node/install-packages
+      - setup_git_bot
+      - deploy:
+          name: Release
+          command: |
+            git branch -u "origin/${CIRCLE_BRANCH}"
+            npx semantic-release
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - lint
+      - node/test:
+          matrix:
+            parameters:
+              version:
+                - '10.23'
+                - '12.20'
+                - '14.15'
+                - 'current'
+      - release_dry_run:
+          filters:
+            branches:
+              only: master
+          requires:
+            - node/test
+            - lint
+      - hold_release:
+          type: approval
+          requires:
+            - release_dry_run
+      - release:
+          context: deploy-npm
+          requires:
+            - hold_release

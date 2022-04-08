@@ -1,0 +1,2 @@
+# Its only a 3 line shell script.
+binary-without-manpage usr/bin/vsftpdwho

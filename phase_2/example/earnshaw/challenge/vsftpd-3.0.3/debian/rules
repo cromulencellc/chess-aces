@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+
+LIBS = -lwrap -lpam -lssl -lcrypto
+ifeq ($(DEB_HOST_ARCH_OS),linux)
+	LIBS += -lcap
+endif
+
+%:
+	dh ${@} --parallel --with=systemd
+
+override_dh_auto_build:
+	dh_auto_build -- CFLAGS="$(CFLAGS) $(CPPFLAGS)" LIBS="$(LIBS)" LINK=""
+
+override_dh_auto_install:
+	install -D -m 644 debian/vsftpd.apport $(CURDIR)/debian/vsftpd/usr/share/apport/package-hooks/vsftpd.py
+	# auto-install disabled
+
+override_dh_strip:
+	dh_strip --dbg-package=vsftpd-dbg

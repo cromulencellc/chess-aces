@@ -1,0 +1,68 @@
+version: '3'
+services:
+  challenge:
+    build: ./challenge/
+    volumes:
+      - ./challenge:/service
+      - ./base_data:/base_data
+      - ./static:/static
+      - .:/mnt
+    ports:
+      - 3035:3035
+      - 9229:9229
+    environment:
+      PORT: 3035
+      # STATIC_DIR: '/mnt/static/static'
+      # VIEW_DIR: '/mnt/static/view'
+    working_dir: /service
+    depends_on:
+      - mosquitto
+  mosquitto:
+    image: eclipse-mosquitto
+    volumes:
+      - ./priv/mosquitto_config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  # unpatched:
+  #   build: .
+  #   volumes:
+  #     - ./variants/unpatched:/service
+  #     - ./base_data:/base_data
+  #   ports:
+  #     - 3028
+  #   environment:
+  #     PORT: 3028
+  # fully_patched:
+  #   build: .
+  #   volumes:
+  #     - ./variants/fully_patched:/service
+  #     - ./base_data:/base_data
+  #   ports:
+  #     - 3028
+  #   environment:
+  #     port: 3028
+  poller:
+    build: poller
+    ports:
+      - 9229
+    environment:
+      PORT: 3035
+    volumes:
+      - ./poller:/poller
+      - ./base_data:/base_data
+      - .:/mnt
+    working_dir: /poller
+  pov_see_others_subs:
+    build: pov_see_others_subs
+    environment:
+      PORT: 3035
+    volumes:
+      - ./pov_see_others_subs:/pov
+    working_dir: /pov
+    command: "ruby pov.rb"
+  pov_message_sqli:
+    build: pov_message_sqli
+    environment:
+      PORT: 3035
+    volumes:
+      - ./pov_message_sqli:/pov
+    working_dir: /pov
+    command: "ruby pov.rb"

@@ -1,0 +1,28 @@
+# AUTO-GENERATED FILE - DO NOT EDIT!! Use ldapmodify.
+# CRC32 3dfebb70
+dn: cn=Alice
+cn: Alice
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+sn: Alice
+title: Receiver
+postalCode: 12345
+ou: People
+description: Just a person
+telephoneNumber: 123-123-1234
+st: Some data
+l: More data
+departmentNumber: 90
+initials: AA
+preferredLanguage: Whitespace
+roomNumber: 1337
+structuralObjectClass: inetOrgPerson
+entryUUID: bfb2ecfe-f8e1-103a-9e94-09415f1885ea
+creatorsName: cn=admin,dc=chess,dc=com
+createTimestamp: 20210201140139Z
+userPassword:: QWxpY2VQYXNz
+entryCSN: 20210201141536.935022Z#000000#000#000000
+modifiersName: cn=admin,dc=chess,dc=com
+modifyTimestamp: 20210201141536Z

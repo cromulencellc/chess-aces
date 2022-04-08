@@ -1,0 +1,38 @@
+doctype html
+html
+  head
+    title Tweets
+    link(rel='stylesheet' href='/static/beacon.css')
+  body
+    h1 Tweets
+
+    form(method='post' action='/tweets' enctype="multipart/form-data")
+      p
+        label
+          | Body:
+          input(type='text' name='tweet[body]')
+      p
+        label
+          | Photo:
+          input(type='file', name='tweet[photo]')
+      input(type='submit' value='just post')
+
+    p Found #{ tweets.length } tweets
+
+    ol
+      each tweet in tweets
+        li(id=`tweet-${tweet.id}`)
+          a(href=`/tweets/${tweet.id}`)
+            span(class='body')= tweet.body
+            if tweet.mime_type
+              span(class='has_image') 🖼
+          |
+          | posted at
+          |
+          time(
+            datetime=tweet.createdAt().toISOString()
+            data-epoch=Math.floor(tweet.createdAt().valueOf() / 1000))
+            = tweet.createdAt().toLocaleString(undefined)
+
+    if 25 <= tweets.length
+      a(href=`/tweets/page/${tweets[tweets.length - 1].id}` id='more_link') more

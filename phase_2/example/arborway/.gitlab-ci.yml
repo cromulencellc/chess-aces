@@ -1,0 +1,167 @@
+stages:
+  - generate-variants
+  - docker-build
+  - tests
+
+# This populates variants/ with the given variants for this challenge
+# (unpatched, patched, etc). These directories will be available to future
+# jobs.
+generate-variants:
+  stage: generate-variants
+  artifacts:
+    paths:
+      - variants
+    expire_in: 3 days
+  image:
+    registry.mlb.cromulence.com/chess/aces_preproc:master
+  script:
+    - aces_preproc -d challenge -b variants
+    - ls
+    - ls variants
+    - cp challenge/src/uint256_t_config.include variants/unpatched/src/uint256_t_config.include
+    - cp challenge/src/uint256_t_config.include variants/fully_patched/src/uint256_t_config.include
+    - cp challenge/src/uint256_t.include variants/unpatched/src/uint256_t.include
+    - cp challenge/src/uint256_t.include variants/fully_patched/src/uint256_t.include
+    - cp challenge/src/uint128_t.include variants/unpatched/src/uint128_t.include
+    - cp challenge/src/uint128_t.include variants/fully_patched/src/uint128_t.include
+
+# This builds the base image used by other images to build and run the
+# challenge.
+arborway:
+  stage: docker-build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    TAGS: "$CI_COMMIT_SHORT_SHA $CI_COMMIT_BRANCH"
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo $TAGS
+    - for TAG in $TAGS; do TAG_LIST="${TAG_LIST} --destination $CI_REGISTRY_IMAGE:$TAG"; done
+    - echo $TAG_LIST
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --cache=true
+      --cache-ttl=168h
+      --context $CI_PROJECT_DIR/challenge
+      $TAG_LIST
+
+# This builds the poller image.
+poller:
+  stage: docker-build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    TAGS: "$CI_COMMIT_SHORT_SHA $CI_COMMIT_BRANCH"
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo $TAGS
+    - for TAG in $TAGS; do TAG_LIST="${TAG_LIST} --destination $CI_REGISTRY_IMAGE/poller:$TAG"; done
+    - echo $TAG_LIST
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - pwd
+    - ls
+    - /kaniko/executor
+      --cache=true
+      --cache-ttl=168h
+      --context $CI_PROJECT_DIR/poller
+      $TAG_LIST
+
+# This builds the pov_2 image.
+pov_1:
+  stage: docker-build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    TAGS: "$CI_COMMIT_SHORT_SHA $CI_COMMIT_BRANCH"
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo $TAGS
+    - for TAG in $TAGS; do TAG_LIST="${TAG_LIST} --destination $CI_REGISTRY_IMAGE/pov_1:$TAG"; done
+    - echo $TAG_LIST
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - pwd
+    - ls
+    - /kaniko/executor
+      --cache=true
+      --cache-ttl=168h
+      --context $CI_PROJECT_DIR/poller
+      $TAG_LIST
+
+# This builds the pov_2 image.
+pov_2:
+  stage: docker-build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    TAGS: "$CI_COMMIT_SHORT_SHA $CI_COMMIT_BRANCH"
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo $TAGS
+    - for TAG in $TAGS; do TAG_LIST="${TAG_LIST} --destination $CI_REGISTRY_IMAGE/pov_2:$TAG"; done
+    - echo $TAG_LIST
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - pwd
+    - ls
+    - /kaniko/executor
+      --cache=true
+      --cache-ttl=168h
+      --context $CI_PROJECT_DIR/poller
+      $TAG_LIST
+
+poller-smell-test:
+  services:
+    - name: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+      alias: arborway
+  stage: tests
+  image: $CI_REGISTRY_IMAGE/poller:$CI_COMMIT_SHORT_SHA
+  variables:
+    HOST: arborway
+    PORT: 3004
+  script:
+    - cd /poller
+    - sleep 5
+    - echo $HOST
+    - echo $PORT
+    - pwd
+    - ls
+    - python3 arborway-poller.py
+
+pov_1-smell-test:
+  services:
+    - name: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+      alias: arborway
+  stage: tests
+  image: $CI_REGISTRY_IMAGE/pov_2:$CI_COMMIT_SHORT_SHA
+  variables:
+    HOST: arborway
+    PORT: 3004
+  script:
+    - cd pov_1
+    - sleep 5
+    - echo $HOST
+    - echo $PORT
+    - pwd
+    - ls
+    - python3 arborway.pov.1.py
+
+pov_2-smell-test:
+  services:
+    - name: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+      alias: arborway
+  stage: tests
+  image: $CI_REGISTRY_IMAGE/pov_2:$CI_COMMIT_SHORT_SHA
+  variables:
+    HOST: arborway
+    PORT: 3004
+  script:
+    - cd pov_2
+    - sleep 5
+    - echo $HOST
+    - echo $PORT
+    - pwd
+    - ls
+    - python3 arborway.pov.2.py

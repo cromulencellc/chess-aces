@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'garfield'
+    compose_service: 'ta3_garfield'
+    role: 'server'
+    runtime:
+      type: ELF
+      path: 'challenge_bin/build/garfield.bin'
+      container_path: '/service/build/garfield.bin'
+    main_source:
+      type: 'C++'
+      path: 'challenge_src/src/main.cpp'
+      container_path: '/home/challenge/src/main.cpp'
+poller:
+  compose_service: 'ta3_garfield_sp_s1'

@@ -1,0 +1,10 @@
+doctype html
+html
+  head
+    title beacon admin
+    link(rel='stylesheet' href='/static/beacon.css')
+  body
+    h1 beacon admin
+    p(id='token')= token
+    form(action='/login/logout' method='post')
+      button Log Out

@@ -1,0 +1,6 @@
+# Ideally, this test should be run in both LXC and qemu environments, since
+# behaviour was shown to fail in only one environment in LP: #1219857. But we
+# do not have the ability to request this yet.
+Tests: smoke
+Depends: vsftpd, ftp
+Restrictions: needs-root allow-stderr breaks-testbed

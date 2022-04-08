@@ -1,0 +1,37 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'ldapsearch'
+    compose_service: 'ta3_olmstead'
+    role: client
+    runtime:
+      type: ELF
+      path: challenge_bin/openldap-2.4.56/clients/tools/ldapsearch
+      container_path: /home/challenge/openldap-2.4.56/clients/tools/ldapsearch
+    main_source:
+      type: C
+      path: challenge_src/openldap-2.4.56/clients/tools/ldapsearch.c
+      container_path: /home/challenge/openldap-2.4.56/clients/tools/ldapsearch.c
+  - name: 'ldapcompare'
+    compose_service: 'ta3_olmstead'
+    role: client
+    runtime:
+      type: ELF
+      path: challenge_bin/openldap-2.4.56/clients/tools/ldapcompare
+      container_path: /home/challenge/openldap-2.4.56/clients/tools/ldapcompare
+    main_source:
+      type: C
+      path: challenge_src/openldap-2.4.56/clients/tools/ldapcompare.c
+      container_path: /home/challenge/openldap-2.4.56/clients/tools/ldapcompare.c
+  - name: 'ldapmodify'
+    compose_service: 'ta3_olmstead'
+    role: client
+    runtime:
+      type: ELF
+      path: challenge_bin/openldap-2.4.56/clients/tools/ldapmodify
+      container_path: /home/challenge/openldap-2.4.56/clients/tools/ldapmodify
+    main_source:
+      type: C
+      path: challenge_src/openldap-2.4.56/clients/tools/ldapmodify.c
+      container_path: /home/challenge/openldap-2.4.56/clients/tools/ldapmodify.c
+poller:
+  compose_service: ta3_olmstead_sp_s1
