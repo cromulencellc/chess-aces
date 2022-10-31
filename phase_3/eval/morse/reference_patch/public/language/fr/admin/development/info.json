@@ -1,0 +1,25 @@
+{
+	"you-are-on": "Vous êtes sur <strong>%1:%2</strong>",
+	"ip": "IP <strong>%1</strong>",
+	"nodes-responded": "%1 noeuds ont répondu en %2ms !",
+	"host": "hôte",
+	"primary": "Tâches principales / Exécuter",
+	"pid": "pid",
+	"nodejs": "nodejs",
+	"online": "en ligne",
+	"git": "git",
+	"process-memory": "mémoire de processus",
+	"system-memory": "mémoire système",
+	"used-memory-process": "Mémoire utilisée par processus",
+	"used-memory-os": "Mémoire système utilisée",
+	"total-memory-os": "Mémoire système totale",
+	"load": "Charge du système",
+	"cpu-usage": "Utilisation du processeur",
+	"uptime": "disponibilité",
+
+	"registered": "Enregistré",
+	"sockets": "Sockets",
+	"guests": "Invités",
+
+	"info": "Info"
+}

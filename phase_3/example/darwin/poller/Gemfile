@@ -1,0 +1,7 @@
+source "https://rubygems.org"
+
+gem "pry"
+gem 'ftpd'
+#gem 'http'
+#gem 'net-http-digest_auth'
+#gem 'nokogiri'

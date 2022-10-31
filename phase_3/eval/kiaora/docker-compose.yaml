@@ -1,0 +1,121 @@
+version: '3.7'
+networks:
+    cs_network:
+        external: false
+        internal: true
+        driver: bridge
+        ipam: {}
+services:
+    ta3_kiaora:
+        image: ta3_kiaora
+        build:
+            context: ./challenge/
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id001
+                aliases:
+                - challenge_container
+        init: true
+        environment: &id002
+        - HOST=challenge_container
+        - PORT=3040
+    ta3_kiaora_ref_patch:
+        image: ta3_kiaora
+        build:
+            context: ./reference_patch/
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: *id001
+        init: true
+        environment: *id002
+    ta3_kiaora_pov_1:
+        image: ta3_kiaora_pov_1
+        build:
+            context: ./pov_1/
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id003
+                aliases:
+                - pov_container
+        init: true
+        environment: &id004
+        - HOST=challenge_container
+        - PORT=3040
+    ta3_kiaora_pov_2:
+        image: ta3_kiaora_pov_2
+        build:
+            context: ./pov_2/
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id005
+                aliases:
+                - pov_container
+        init: true
+        environment: &id006
+        - HOST=challenge_container
+        - PORT=3040
+    ta3_kiaora_pov_3:
+        image: ta3_kiaora_pov_3
+        build:
+            context: ./pov_3/
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id007
+                aliases:
+                - pov_container
+        init: true
+        environment: &id008
+        - HOST=challenge_container
+        - PORT=3040
+    ta3_kiaora_pov_4:
+        image: ta3_kiaora_pov_4
+        build:
+            context: ./pov_4/
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id009
+                aliases:
+                - pov_container
+        init: true
+        environment: &id010
+        - HOST=challenge_container
+        - PORT=3040
+    ta3_kiaora_poller:
+        image: ta3_kiaora_poller
+        ## Uncomment the following two lines for user controlled poller
+        ## Ensure they are commented out for the automated poller options
+        #stdin_open: true # docker run -i
+        #tty: true        # docker run -t
+        ##END
+        build:
+            context: ./poller/
+            dockerfile: Dockerfile
+            network: host
+        security_opt:
+        - apparmor:unconfined
+        networks:
+            cs_network: &id011
+                aliases:
+                - poller_container
+        init: true
+        environment: &id012
+        - HOST=challenge_container
+        - PORT=3040

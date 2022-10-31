@@ -1,0 +1,88 @@
+cvs (2:1.12.13+real-23) unstable; urgency=low
+
+  Starting from this version, environment variables that are
+  defined but empty are handled the same as undefined ones,
+  except CVSREAD and CVSREADONLYFS (whose mere presence in
+  the environment enables the functionality).
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Fri, 28 Apr 2017 19:10:30 +0200
+
+cvs (2:1.12.13+real-22) unstable; urgency=low
+
+  Newly created repositories (from “cvs init”) now rely on
+  CVSUMASK for the permissions of the “history” and “val-tags”
+  files instead of creating them as world-writable.
+
+  Newly created repositories contain a LogHistory configuration
+  setting to only record write operations in the “history” file.
+
+  If you are used to the previous behaviour, you can restore it
+  by altering (or removing, in which case the (commented-out)
+  default of logging everything will be used) the LogHistory
+  configuration setting and changing the permissions on the
+  “history” and “val-tags” files so that every user can write
+  into them.
+
+  If you did not deliberately open your repository to all users
+  on your system, you might wish to change all existing repos
+  to this behaviour. To do this, check out the CVSROOT module,
+  edit the “config” file adding “LogHistory=TMAR”, check that
+  change in, release the CVSROOT module, and chmod the “history”
+  and “val-tags” files to either 0664 (if all users in the same
+  group should be able to commit) or 0644 (if only you wish to
+  commit), possibly 0660 or 0600 is non-committers should also
+  be denied reading.
+
+  Contact me (mirabilos) in #cvs on irc.freenode.net if you have
+  any questions about this change or require further support.
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Tue, 28 Mar 2017 19:54:01 +0200
+
+cvs (2:1.12.13+real-7) unstable; urgency=high
+
+  rcs2log no longer lives in the PATH, the contributed script
+  and its manpage are in /usr/share/cvs/contrib/rcs2log now.
+
+  Some contrib files (and their documentation) are no longer
+  shipped with the binary package (antique, insecure, useless).
+
+  -rHEAD in "cvs diff" now, consistently with all other cvs
+  subcommands, means "tip of the trunk (MAIN branch)"; to
+  access the tip of the another branch, use its name; as a
+  compatibility aid, -r.bhead (only in diff) points to the
+  tip of the sticky branch.
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sun, 04 Dec 2011 20:10:09 +0000
+
+cvs (2:1.12.13+real-5) unstable; urgency=low
+
+  This cvs package is a totally new packaging and has almost
+  nothing in common with what was in Debian before. The most
+  visible changes are outlined below:
+
+  pserver is no longer officially supported; the cvs package
+  does not install any service, inetd, or something similar.
+  If you want to set up a CVS server, use SSH, as shown in:
+  * http://www.stremler.net/Code/cvs_tricks/cvs-over-ssh.html
+  * http://www.stremler.net/Code/cvs_tricks/cvs-over-ssh-advanced.html
+  * http://www.stremler.net/Code/cvs_tricks/cvs-over-ssh-advanced2.html
+
+  Consequentially, PAM is also no longer supported, and this
+  package does not set up or manage any repositories; that's
+  the system administrator's job now.
+
+  For running "cvs admin" tasks the user must be a member of
+  the new "_cvsadmin" system group, or the repository be set
+  up (UserAdminOptions in CVSROOT/config) to allow everyone.
+
+  The date format for $Id$ and similar in checkouts has been
+  switched back from ISO 8601 to the standard RCS format, to
+  keep checksums over checkouts/exports consistent. This, as
+  well as the fact that only the :local: and :extssh: access
+  methods are officially supported, is not negotiable.
+
+  Please direct feature requests upstream, not to the BTS. I
+  do quite an amount of hacking CVS, but prefer to care only
+  about the packaging bits with "full power" in Debian.
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sat, 11 Jun 2011 05:01:49 +0000

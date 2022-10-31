@@ -1,0 +1,4 @@
+Unable to open lua file with name:
+bad1.lua
+bad1.lua:1: '=' expected near 'is'
+Fatal error opening lua config file

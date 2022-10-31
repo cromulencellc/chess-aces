@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'loquat'
+    compose_service: 'ta3_loquat'
+    role: 'server'
+    runtime:
+      type: JavaScript
+      path: 'challenge_bin/build/main.js'
+      container_path: '/mnt/challenge/build/main.js'
+    main_source:
+      type: TypeScript
+      path: 'challenge_src/src/main.ts'
+      container_path: '/mnt/challenge/src/main.ts'
+poller:
+  compose_service: ta3_loquat_sp_s1

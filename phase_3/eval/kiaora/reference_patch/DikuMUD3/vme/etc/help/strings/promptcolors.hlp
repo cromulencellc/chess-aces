@@ -1,0 +1,75 @@
+<div class="mw-parser-output"><h1>Prompt</h1>
+<p>Usage:
+</p>
+<pre> prompt &lt;blank|default|string&gt;
+</pre>
+<p>Examples:
+</p>
+<pre> <a cmd='#'>prompt blank</a>
+ <a cmd='#'>prompt default</a>
+ <a cmd='#'>prompt %hp%&gt;</a>
+</pre>
+<p>To make a custom prompt simply type the word PROMPT and follow it with any
+of the following variables. Color may be added to the prompt, see the help
+at the end of the prompt variables for this.
+</p><p><b>PROMPT VARIABLES</b>
+</p>
+<ul><li>%hp% - Your Current Hit Points</li>
+<li>%maxhp% - Your Maximum Hit Points</li>
+<li>%mana% - Your Current Mana</li>
+<li>%maxmana% - Your Maximum Mana</li>
+<li>%endurance% - Your Current Endurance</li>
+<li>%maxendurance% - Your Maximum Endurance</li>
+<li>%guild% - Your Guild's Name</li>
+<li>%title% - Your Title</li>
+<li>%age% - Your age</li>
+<li>%race% - Your race</li>
+<li>%xp% - Your current experience</li>
+<li>%xptolvl% - Your experience to next level</li>
+<li>%level% - Your current base level</li>
+<li>%vlevel% - Your current virtual level</li>
+<li>%oppname% - Your opponent's name</li>
+<li>%tankname% - Your tank's name</li>
+<li>%oppdiag% - Your opponent's condition (diagnoses)</li>
+<li>%tankdiag% - Your tank's condition (diagnoses)</li></ul>
+<p><b>IMMORTAL ONLY IDENTIFIERS</b>
+</p>
+<ul><li>%zone% - The zone idx you are in</li>
+<li>%room% - The room idx you are in</li>
+<li>%wizinv% - Your wizinv level</li></ul>
+<p><b>More Examples</b>
+</p><p>Example:
+</p>
+<pre> prompt (hit:%hp%/Mana:%mana%/Endurance:%endurance%)
+</pre>
+<p>will give you a prompt like:
+</p>
+<pre> (hit:40/Mana:10/Endurance:0)
+</pre>
+<pre> prompt My hit %hp%&gt;
+</pre>
+<p>will give you a prompt like:
+</p>
+<pre> My hit 10&gt;
+</pre>
+<p>To get the default prompt back type the following:
+</p>
+<pre> <a cmd='#'>prompt default</a>
+</pre>
+<p>TO have no prompt at all, which can be nice if you're
+visually impaired, try:
+</p>
+<pre> <a cmd='#'>prompt blank</a>
+</pre>
+<p>Using a blank prompt can be combined with e.g. the <a cmd='#'>score hp</a>
+command.
+</p><p><br />
+See Also:
+</p>
+<pre> &gt; <a cmd='#'>help score</a>
+</pre>
+
+
+
+
+</div>

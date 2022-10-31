@@ -1,0 +1,294 @@
+cvs (2:1.12.13+real-26) unstable; urgency=low
+
+  * Policy 4.1.3 (no changes)
+  * Debhelper 11, prompted by lintian…
+  * Update VCS-* to new repository caused by Alioth deprecation
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Fri, 05 Jan 2018 20:06:42 +0100
+
+cvs (2:1.12.13+real-25) unstable; urgency=low
+
+  * Update from MirBSD (0AB8.4)
+    - support LOGM response
+  * Policy 4.1.1 (no changes)
+  * Use “?=” in debian/rules for dpkg-architecture fields (lintian)
+  * Update watch file
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sun, 19 Nov 2017 18:10:56 +0100
+
+cvs (2:1.12.13+real-24) unstable; urgency=high
+
+  * Update from MirBSD
+    - fix for CVE-2017-12836 (Closes: #871810)
+    - more robust $CVSROOT parsing
+  * Policy 4.0.1
+    - add nodoc build option
+      ‣ I’m unclear on how this mixes with build profiles and/or
+        Build-Depends exclusion; should I exclude ghostscript,
+        groff, texinfo, texlive-* with <!nodocs> now, or are
+        DEB_BUILD_OPTIONS=nodoc and the profile independent of
+        each other? Info and patches welcome.
+  * Drop explicit (thus redundant) autotools-dev B-D (lintian)
+  * Update lintian overrides
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sat, 12 Aug 2017 22:18:41 +0200
+
+cvs (2:1.12.13+real-23) unstable; urgency=low
+
+  * Improve documentation:
+    - on CVSREADONLYFS
+    - regarding the formerly world-writable files
+    - fix typos, thanks lintian
+  * Remove testsuite logfiles on clean properly
+  * With most environment variables, handle them being defined but
+    empty as undefined, not enabled (fixes the testsuite creating
+    spurious ~/.in and ~/.out files); exceptions:
+    - CVS_PASSWORD (just triggers an error, as previously)
+    - CVSREAD, CVSREADONLYFS (mere presence enables them)
+    Note this in the Debian NEWS file
+  * Fix some spelling in the/and comments
+  * Emit better errors when multiple LogHistory config options occur
+  * Fix some corner cases in the testsuite
+  * Repair the noredirect-writeproxy testsuite mode
+  * Apply the OpenBSD patch for flowcontrol with fast HDD and slow network
+  * Override a false positive lintian warning
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Fri, 28 Apr 2017 21:33:27 +0200
+
+cvs (2:1.12.13+real-22) unstable; urgency=low
+
+  * cvs init: Change default history logging configuration
+    to only log write operations by adding “LogHistory=TMAR”
+  * Testsuite: Alter to cope with this explicit option
+  * cvs init: Rely on CVSUMASK for history and val-tags files
+    in newly created repositories (Closes: #858769)
+  * Add a NEWS.Debian entry verbosely documenting this change
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Tue, 28 Mar 2017 20:01:39 +0200
+
+cvs (2:1.12.13+real-21) unstable; urgency=medium
+
+  [ Sylvain Beucler ]
+  * Add --allow-root-regexp option, for Savannah
+
+  [ Thorsten Glaser ]
+  * Always add --build=/--host= to avoid config.guess being too smart
+  * Fix testsuite for --allow-root-regexp in the “deny” case
+  * Some minor documentation fixes (wording and formatting)
+  * Remove unnecessary autopoint from Build-Depends; optimise them
+  * Harmonise PDF version 1.4 across all generated PDFs
+  * Generate all PDFs using the PA4 paper size (prints on Letter and A4)
+  * Disable parallel build because the testsuite is not safe
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Mon, 09 Jan 2017 23:19:38 +0000
+
+cvs (2:1.12.13+real-20) unstable; urgency=low
+
+  * Do not spew into syslog when 'cvs pserver' is called from a tty
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Wed, 09 Nov 2016 04:17:18 +0100
+
+cvs (2:1.12.13+real-19) unstable; urgency=low
+
+  * Update from MirBSD CVS:
+    - Fix some spelling mistakes
+    - Greatly improve the manpage introduction (even going so far
+      as to add a “how not to be totally lost in info” section)
+    - Improve documentation cross-references
+    - Apply TCP_NODELAY patch from CVS mailing list
+  * Switch (experimentally) to debhelper compat 10
+  * Enhances cvs2svn (>= 2.4.0-4~) as it’s added relevant patches
+  * Make cross-buildable (Closes: #842847)
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Tue, 08 Nov 2016 23:22:39 +0000
+
+cvs (2:1.12.13+real-18) unstable; urgency=low
+
+  [ esr ]
+  * Correct a bug in the manpage
+
+  [ Sergei Trofimovich ]
+  * Fix a memory leak
+
+  [ Thorsten Glaser ]
+  * Several sanity and getdate fixes
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sun, 23 Oct 2016 00:34:10 +0200
+
+cvs (2:1.12.13+real-17) unstable; urgency=medium
+
+  * Fix a use-after-free bug
+  * Correctly use autoconf to detect long double
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sat, 22 Oct 2016 05:42:39 +0200
+
+cvs (2:1.12.13+real-16) unstable; urgency=medium
+
+  * Take back the package (Closes: #764397)
+  * Fix typo in changelog entry for cvs (2:1.12.13+real-9) and others
+  * Bump Policy; no changes
+  * Update code with bugfixes from MirBSD 0AB7.2 (Closes: #839669)
+  * Actually use correct getdate implementation
+  * groff now needs an explicit ghostscript dependency for ps2pdf
+  * Remove stuff unnecessary with dh-autoreconf
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sat, 22 Oct 2016 02:58:34 +0200
+
+cvs (2:1.12.13+real-15) unstable; urgency=low
+
+  * QA upload.
+  * Orphan the package.
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Tue, 07 Oct 2014 17:58:58 +0000
+
+cvs (2:1.12.13+real-14) unstable; urgency=low
+
+  * debian/control: Move VCS-* fields to Alioth collab-maint git
+  * Remove now-useless RCS IDs
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Tue, 08 Jul 2014 16:10:54 +0200
+
+cvs (2:1.12.13+real-12) unstable; urgency=medium
+
+  * Add texlive-fonts-recommended B-D (thanks Norbert Preining)
+    to fix FTBFS in sid (thanks Daniel Schepler) (Closes: #739138)
+  * Policy 3.9.5 (no changes AFAICT)
+  * Check distfile with upstream signing key (thanks lintian)
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sun, 16 Feb 2014 14:07:36 +0000
+
+cvs (2:1.12.13+real-11) unstable; urgency=medium
+
+  * Add workaround for eglibc crypt(3) returning NULL
+  * If DEB_BUILD_OPTIONS contains “sanity” run testsuite after build
+  * Drop obsolete texi2html B-D (thanks lintian) that was unused anyway
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Thu, 18 Jul 2013 21:52:12 +0000
+
+cvs (2:1.12.13+real-10) unstable; urgency=low
+
+  [ Daniel Schepler ]
+  * Use dh-autoreconf to regenerate configure script and avoid unnecessary
+    compilation of mktime.c, which doesn't work on x32 as is.
+  * Add texlive-latex-recommended to fix just another FTBFS
+
+  [ Thorsten Glaser ]
+  * Do not compress *.pdf files (cf. #704093)
+  * Allow root to commit
+  * Policy 3.9.4
+  * Make cvs.texinfo compatible with newer makeinfo (Closes: #711298)
+  * Actually use a fixed mktime.m4 (Closes: #698908)
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Wed, 26 Jun 2013 19:40:39 +0000
+
+cvs (2:1.12.13+real-9) unstable; urgency=low
+
+  * Fix watch file: mangle Epoch away, too
+  * Remove old conffile /etc/pam.d/cvs (Closes: #669957)
+  * Policy 3.9.3 (no changes)
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sun, 22 Apr 2012 15:10:16 +0000
+
+cvs (2:1.12.13+real-8) unstable; urgency=high
+
+  * Brown paper bag change: sanity.sh (the testsuite) was corrupted
+    during checkout of the packaging VCS in the -7 (all PASS again)
+  * Bonus change: use hardening build flags; fix resulting warnings
+  * Urgency due to riding on the previous upload’s security fix
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Tue, 07 Feb 2012 20:39:42 +0000
+
+cvs (2:1.12.13+real-7) unstable; urgency=high
+
+  * Drop unsafe scripts from contrib, add NEWS entry for that
+    (Closes: #658947)
+  * debian/rules: cleanup (remove install/check, dh_installdirs;
+    switch to dh_prep if extant)
+  * Use -Wl,--as-needed for the link to appease dpkg-shlibdebs
+  * Update maintainer scripts from template jupp (better comments)
+  * Drop csh-using contrib script from package, with NEWS entry
+  * Demote rcs2log(1) to contrib, add NEWS entry
+  * Stop shipping a patch to rcs(1) with the binary package, ffs
+  * Don’t ship cvshelp.man either, it’s antiquated and not useful
+  * Fix meaning of -rHEAD for the diff subcommand (with NEWS entry)
+  * Make the testsuite again usable (full PASS)
+  * Apply suggested patch for CVE-2012-0804 from Petr Pisar
+  * Update lintian overrides
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Tue, 07 Feb 2012 18:01:44 +0000
+
+cvs (2:1.12.13+real-6) unstable; urgency=low
+
+  * d/watch: mangle the +real away until 1.12.14 is out,
+    as this is an artefact from the old (epoch 1) packaging
+  * Demote mksh to Suggests, recommended (hah!) by many
+    (Closes: #631110) (merges back
+    2:1.12.13+real-5debianderivatethatcannotbenamed1)
+  * Honour Policy §11.4; fix by YOSHINO Yoshihito (Closes: #631936)
+  * Use upstream-source-in-CVS packaging, clean up
+  * d/rules: Add build-{arch,indep} targets as aliases to build
+  * Bring d/copyright more in sync with this distfile’s reality
+  * d/control: Reword package description. (Closes: #631826)
+  * If sleeping at exit, sleep another 20 ms (2 HZ), to avoid
+    possible race conditions. (Should work around LP: #12230)
+  * Update in sync with MirPorts 1.12.13-12 = MirOS BSD 0AAF.1
+  * Stop installing cvsbug(8), use reportbug instead
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Thu, 28 Jul 2011 16:02:02 +0000
+
+cvs (2:1.12.13+real-5) unstable; urgency=low
+
+  * Drop PAM entirely, it was specific to Debian anyway
+  * Add cvs-switchroot, from src/scripts/mnt-cvsroot (Closes: #41685)
+  * Drop some old and irrelevant changelogs from the binary package
+  * Update from MirPorts 1.12.13-11 = MirOS BSD 0AAE.2
+  * Revert most of 65_login_cvspass_message and just be silent if the
+    pserver client password file doesn't exist and create it silently
+    if needed (Closes: #524146)
+  * Honour noexec flag in 'cvs -n init' (Closes: #151982)
+  * Sync modules option list with cederqvist (Closes: #226888)
+  * Apply patch for assert on negated version numbers on diff
+    (Closes: #297551)
+    From: Peter Moulder <Peter.Moulder@infotech.monash.edu.au>
+  * Change cvs add dir message (Closes: #294094)
+  * Accept port when using extssh connection method (Closes: #151882)
+  * Write a new command for direct ,v file download (Closes: #421119)
+  * Drop broken libbsd.fd.o headers and shut up gcc 4.6 warnings
+  * Fix piuparts breakage: ignore delgroup non-existence on purge
+  * Deliver a NEWS.Debian (Closes: #626106)
+  * d/README.source: Update, call to automake is now also needed
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sat, 11 Jun 2011 05:32:56 +0000
+
+cvs (2:1.12.13+real-4) unstable; urgency=low
+
+  * Renamed .orig.tar.gz due to archive pathname conflict
+  * d/README.source: Document patch location (VCS-CVS, VCS-Browser alike)
+  * New build from MirPorts 1.12.13-10 = MirOS BSD 0AAE.1
+    - Contains changes from cvs
+      (1:1.12.13-12debianderivatethatcannotbenamed1):
+      + Apply fix from Kees Cook to avoid %n in writable memory (LP: #296453)
+    - Other BTS relevant changes:
+      + Allow CVSROOT-less “version” (LP: #97683) and “cvs version”
+      + Update loginfo documentation, ‘%{t}’ is indeed gone (Closes: #329151)
+      + Lower syslog level from emergency (Closes: #563856)
+      + Fix awk substr start argument, thanks John Hughes (Closes: #518600)
+      + Rename nodes with colons in them (Closes: #113809)
+      + Fix typo (Closes: #464137)
+      + Document missing rcs2log(1) options (Closes: #306354) and fix dashes
+  * Upload new package to Debian unstable (Closes: #306432)
+    (Closes: #458864) (Closes: #464134) (Closes: #479752)
+    (Closes: #576035) (Closes: #614700) (Closes: #617578)
+    - Drop PAM (Closes: #340984) (Closes: #393436)
+    - No longer installs repositories (Closes: #168300)
+      (Closes: #408117) (Closes: #482301) (Closes: #499790)
+      (Closes: #511643) (Closes: #607297)
+    - Deprecate pserver (Closes: #343169) (Closes: #495938)
+    - Drop Origin and Bugs headers again (upload to Debian proper)
+      and old (pre-Debian upload) private repo changelog entries
+    - Thank you, Steve, for handing over package maintainership!
+  * Clarify package description (LP: #377411)
+  * Build with Kerberos V support (Closes: #60800) (LP: #157760)
+  * Recommends: openssh-client; Suggests: rcs
+
+ -- Thorsten Glaser <tg@mirbsd.de>  Sat, 07 May 2011 01:00:39 +0000

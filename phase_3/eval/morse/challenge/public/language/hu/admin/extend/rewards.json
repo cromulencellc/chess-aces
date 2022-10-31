@@ -1,0 +1,15 @@
+{
+	"rewards": "Jutalmak",
+	"condition-if-users": "Ha a felhasználó",
+	"condition-is": "Kisebb/nagyobb/egyenlő:",
+	"condition-then": "Akkor:",
+	"max-claims": "Hány alkalommal igényelhető a jutalom",
+	"zero-infinite": "Írj 0-t a végtelenhez",
+	"delete": "Törlés",
+	"enable": "Engedélyezés",
+	"disable": "Tiltás",
+
+	"alert.delete-success": "Jutalom sikeresen törölve",
+	"alert.no-inputs-found": "Helytelen jutalom - nem található bevitel!",
+	"alert.save-success": "Jutalmak sikeresen elmentve"
+}

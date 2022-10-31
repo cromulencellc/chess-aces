@@ -1,0 +1,16 @@
+darpachess.org.      NS    ns1.darpachess.org. ~
+a.darpachess.org.      NS    ns1.darpachess.org. ~
+ns1.darpachess.org.        10.0.2.15 ~
+darpachess.org.            10.0.2.15 ~
+darpachess.org.		AAAA :: ~
+www.darpachess.org.        10.0.2.15 ~
+darpachess.org.      MX 10 mail1.darpachess.org. ~
+a.darpachess.org.      MX 10 mail1.darpachess.org. ~
+mail1.darpachess.org.      10.0.2.15 ~
+a.darpachess.org.	A 10.0.2.15 ~
+a.darpachess.org.	AAAA :: ~
+b.darpachess.org.	10.0.2.15 ~
+darpachess.org.		TXT 'This is the text for the darpa chess org domain' ~
+a.darpachess.org.	TXT 'Basic txt record for a' ~
+a.darpachess.org.	CNAME b.darpachess.org. ~
+darpachess.org.		CNAME www.darpachess.org. ~

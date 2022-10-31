@@ -1,0 +1,63 @@
+version: '3'
+services:
+  challenge:
+    build: ./challenge/
+    volumes:
+      - ./challenge:/service
+      - ./base_data:/base_data
+      # - ./static:/static
+      - .:/mnt
+    ports:
+      - "8080"
+      - "50222/udp"
+    environment:
+      HTTP_PORT: 8080
+      WEATHER_PORT: 50222
+      MONGO_URL: "mongodb://mongodb:27017/weatherdb"
+      # STATIC_DIR: '/mnt/static/static'
+      # VIEW_DIR: '/mnt/static/view'
+    working_dir: /service
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo:5.0.5
+    environment:
+      MONGO_INITDB_DATABASE: weatherdb
+  # unpatched:
+  #   build: .
+  #   volumes:
+  #     - ./variants/unpatched:/service
+  #     - ./base_data:/base_data
+  #   ports:
+  #     - 3028
+  #   environment:
+  #     PORT: 3028
+  # fully_patched:
+  #   build: .
+  #   volumes:
+  #     - ./variants/fully_patched:/service
+  #     - ./base_data:/base_data
+  #   ports:
+  #     - 3028
+  #   environment:
+  #     port: 3028
+  poller:
+    build: poller
+    environment:
+      HTTP_PORT: 8080
+      WEATHER_PORT: 50222
+    volumes:
+      - ./poller:/poller
+      - ./base_data:/base_data
+      - .:/mnt
+    working_dir: /poller
+  pov:
+    build: pov
+    environment:
+      HTTP_PORT: 8080
+      WEATHER_PORT: 50222
+    volumes:
+      - ./pov:/pov
+    working_dir: /pov
+    command: "python pov.py"
+  

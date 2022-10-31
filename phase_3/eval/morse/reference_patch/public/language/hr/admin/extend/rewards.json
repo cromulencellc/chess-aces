@@ -1,0 +1,15 @@
+{
+	"rewards": "Nagrade",
+	"condition-if-users": "Ako korisnici",
+	"condition-is": "ls:",
+	"condition-then": "Tada:",
+	"max-claims": "Koliko puta nagrada može biti osvojena.",
+	"zero-infinite": "Upišite 0 za beskonačno",
+	"delete": "Obriši",
+	"enable": "Omogući",
+	"disable": "onemogući",
+
+	"alert.delete-success": "Uspješno obrisana nagrada",
+	"alert.no-inputs-found": "Ilegalna nagrada - nije pronađen unos!",
+	"alert.save-success": "Uspješno spremljene nagrade"
+}

@@ -1,0 +1,876 @@
+#!/bin/sh
+#
+# Config script for UnrealIRCd
+# (C) 2001-2021 The UnrealIRCd Team
+#
+# This configure script is free software; the UnrealIRCd Team gives 
+# unlimited permission to copy, distribute and modify as long as the
+# copyright headers stay intact
+#
+#
+# Rewritten completely to be an interface to autoconf by codemastr
+# This was inspired by the config by Michael Graff (explorer@flame.org)
+# but was written from scratch
+
+# In order to be faster than the old Config, this assumes that all information
+# in the cache file is valid and therefore doesn't check it, so if you messed with
+# default values thats your problem :P
+
+# some bits edited by baafie on March 17 2004, every change marked.
+
+
+RUN_CONFIGURE () {
+ARG=" "
+
+if [ -z "$BINDIR" -o -z "$DATADIR" -o -z "$CONFDIR" -o -z "$MODULESDIR" -o -z "$LOGDIR" -o -z "$CACHEDIR" -o -z "$DOCDIR" -o -z "$TMPDIR" -o -z "$PRIVATELIBDIR" ]; then
+	echo "Sorry './Config -quick' cannot be used because your 'config.settings'"
+	echo "file either does not exist or is from an old UnrealIRCd version"
+	echo "(older than UnrealIRCd 5.0.0)."
+	echo ""
+	echo "Please run './Config' without -quick and answer all questions."
+	echo ""
+	exit
+fi
+
+
+mkdir -p $TMPDIR
+mkdir -p $PRIVATELIBDIR
+
+# Do this even if we're not in advanced mode
+if [ "$ADVANCED" = "1" ] ; then
+if [ "$NOOPEROVERRIDE" = "1" ] ; then
+	ARG="$ARG--with-no-operoverride "
+fi
+if [ "$OPEROVERRIDEVERIFY" = "1" ] ; then
+	ARG="$ARG--with-operoverride-verify "
+fi
+fi
+if test x"$SSLDIR" = "x" ; then
+ARG="$ARG--enable-ssl "
+else
+ARG="$ARG--enable-ssl=$SSLDIR "
+fi
+# Ensure we install curl even if someone does ./Config -quick...
+if [ "x$CURLDIR" = "x$UNREALCWD/extras/curl" ]; then
+	INSTALLCURL=1
+else
+	# And that the path does not refer to eg an old unrealircd-1.2.3 either ;)
+	if echo "$CURLDIR"|egrep -qi extras.*curl; then
+		echo "WARNING: Potentially old cURL directory encountered ($CURLDIR)."
+		echo "I am changing the cURL directory to $UNREALCWD/extras/curl and forcing a rebuild of cURL."
+		CURLDIR="$UNREALCWD/extras/curl"
+		INSTALLCURL=1
+	fi
+fi
+if [ "$REMOTEINC" = "1" ] ; then
+ARG="$ARG--enable-libcurl=$CURLDIR "
+fi
+if [ "$MAXCONNECTIONS_REQUEST" != "auto" ]; then
+	ARG="$ARG--with-maxconnections=$MAXCONNECTIONS_REQUEST "
+fi
+
+ARG="$ARG--with-bindir=$BINDIR "
+ARG="$ARG--with-datadir=$DATADIR "
+ARG="$ARG--with-pidfile=$DATADIR/unrealircd.pid "
+ARG="$ARG--with-controlfile=$DATADIR/unrealircd.ctl "
+ARG="$ARG--with-confdir=$CONFDIR "
+ARG="$ARG--with-modulesdir=$MODULESDIR "
+ARG="$ARG--with-logdir=$LOGDIR "
+ARG="$ARG--with-cachedir=$CACHEDIR "
+ARG="$ARG--with-docdir=$DOCDIR "
+ARG="$ARG--with-tmpdir=$TMPDIR "
+ARG="$ARG--with-privatelibdir=$PRIVATELIBDIR "
+ARG="$ARG--with-scriptdir=$BASEPATH "
+ARG="$ARG--with-nick-history=$NICKNAMEHISTORYLENGTH "
+ARG="$ARG--with-permissions=$DEFPERM "
+ARG="$ARG--enable-dynamic-linking "
+if [ "$GEOIP" = "classic" ]; then
+	ARG="$ARG--enable-geoip-classic "
+fi
+if [ "$GEOIP" = "libmaxminddb" ]; then
+	ARG="$ARG--enable-libmaxminddb "
+fi
+if [ "$SANITIZER" = "asan" ]; then
+	ARG="$ARG--enable-asan "
+fi
+ARG="$ARG $EXTRAPARA "
+CONF="./configure $ARG"
+# remove possibly old instances of curl in ~/unrealircd/lib/
+rm -f $PRIVATELIBDIR/*curl* 1>/dev/null 2>&1
+if [ "x$INSTALLCURL" = "x1" ]; then
+	extras/curlinstall "$PRIVATELIBDIR" || exit 1
+fi
+# At least do SOME parallel compiling by default, IF:
+# - the MAKE environment variable is not set
+# - the MAKEFLAGS environment variable is not set
+# - we are using GNU Make
+if [ "x$MAKE" = "x" ]; then
+	if [ "x$MAKEFLAGS" = "x" ]; then
+		if make --version 2>&1|grep -q "GNU Make"; then
+			LOWMEM=0
+			if [ -f /proc/meminfo ]; then
+				FREEKB="`cat /proc/meminfo |grep MemAvailable|awk '{ print $2 }'`"
+				if [ "$FREEKB" != "" -a "$FREEKB" -lt 768000 ]; then
+					LOWMEM=1
+				fi
+			fi
+			if [ "$LOWMEM" = 0 ]; then
+				echo "Running with 4 concurrent build processes by default (make -j4)."
+				export MAKE='make -j4'
+			else
+				echo "System detected with less than 750MB available memory, not forcing parallel build."
+			fi
+		fi
+	fi
+fi
+
+echo $CONF
+$CONF || exit 1
+cd "$UNREALCWD"
+
+if [ "$QUICK" != "1" ] ; then
+	if [ ! -f $CONFDIR/tls/server.cert.pem -a ! -f $CONFDIR/ssl/server.cert.pem ]; then
+		export OPENSSLPATH
+		TEST=""
+		while [ -z "$TEST" ] ; do
+			if [ "$GENCERTIFICATE" = "1" ] ; then
+				TEST="Yes"
+			else
+				TEST="No"
+			fi
+			echo ""
+			echo "UnrealIRCd requires a TLS certificate in order to work."
+			echo "Do you want to generate a TLS certificate for the IRCd?"
+			echo "Only answer No if you already have one."
+			echo $n "[$TEST] -> $c"
+			read cc
+			if [ -z "$cc" ] ; then
+			cc=$TEST
+			fi
+			case "$cc" in
+			[Yy]*)
+				GENCERTIFICATE="1"
+				;;
+			[Nn]*)
+				GENCERTIFICATE=""
+				;;
+			*)
+				echo ""
+				echo "You must enter either Yes or No"
+				TEST=""
+				;;
+			esac
+		done
+		if [ "$GENCERTIFICATE" = 1 ]; then
+			echo
+			echo "*******************************************************************************"
+			echo "Next you will be asked some questions in order to generate the TLS certificate."
+			echo "IMPORTANT: If you don't own a domain or don't know what to answer, then you can"
+			echo "           simply press ENTER or use fictional names for each question!"
+			echo "*******************************************************************************"
+			echo "Press ENTER to continue"
+			read cc
+			$MAKE pem
+			echo "Certificate created successfully."
+			sleep 1
+		else
+			echo "Ok, not generating TLS certificate. Make sure that the certificate and key"
+			echo "are installed in conf/tls/server.cert.pem and conf/tls/server.key.pem prior to starting the IRCd."
+		fi
+	else
+		echo "TLS certificate already exists in configuration directory, no need to regenerate."
+	fi
+fi
+
+# Silently force a 'make clean' as otherwise part (or whole) of the
+# compiled source could be using different settings than the user
+# just requested when re-running ./Config.
+$MAKE clean 1>/dev/null 2>&1
+}
+
+RUN_ADVANCED () {
+TEST=""
+while [ -z "$TEST" ] ; do
+	if [ "$NOOPEROVERRIDE" = "1" ] ; then
+		TEST="Yes"
+	else
+		TEST="No"
+	fi
+	echo ""
+	echo "Do you want to disable oper override?"
+	echo $n "[$TEST] -> $c"
+	read cc
+	if [ -z "$cc" ] ; then
+		cc=$TEST
+	fi
+	case "$cc" in
+	[Yy]*)
+		NOOPEROVERRIDE="1"
+		;;
+	[Nn]*)
+		NOOPEROVERRIDE=""
+		;;
+	*)
+		echo ""
+		echo "You must enter either Yes or No"
+		TEST=""
+		;;
+	esac
+done
+
+TEST=""
+while [ -z "$TEST" ] ; do
+	if [ "$OPEROVERRIDEVERIFY" = "1" ] ; then
+		TEST="Yes"
+	else
+		TEST="No"
+	fi
+	echo ""
+	echo "Do you want to require opers to /invite themselves into a +s or +p channel?"
+	echo $n "[$TEST] -> $c"
+	read cc
+	if [ -z "$cc" ] ; then
+		cc=$TEST
+	fi
+	case "$cc" in
+	[Yy]*)
+		OPEROVERRIDEVERIFY="1"
+		;;
+	[Nn]*)
+		OPEROVERRIDEVERIFY=""
+		;;
+	*)
+		echo ""
+		echo "You must enter either Yes or No"
+		TEST=""
+		;;
+	esac
+done
+
+}
+c=""
+n=""
+UNREALCWD="`pwd`"
+BASEPATH="$HOME/unrealircd"
+DEFPERM="0600"
+SSLDIR=""
+NICKNAMEHISTORYLENGTH="2000"
+MAXCONNECTIONS_REQUEST="auto"
+REMOTEINC=""
+CURLDIR=""
+NOOPEROVERRIDE=""
+OPEROVERRIDEVERIFY=""
+GENCERTIFICATE="1"
+EXTRAPARA=""
+SANITIZER=""
+GEOIP="classic"
+if [ "`eval echo -n 'a'`" = "-n a" ] ; then
+	c="\c"
+else
+	n="-n"
+fi
+
+
+#parse arguments
+IMPORTEDSETTINGS=""
+NOINTRO=""
+QUICK=""
+ADVANCED=""
+while [ $# -ge 1 ] ; do
+	if [ $1 = "--help" ] ; then
+		echo "Config utility for UnrealIRCd"
+		echo "-----------------------------"
+		echo "Syntax: ./Config [options]"
+		echo "-nointro     Skip intro (release notes, etc)"
+		echo "-quick       Skip questions, go straight to configure"
+		echo "-advanced    Include additional advanced questions"
+		exit 0
+	elif [ $1 = "-nointro" ] ; then
+		NOINTRO="1"
+	elif [ $1 = "-quick" -o $1 = "-q" ] ; then
+		QUICK="1"
+		echo "running quick config"
+		if [ -f "config.settings" ] ; then
+			. ./config.settings
+		fi
+		RUN_CONFIGURE
+		cd "$UNREALCWD"
+		exit 0
+	elif [ $1 = "-advanced" ] ; then
+		PREADVANCED="1"
+	fi
+	shift 1
+done
+
+if [ "$PREADVANCED" = "1" ] ; then
+	ADVANCED="1"
+elif [ "$ADVANCED" = "1" ]; then
+	ADVANCED=""
+fi
+
+if [ "`id -u`" = "0" ]; then
+	echo "ERROR: You cannot build or run UnrealIRCd as root"
+	echo ""
+	echo "Please create a separate account for building and running UnrealIRCd."
+	echo "See https://www.unrealircd.org/docs/Do_not_run_as_root"
+	exit
+fi
+
+# Check for gmake early...
+if [ "$MAKE" = "" ]; then
+	MAKE="make"
+fi
+
+if ! $MAKE --version 2>&1|grep -q "GNU Make"; then
+	# So $MAKE is not GNU make, but do we have gmake?
+	if gmake --version 2>&1|grep -q "GNU Make"; then
+		# Great, use that one!
+		MAKE="gmake"
+	else
+		# Both $MAKE and gmake are not GNU make, do we have a working $MAKE at all?
+		if $MAKE --version 1>/dev/null 2>&1; then
+			echo "Your system has 'make' but UnrealIRCd requires GNU Make ('gmake')"
+			echo "Please install 'gmake' (eg 'pkg install gmake' on BSD)."
+			exit 1
+		else
+			echo "Your system does not have the required tools installed to build UnrealIRCd."
+			echo "Please check https://www.unrealircd.org/docs/Installing_from_source"
+			echo "and install the required tools listed under 'Prerequisites'."
+			echo "After that, you can run ./Config again"
+			exit 1
+		fi
+	fi
+fi
+
+
+clear
+
+if [ -f "doc/Config.header" -a -z "$NOINTRO" ] ; then
+	more doc/Config.header
+	echo ""
+	echo $n "[Press Enter to continue]"
+	read cc
+	clear
+fi
+
+echo "We will now ask you a number of questions. You can just press ENTER to accept the defaults!"
+echo ""
+
+# This needs to be updated each release so auto-upgrading works for settings, modules, etc!!:
+UNREALRELEASES="unrealircd-6.0.1.1 unrealircd-6.0.1 unrealircd-6.0.0 unrealircd-6.0.0-rc2 unrealircd-6.0.0-rc1 unrealircd-6.0.0-beta4 unrealircd-6.0.0-beta3 unrealircd-6.0.0-beta2 unrealircd-6.0.0-beta1 unrealircd-5.2.3 unrealircd-5.2.2 unrealircd-5.2.1.1 unrealircd-5.2.1 unrealircd-5.2.1-rc1 unrealircd-5.2.0.2 unrealircd-5.2.0.1 unrealircd-5.2.0 unrealircd-5.2.0-rc1 unrealircd-5.0.9.1 unrealircd-5.0.9 unrealircd-5.0.9-rc1 unrealircd-5.0.8 unrealircd-5.0.8-rc1 unrealircd-5.0.7 unrealircd-5.0.7-rc1 unrealircd-5.0.6"
+if [ -f "config.settings" ]; then
+	. ./config.settings
+else
+	# Try to load a previous config.settings
+	for x in $UNREALRELEASES
+	do
+		if [ -f ../$x/config.settings ]; then
+			IMPORTEDSETTINGS="../$x"
+			break
+		fi
+	done
+	echo "If you have previously installed UnrealIRCd on this shell then you can specify a"
+	echo "directory here so I can import the build settings and third party modules"
+	echo "to make your life a little easier."
+	if [ ! -z "$IMPORTEDSETTINGS" ]; then
+		echo "Found previous installation in: $IMPORTEDSETTINGS."
+		echo "You can enter a different path or type 'none' if you don't want to use it."
+		echo "Just press Enter to accept the default settings."
+	else
+		echo "If you install UnrealIRCd for the first time on this shell, then just hit Enter";
+	fi
+
+	TEST="$IMPORTEDSETTINGS"
+	echo $n "[$TEST] -> $c"
+	read cc
+	if [ -z "$cc" ]; then
+		IMPORTEDSETTINGS="$TEST"
+	else
+		IMPORTEDSETTINGS="$cc"
+	fi
+	if [ "$IMPORTEDSETTINGS" = "none" ]; then
+		IMPORTEDSETTINGS=""
+	fi
+	if [ "$IMPORTEDSETTINGS" != "" ]; then
+		if [ -d $IMPORTEDSETTINGS/conf ]; then
+			echo "ERROR: Directory $IMPORTEDSETTINGS is an INSTALLATION directory (eg /home/irc/unrealircd)."
+			echo "This question was about a SOURCE directory (eg /home/irc/unrealircd-5.0.0)."
+			exit
+		fi
+		if [ ! -f $IMPORTEDSETTINGS/config.settings ]; then
+			echo "Directory $IMPORTEDSETTINGS does not exist or does not contain a config.settings file"
+			exit
+		fi
+		COPYMODULES="1"
+		if grep -q TOPICNICKISNUH $IMPORTEDSETTINGS/config.settings; then
+			echo "Directory $IMPORTEDSETTINGS seems to be UnrealIRCd 4.x (or older)."
+			echo "I will copy the settings but not any 3rd party modules, as they are incompatible with 5.x."
+			COPYMODULES="0"
+		fi
+		# Actually load the settings
+		. $IMPORTEDSETTINGS/config.settings
+		if [ "$COPYMODULES" = "1" ]; then
+			# Copy over 3rd party modules (also deals with 0 file cases, hence the silly looking code)
+			for f in $IMPORTEDSETTINGS/src/modules/third/*.c
+			do
+				[ -e "$f" ] && cp $f src/modules/third/
+			done
+		fi
+	fi
+fi
+# If we just imported settings and the curl dir is set to
+# something like /home/xxx/unrealircd-5.x.y/extras/curl/
+# (what we call 'local-curl') then remove this setting as
+# it would refer to the old UnrealIRCd installation.
+if [ ! -z "$IMPORTEDSETTINGS" ]; then
+	if echo "$CURLDIR"|grep -qi unrealircd; then
+		CURLDIR=""
+	fi
+fi
+
+TEST="$BASEPATH"
+echo ""
+echo "In what directory do you want to install UnrealIRCd?"
+echo "(Note: UnrealIRCd 6 will need to be installed somewhere."
+echo " If this directory does not exist it will be created.)"
+echo $n "[$TEST] -> $c"
+read cc
+if [ -z "$cc" ] ; then
+	BASEPATH=$TEST
+else
+	BASEPATH=`eval echo $cc` # modified
+fi
+if [ "$BASEPATH" = "$UNREALCWD" ]; then
+	echo ""
+	echo "ERROR: The installation directory cannot be the same as the directory"
+	echo "       containing the source code ($UNREALCWD)."
+	echo " HINT: Usually the directory containing the source is $HOME/unrealircd-5.x.y"
+	echo "       and the installation directory you would need to enter is $HOME/unrealircd"
+	exit 1
+fi
+
+# TODO: For -advanced we could prompt the user.
+BINDIR="$BASEPATH/bin"
+DATADIR="$BASEPATH/data"
+CONFDIR="$BASEPATH/conf"
+MODULESDIR="$BASEPATH/modules"
+LOGDIR="$BASEPATH/logs"
+CACHEDIR="$BASEPATH/cache"
+DOCDIR="$BASEPATH/doc"
+TMPDIR="$BASEPATH/tmp"
+PRIVATELIBDIR="$BASEPATH/lib"
+
+TEST=""
+while [ -z "$TEST" ] ; do
+	TEST="$DEFPERM"
+	echo ""
+	echo "What should the default permissions for your configuration files be? (Set this to 0 to disable)"
+	echo "It is strongly recommended that you use 0600 to prevent unwanted reading of the file"
+	echo $n "[$TEST] -> $c"
+	read cc
+	if [ -z "$cc" ] ; then
+		DEFPERM=$TEST
+		break
+	fi
+	case "$cc" in
+	[0-9]*)
+		DEFPERM="$cc"
+		;;
+	*)
+		echo ""
+		echo "You must enter a number"
+		TEST=""
+		;;
+	esac
+done
+
+echo ""
+echo "If you want, you can manually enter the path to OpenSSL/LibreSSL here."
+echo "In most cases you can leave this blank and it will be detected automatically."
+
+if [ -z "$SSLDIR" ]; then
+	uname|grep -q Darwin
+	if [ "$?" = 0 ]; then
+		echo "Looks like you're on a Mac - El Capitan and higher require"
+		echo "a 3rd party OpenSSL installation. We recommend using homebrew"
+		echo "to install OpenSSL, but you may install it any other way as well."
+		echo "We are selecting the default homebrew OpenSSL path - but you can"
+		echo "change it to another path if you have installed OpenSSL another way"
+		SSLDIR="/usr/local/opt/openssl/"
+	fi
+fi
+
+TEST="$SSLDIR"
+echo $n "[$TEST] -> $c"
+read cc
+if [ -z "$cc" ] ; then
+	SSLDIR="$TEST"
+else 
+	SSLDIR=`eval echo $cc` # modified
+fi
+
+TEST=""
+while [ -z "$TEST" ] ; do
+	if [ "$REMOTEINC" = "1" ] ; then
+		TEST="Yes"
+	else
+		TEST="No"
+	fi
+	echo ""
+	echo "UnrealIRCd comes with support for 'remote includes', this allows things like:"
+	echo "include \"https://www.example.org/files/opers.conf\";"
+	echo "Do you want to compile with the libcurl library to enable additional protocols?"
+	echo "If you answer 'No' then only https:// links will work for remote includes."
+	echo "Answer 'Yes' if you need other protocols, such as plaintext http, ftp, tftp or smb."
+	echo "Most people answer 'No' here because they don't use remote includes or only need https."
+	echo $n "[$TEST] -> $c"
+	read cc
+	if [ -z "$cc" ] ; then
+		cc=$TEST
+	fi
+	case "$cc" in
+	[Yy]*)
+		REMOTEINC="1"
+		;;
+	[Nn]*)
+		REMOTEINC=""
+		CURLDIR=""
+		;;
+	*)
+		echo ""
+		echo "You must enter either Yes or No"
+		TEST=""
+		;;
+	esac
+done
+
+if [ "$REMOTEINC" = "1" ] ; then
+	if [ ! -d "$CURLDIR" ]; then
+		# Reset any previous CURLDIR if it doesn't exist (anymore)
+		CURLDIR=""
+	fi
+
+	INSTALLCURL="0"
+	SUGGESTCURLDIR=""
+
+	if [ -d "/usr/local/include/curl" ]; then
+		SUGGESTCURLDIR="/usr/local"
+	fi
+	if [ -d "/usr/include/curl" ]; then
+		SUGGESTCURLDIR="/usr"
+	fi
+	# This one also works for /usr/include/x86_64-linux-gnu and friends:
+	if [ -f "/usr/bin/curl-config" ]; then
+		SUGGESTCURLDIR="/usr"
+	fi
+
+	GOTASYNC=0
+	if [ "x$SUGGESTCURLDIR" != "x" ]; then
+		# Check if it's of any use: a curl without async dns (cares) hangs the entire ircd..
+		# normally this is done in ./configure but now we're forced to do it also here..
+		if "$SUGGESTCURLDIR"/bin/curl-config --features | grep -q -e AsynchDNS; then
+			GOTASYNC="1"
+		fi
+		if [ "$GOTASYNC" != "1" ]; then
+			SUGGESTCURLDIRBAD="$CURLDIR"
+			SUGGESTCURLDIR=""
+		fi
+	fi
+
+	if [ "x$CURLDIR" = "x$HOME/curl" ]; then
+		if [ "x$SUGGESTCURLDIR" != "x" ]; then
+			# I guess some people will complain about this, but if system wide cURL is available
+			# and many people have old defaults then this is much preferred:
+			echo ""
+			echo "WARNING: Your previous (potentially old) setting is to use cURL from $HOME/curl."
+			echo "However, your operating system also provides a working cURL."
+			echo "I am therefore changing the setting to: $SUGGESTCURLDIR"
+			CURLDIR="$SUGGESTCURLDIR"
+		else
+			echo ""
+			echo "WARNING: We no longer use $HOME/curl nowadays."
+			echo "Use the automatic download and install feature below."
+			CURLDIR=""
+		fi
+	fi
+
+	if [ "x$CURLDIR" = "x" ]; then
+		CURLDIR="$SUGGESTCURLDIR"
+		# NOTE: CURLDIR may still be empty after this
+
+		# System curl has no asyncdns, so install our own.
+		if [ "$GOTASYNC" != "1" ]; then
+			CURLDIR=""
+		fi
+
+		# Need to output it here, as the HOME check from above may cause this to be no longer relevant.
+		if [ "x$CURLDIR" = "x" -a "x$SUGGESTCURLDIRBAD" != "x" ]; then
+			echo "Curl library was found in $SUGGESTCURLDIRBAD, but it does not support Asynchronous DNS (not compiled with c-ares)"
+			echo "so it's of no use to us as it would stall the IRCd on REHASH."
+		fi
+	fi
+
+	# Final check
+	if [ "x$CURLDIR" != "x" ]; then
+		"$CURLDIR/bin/curl-config" --features 2>/dev/null | grep -q -e AsynchDNS
+		if [ "$?" != 0 ]; then
+			echo "Curl from $CURLDIR seems unusable ($CURLDIR/bin/curl-config does not exist)"
+			CURLDIR=""
+		fi
+	fi
+
+	if [ "x$CURLDIR" = "x" ]; then
+		# Still empty?
+		TEST=""
+		while [ -z "$TEST" ] ; do
+			TEST="Yes"
+			echo ""
+			echo "Do you want me to automatically download and install curl for you?"
+			echo $n "[$TEST] -> $c"
+			read cc
+			if [ -z "$cc" ] ; then
+				cc=$TEST
+			fi
+			case "$cc" in
+			[Yy]*)
+				INSTALLCURL="1"
+				CURLDIR="$UNREALCWD/extras/curl"
+				;;
+			[Nn]*)
+				INSTALLCURL="0"
+				;;
+			*)
+				echo ""
+				echo "You must enter either Yes or No"
+				TEST=""
+				;;
+			esac
+		done
+	fi
+
+	if [ "$INSTALLCURL" != "1" ]; then
+		TEST=""
+		while [ -z "$TEST" ] ; do
+			TEST="$CURLDIR"
+			echo ""
+			echo "Specify the directory you installed libcurl to"
+			echo $n "[$TEST] -> $c"
+			read cc
+			if [ -z "$cc" ] ; then
+				cc=$TEST
+			else
+				TEST=$cc
+				CURLDIR=`eval echo $cc` # modified
+			fi
+		done
+		if [ "x$CURLDIR" != "x" ]; then
+			"$CURLDIR/bin/curl-config" --libs 1>/dev/null 2>&1
+			if [ "$?" != 0 ]; then
+				echo "Curl from $CURLDIR seems unusable ($CURLDIR/bin/curl-config does not exist)"
+				CURLDIR=""
+			fi
+		fi
+	fi
+fi
+
+
+TEST=""
+while [ -z "$TEST" ] ; do
+	TEST="$NICKNAMEHISTORYLENGTH"
+	echo ""
+	echo "How far back do you want to keep the nickname history?"
+	echo $n "[$TEST] -> $c"
+	read cc
+	if [ -z "$cc" ] ; then
+		NICKNAMEHISTORYLENGTH=$TEST
+		break
+	fi
+	case "$cc" in
+	[1-9]*)
+		NICKNAMEHISTORYLENGTH="$cc"
+		;;
+	*)
+		echo ""
+		echo "You must enter a number"
+		TEST=""
+		;;
+	esac
+done
+
+TEST=""
+while [ -z "$TEST" ] ; do
+	TEST="$GEOIP"
+	echo ""
+	echo "GeoIP is a feature that allows converting an IP address to a location (country)"
+	echo "Possible build options:"
+	echo "     classic: This is the DEFAULT geoip engine. It should work on all systems"
+	echo "              and receives automatic updates."
+	echo "libmaxminddb: This uses the libmaxminddb library. If you want to use this, then"
+	echo "              you need to install the libmaxminddb library on your system first"
+	echo "        none: Don't build with any geoip library (geoip-csv is still built)"
+	echo "Choose one of: classic, libmaxminddb, none"
+	echo $n "[$TEST] -> $c"
+	read cc
+	if [ -z "$cc" ] ; then
+		GEOIP=$TEST
+		break
+	fi
+	case "$cc" in
+	classic)
+		GEOIP="$cc"
+		;;
+	libmaxminddb)
+		GEOIP="$cc"
+		;;
+	none)
+		GEOIP="$cc"
+		;;
+	*)
+		echo ""
+		echo "Invalid choice: $cc"
+		TEST=""
+		;;
+	esac
+done
+
+echo ""
+TEST=""
+while [ -z "$TEST" ] ; do
+	TEST="$MAXCONNECTIONS_REQUEST"
+	echo ""
+	echo "What is the maximum number of sockets (and file descriptors) that"
+	echo "UnrealIRCd may use?"
+	echo "It is recommended to leave this at the default setting 'auto',"
+	echo "which at present results in a limit of up to 16384, depending on"
+	echo "the system. When you boot UnrealIRCd later you will always see"
+	echo "the effective limit."
+	echo $n "[$TEST] -> $c"
+	read cc
+	if [ -z "$cc" ] ; then
+		MAXCONNECTIONS_REQUEST=$TEST
+		break
+	fi
+	case "$cc" in
+		auto)
+			MAXCONNECTIONS_REQUEST="$cc"
+			;;
+		[1-9][0-9][0-9]*)
+			MAXCONNECTIONS_REQUEST="$cc"
+			;;
+		*)
+			echo ""
+			echo "You must to enter a number greater than or equal to 100."
+			echo "Or enter 'auto' to leave it at automatic, which is recommended."
+			TEST=""
+			;;
+	esac
+done
+if [ -n "$ADVANCED" ] ; then
+	RUN_ADVANCED
+fi
+
+TEST=""
+while [ -z "$TEST" ] ; do
+	if [ "$SANITIZER" = "asan" ] ; then
+		TEST="Yes"
+	else
+		TEST="No"
+	fi
+	echo ""
+	echo "Are you running UnrealIRCd as a test, debugging a problem or developing a module?"
+	echo "Then it is possible to run with AddressSanitizer enabled. This will make it"
+	echo "catch bugs such as out-of-bounds and other memory corruption issues, which can"
+	echo "be really helpful in some cases. The downside is that it will consume a lot"
+	echo "more memory and run slower too. So, only answer 'Yes' if you are OK with this."
+	echo "Also, on some systems (notably FreeBSD), when you enable AddressSanitizer,"
+	echo "UnrealIRCd may fail to start. So when in doubt, answer 'No'."
+	echo "Do you want to enable AddressSanitizer?"
+	echo $n "[$TEST] -> $c"
+	read cc
+	if [ -z "$cc" ] ; then
+		cc=$TEST
+	fi
+	case "$cc" in
+	[Yy]*)
+		SANITIZER="asan"
+		;;
+	[Nn]*)
+		SANITIZER=""
+		;;
+	*)
+		echo ""
+		echo "You must enter either Yes or No"
+		TEST=""
+		;;
+	esac
+done
+
+TEST="$EXTRAPARA"
+echo ""
+echo "Would you like to pass any custom parameters to configure?"
+echo "Most people don't need this and can just press ENTER."
+echo "Otherwise, see \`./configure --help' and write them here:"
+echo $n "[$TEST] -> $c"
+read EXTRAPARA
+if [ -z "$EXTRAPARA" ]; then
+	EXTRAPARA="$TEST"
+fi
+
+rm -f config.settings
+cat > config.settings << __EOF__
+#
+# These are the settings saved from running './Config'.
+# Note that it is not recommended to edit config.settings by hand!
+# Chances are you misunderstand what a variable does or what the
+# supported values are. You better just re-run the ./Config script
+# and answer appropriately there, to get a correct config.settings
+# file.
+#
+BASEPATH="$BASEPATH"
+BINDIR="$BINDIR"
+DATADIR="$DATADIR"
+CONFDIR="$CONFDIR"
+MODULESDIR="$MODULESDIR"
+LOGDIR="$LOGDIR"
+CACHEDIR="$CACHEDIR"
+DOCDIR="$DOCDIR"
+TMPDIR="$TMPDIR"
+PRIVATELIBDIR="$PRIVATELIBDIR"
+MAXCONNECTIONS_REQUEST="$MAXCONNECTIONS_REQUEST"
+NICKNAMEHISTORYLENGTH="$NICKNAMEHISTORYLENGTH"
+GEOIP="$GEOIP"
+DEFPERM="$DEFPERM"
+SSLDIR="$SSLDIR"
+REMOTEINC="$REMOTEINC"
+CURLDIR="$CURLDIR"
+NOOPEROVERRIDE="$NOOPEROVERRIDE"
+OPEROVERRIDEVERIFY="$OPEROVERRIDEVERIFY"
+GENCERTIFICATE="$GENCERTIFICATE"
+SANITIZER="$SANITIZER"
+EXTRAPARA="$EXTRAPARA"
+ADVANCED="$ADVANCED"
+__EOF__
+RUN_CONFIGURE
+cd "$UNREALCWD"
+cat << __EOF__
+
+ _______________________________________________________________________
+|                                                                       |
+|                    UnrealIRCd Compile-Time Config                     |
+|_______________________________________________________________________|
+|_______________________________________________________________________|
+|                                                                       |
+|                        - The UnrealIRCd Team -                        |
+|                                                                       |
+|              Bram Matthys (Syzop) - syzop@unrealircd.org              |
+|       Krzysztof Beresztant (k4be) - k4be@unrealircd.org               |
+|                            Gottem - gottem@unrealircd.org             |
+|                                 i - i@unrealircd.org                  |
+|_______________________________________________________________________|
+|_______________________________________________________________________|
+|                                                                       |
+| Now all you have to do is type '$MAKE' and let it compile. When that's |
+| done, you will receive other instructions on what to do next.         |
+|_______________________________________________________________________|
+__EOF__
+

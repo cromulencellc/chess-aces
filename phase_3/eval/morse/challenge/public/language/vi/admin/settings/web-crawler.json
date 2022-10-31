@@ -1,0 +1,10 @@
+{
+	"crawlability-settings": "Cài Đặt Khả Năng Thu Thập Thông Tin",
+	"robots-txt": "Tùy chỉnh Robots.txt <small>Để trống mặc định</small>",
+	"sitemap-feed-settings": "Sơ đồ trang web & Cài đặt Nguồn cấp dữ liệu",
+	"disable-rss-feeds": "Tắt Nguồn Cấp RSS",
+	"disable-sitemap-xml": "Tắt Sitemap.xml",
+	"sitemap-topics": "Số lượng Chủ đề để hiển thị trong Sơ đồ trang web",
+	"clear-sitemap-cache": "Xóa Bộ Đệm Sơ Đồ Trang Web",
+	"view-sitemap": "Xem Sơ Đồ Trang Web"
+}

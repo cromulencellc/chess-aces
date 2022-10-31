@@ -1,0 +1,4 @@
+debian/cvs-switchroot.1
+debian/stagedir/usr/share/man/man1/cvs.1
+debian/stagedir/usr/share/man/man5/cvs.5
+#debian/stagedir/usr/share/man/man8/cvsbug.8

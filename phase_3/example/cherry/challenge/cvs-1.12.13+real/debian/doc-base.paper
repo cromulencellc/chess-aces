@@ -1,0 +1,14 @@
+Document: cvs-doc-paper
+Title: CVS II: Parallelizing Software Development
+Author: Brian Berliner <berliner@prisma.com>
+Abstract: This paper is the cvs USENIX article, Winter 1990.
+ The program described in this paper fills a need in the UNIX community
+ for a freely available tool to manage software revision and release
+ control in a multi-developer, multi-directory, multi-group environment.
+ This tool also addresses the increasing need for tracking third-party
+ vendor source distributions while trying to maintain local modifications
+ to earlier releases.
+Section: Programming
+
+Format: PDF
+Files: /usr/share/doc/cvs/cvs-paper.pdf*

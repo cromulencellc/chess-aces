@@ -1,0 +1,21 @@
+
+{
+	"post-queue": "Cola de Mensajes",
+	"description": "No hay publicaciones en cola.<br>Para habilitar esta funcionalidad, ir a <a href=\"%1\">Ajustes/Publicar/Cola de Publicaciones</a>y habilitar <strong>Cola de publicaciones</strong>.",
+	"user": "Usuario",
+	"category": "Categoría",
+	"title": "Título",
+	"content": "Contenido",
+	"posted": "Publicado",
+	"reply-to": "Responder a %1",
+	"content-editable": "Click en el contenido para editar",
+	"category-editable": "Click en la categoría para editar",
+	"title-editable": "Click en el título para editar",
+	"reply": "Responder",
+	"topic": "Tema",
+	"accept": "Aceptar",
+	"reject": "Rechazar",
+	"remove": "Remove",
+	"notify": "Notify",
+	"notify-user": "Notify User"
+}

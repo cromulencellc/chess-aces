@@ -1,0 +1,11 @@
+{
+	"alert.confirm-rebuild-and-restart": "Ste si istý, že chcete znova zostaviť a reštartovať NodeBB?",
+	"alert.confirm-restart": "Ste si naozaj istý/á, že chcete reštartovať NodeBB?",
+
+	"acp-title": "Ovládací panel administrátora %1 | NodeBB ",
+	"settings-header-contents": "Obsah",
+	"changes-saved": "Changes Saved",
+	"changes-saved-message": "Your changes to the NodeBB configuration have been saved.",
+	"changes-not-saved": "Changes Not Saved",
+	"changes-not-saved-message": "NodeBB encountered a problem saving your changes. (%1)"
+}

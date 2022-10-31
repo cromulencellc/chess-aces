@@ -1,0 +1,41 @@
+Source: cvs
+Section: vcs
+Priority: optional
+Maintainer: Thorsten Glaser <tg@mirbsd.de>
+Homepage: http://www.nongnu.org/cvs/
+Build-Depends: debhelper (>= 11), bsdmainutils,
+ ghostscript, groff, libbsd-dev, libkrb5-dev | heimdal-dev, procps,
+ texinfo, texlive-latex-recommended, texlive-fonts-recommended, zlib1g-dev
+Standards-Version: 4.1.3
+VCS-git: https://evolvis.org/anonscm/git/alioth/cvs.git -b master
+VCS-Browser: https://evolvis.org/plugins/scmgit/cgi-bin/gitweb.cgi?p=alioth/cvs.git;a=shortlog;h=refs/heads/master
+
+Package: cvs
+Architecture: any
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${shlibs:Depends}, adduser,
+ dpkg (>= 1.15.4) | install-info
+Recommends: openssh-client
+Suggests: mksh (>= 40~), rcs
+Enhances: rcs, cvs2svn (>= 2.4.0-4~)
+Replaces: cvs-doc
+Conflicts: cvs-doc
+Provides: cvs-doc
+Description: Concurrent Versions System
+ CVS is a version control system, which allows you to keep access
+ to old versions  of files (usually source code), keep a log of
+ who, when, and why changes occurred, etc., like RCS or SCCS.
+ It handles multiple developers, multiple directories, triggers to
+ enable/log/control various operations, and can work over a wide
+ area network. The texinfo manual provides further information on
+ more tasks that it can perform.
+ .
+ There are some tasks that are not covered by CVS. They can be done in
+ conjunction with CVS but will tend to require some script-writing and
+ software other than CVS. These tasks are bug-tracking, build management
+ (that is, make and make-like tools), and automated testing. However,
+ CVS makes these tasks easier.
+ .
+ This package contains a CVS binary which can act as both client and
+ server, although there is no CVS dæmon; to access remote repositories,
+ please use :extssh: not :pserver: any more.

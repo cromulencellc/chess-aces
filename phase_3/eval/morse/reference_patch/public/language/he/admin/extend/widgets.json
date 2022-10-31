@@ -1,0 +1,30 @@
+{
+	"available": "וידג'טים זמינים",
+	"explanation": "בחר וידג'ט מהתפריט הנפתח ואז גרור ושחרר אותו באזור הווידג'ט של התבנית משמאל.",
+	"none-installed": "לא נמצאו וידג'טים! הפעל את תוספי הוידג'טים ב <a href=\"%1\">תוספים</a> בלוח הבקרה.",
+	"clone-from": "וידג'טים משוכפלים מ",
+	"containers.available": "גורמים מכילים זמינים",
+	"containers.explanation": "גרור ושחרר מעל כל וידג'ט פעיל",
+	"containers.none": "None",
+	"container.well": "Well",
+	"container.jumbotron": "Jumbotron",
+	"container.panel": "פאנל",
+	"container.panel-header": "כותרת פאנל",
+	"container.panel-body": "גוף הפאנל",
+	"container.alert": "התראה",
+
+	"alert.confirm-delete": "האם אתה בטוח שאתה רוצה למחוק את הוידג'ט?",
+	"alert.updated": "העלאת וידג'טים",
+	"alert.update-success": "הוידג'טים הועלו בהצלחה",
+	"alert.clone-success": "הוידג'טים שוכפלו בהצלחה",
+
+	"error.select-clone": "בחר דף לשכפל ממנו",
+
+	"title": "כותרת",
+	"title.placeholder": "כותרת (מוצגת רק בגורמים מכילים מסוימים)",
+	"container": "גורם מכיל",
+	"container.placeholder": "גרור ושחרר גורם מכיל (container) או הזן HTML כאן.",
+	"show-to-groups": "יוצג בקבוצות",
+	"hide-from-groups": "יוסתר מקבוצות",
+	"hide-on-mobile": "הסתר במובייל"
+}

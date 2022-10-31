@@ -1,0 +1,14 @@
+{
+	"figure-x": "Hình %1",
+	"error-events-per-day": "sự kiện mỗi ngày <code>%1</code>",
+	"error.404": "404 Không Tìm Thấy",
+	"error.503": "503 Dịch Vụ Không Sẵn Có",
+	"manage-error-log": "Quản Lý Nhật Ký Lỗi",
+	"export-error-log": "Xuất Nhật ký Lỗi (CSV)",
+	"clear-error-log": "Xóa Nhật Ký Lỗi",
+	"route": "Liên kết",
+	"count": "Số lượng",
+	"no-routes-not-found": "Hoan hô! Không có lỗi 404!",
+	"clear404-confirm": "Bạn có chắc chắn muốn xóa nhật ký lỗi 404 không?",
+	"clear404-success": "Đã xóa lỗi \"404 Không Tìm Lấy\""
+}

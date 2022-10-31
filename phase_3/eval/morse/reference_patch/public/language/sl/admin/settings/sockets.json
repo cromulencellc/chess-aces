@@ -1,0 +1,6 @@
+{
+    "reconnection": "Nastavitve vzpostavitve ponovne povezave",
+    "max-attempts": "Največ poskusov vzpostavitve ponovne povezave",
+    "default-placeholder": "Privzeto: %1",
+    "delay": "Zamuda pri vzpostavitvi ponovne povezave"
+}

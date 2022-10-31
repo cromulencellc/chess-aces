@@ -1,0 +1,21 @@
+
+{
+	"post-queue": "Berichtenwachtrij",
+	"description": "Er zijn geen berichten in de wachtrij. <br> Om deze functionaliteit in te schakelen, ga naar <a href=\"%1\">Instellingen &rarr; Bericht &rarr; Berichtenwachtrij</a> en schakel <strong>Berichtenwachtrij</strong> in.",
+	"user": "Gebruiker",
+	"category": "Categorie",
+	"title": "Titel",
+	"content": "Inhoud",
+	"posted": "Geplaatst",
+	"reply-to": "Antwoord naar \"%1\"",
+	"content-editable": "Klik op inhoud om aan te passen",
+	"category-editable": "Klik op categorie om aan te passen",
+	"title-editable": "Klik op titel om aan te passen",
+	"reply": "Antwoorden",
+	"topic": "Onderwerp",
+	"accept": "Accepteren",
+	"reject": "Afkeuren",
+	"remove": "Remove",
+	"notify": "Notify",
+	"notify-user": "Notify User"
+}

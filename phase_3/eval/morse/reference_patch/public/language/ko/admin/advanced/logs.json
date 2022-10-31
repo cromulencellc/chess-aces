@@ -1,0 +1,7 @@
+{
+	"logs": "로그",
+	"control-panel": "로그 제어판",
+	"reload": "로그 리로드",
+	"clear": "로그 초기화",
+	"clear-success": "로그 초기화 완료!"
+}

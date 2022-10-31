@@ -1,0 +1,15 @@
+chess_challenge_metadata: '1.0.0'
+targets:
+  - name: 'edgewood'
+    compose_service: 'ta3_edgewood'
+    role: 'server'
+    runtime:
+      type: JavaScript
+      path: 'challenge_bin/build/index.js'
+      container_path: '/mnt/challenge/build/index.js'
+    main_source:
+      type: TypeScript
+      path: 'challenge_src/src/index.ts'
+      container_path: '/mnt/challenge/src/index.ts'
+poller:
+  compose_service: ta3_edgewood_sp_s1

@@ -1,0 +1,18 @@
+{
+	"none": "Vaše fórum zatiaľ neobsahuje žiadne témy.",
+	"bg-color": "Farba pozadia",
+	"text-color": "Farba textu",
+	"description": "Select tags by clicking or dragging, use <code>CTRL</code> to select multiple tags.",
+	"create": "Vytvoriť značku",
+	"modify": "upraviť značky",
+	"rename": "Premenovať značky",
+	"delete": "Odstrániť vybraté značky",
+	"search": "Hľadanie značky...",
+	"settings": "Tags Settings",
+	"name": "Názov značky",
+
+	"alerts.editing": "Editing tag(s)",
+	"alerts.confirm-delete": "Chcete odstrániť vybranú značku?",
+	"alerts.update-success": "Značka bola aktualizovaná!",
+	"reset-colors": "Reset colors"
+}

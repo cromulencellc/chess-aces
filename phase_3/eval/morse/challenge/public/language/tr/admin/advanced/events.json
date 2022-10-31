@@ -1,0 +1,13 @@
+{
+	"events": "Aktiviteler",
+	"no-events": "Aktivite yok",
+	"control-panel": "Aktivite Kontrol Paneli",
+	"delete-events": "Aktiviteyi Sil",
+	"confirm-delete-all-events": "Kaydedilen tüm etkinlikleri silmek istediğinizden emin misiniz?",
+	"filters": "Filtreler",
+	"filters-apply": "Filtreleri Uygula",
+	"filter-type": "Aktivite türü",
+	"filter-start": "Başlangıç zamanı",
+	"filter-end": "Bitiş zamanı",
+	"filter-perPage": "Sayfa Başına"
+}

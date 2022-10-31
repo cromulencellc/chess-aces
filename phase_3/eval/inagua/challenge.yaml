@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'inagua'
+    compose_service: 'ta3_inagua'
+    role: 'server'
+    runtime:
+      path: challenge_bin/ngircd-26.1/src/ngircd/ngircd
+      container_path: /home/challenge/ngircd-26.1/src/ngircd
+      type: ELF
+    main_source:
+      path: challenge_src/ngircd-26.1/src/ngircd.c
+      container_path: /home/challenge/ngircd-26.1/src/ngircd.c
+      type: C
+poller:
+  compose_service: 'ta3_inagua_sp_s1'

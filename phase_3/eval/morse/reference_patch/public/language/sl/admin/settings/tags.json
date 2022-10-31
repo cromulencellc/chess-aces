@@ -1,0 +1,12 @@
+{
+    "tag": "Nastavitve oznak",
+    "link-to-manage": "Upravljaj oznake",
+    "system-tags": "System Tags",
+    "system-tags-help": "Ze oznake bodo lahko uporabljali le privilegirani uporabniki.",
+    "min-per-topic": "Najmanj oznak na temo",
+    "max-per-topic": "Največ oznak na temo",
+    "min-length": "Najmanjša dolžina oznake",
+    "max-length": "Največja dolžina oznake",
+    "related-topics": "Sorodne teme",
+    "max-related-topics": "Največ sorodnih tem za prikaz (če jih tema podpira)"
+}

@@ -1,0 +1,23 @@
+{
+    "category": "دسته‌بندی",
+    "subcategories": "زیر دسته‌بندی‌",
+    "new_topic_button": "موضوع تازه",
+    "guest-login-post": "برای ارسال پست وارد شوید",
+    "no_topics": "<strong>هیچ پستی در این دسته‌بندی نیست.</strong><br />چرا شما یکی نمی‌فرستید؟",
+    "browsing": "بیننده‌ها",
+    "no_replies": "هیچ کسی پاسخ نداده است.",
+    "no_new_posts": "هیچ پست جدیدی وجود ندارد.",
+    "watch": "پیگیری",
+    "ignore": "نادیده گرفتن",
+    "watching": "درحال پیگیری",
+    "not-watching": "درحال پیگیری نیستید",
+    "ignoring": "در حال نادیده گرفتن",
+    "watching.description": "موضوع ها را در بخش نخوانده ها و تازه ها نشان بده",
+    "not-watching.description": "موضوع ها را در بخش نخوانده ها نمایش نده و در بخش تازه ها نشان بده",
+    "ignoring.description": "موضوع ها را در بخش نخوانده ها و تازه ها نمایش نده",
+    "watching.message": "You are now watching updates from this category and all subcategories",
+    "notwatching.message": "You are not watching updates from this category and all subcategories",
+    "ignoring.message": "You are now ignoring updates from this category and all subcategories",
+    "watched-categories": "دسته بندی های پیگیری شده",
+    "x-more-categories": "%1 more categories"
+}

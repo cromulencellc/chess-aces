@@ -1,0 +1,30 @@
+{
+	"available": "Verfügbare Widgets",
+	"explanation": "Widget vom Dropdown-Menu auswählen und anschließend links in den Widget-Bereich einer Vorlage ziehen.",
+	"none-installed": "Keine Widgets gefunden! Aktivieren Sie das Widget Essentials Plugin im <a href=\"%1\">Plugin-Kontrollzentrum</a>.",
+	"clone-from": "Klone Widget von",
+	"containers.available": "Verfügbare Container",
+	"containers.explanation": "Auf ein beliebiges aktives Widget ziehen",
+	"containers.none": "Nichts",
+	"container.well": "Well",
+	"container.jumbotron": "Jumbotron",
+	"container.panel": "Panel",
+	"container.panel-header": "Panel Header",
+	"container.panel-body": "Panel Körper",
+	"container.alert": "Alarm",
+
+	"alert.confirm-delete": "Sind Sie sicher, dass Sie dieses Widget löschen wollen?",
+	"alert.updated": "Widgets aktualisiert",
+	"alert.update-success": "Widgets erfolgreich aktualisiert",
+	"alert.clone-success": "Die Widgets wurden erfolgreich geklont",
+
+	"error.select-clone": "Bitte wähle eine Seite aus von der geklont werden soll",
+
+	"title": "Titel",
+	"title.placeholder": "Titel (nur in bestimmten Bereichen zusehen)",
+	"container": "Container",
+	"container.placeholder": "Ziehen Sie einen Container per Drag & Drop oder geben Sie hier HTML ein.",
+	"show-to-groups": "Für Gruppen anzeigen",
+	"hide-from-groups": "Für Gruppen verbergen",
+	"hide-on-mobile": "Auf Mobile verbergen"
+}

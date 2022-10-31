@@ -1,0 +1,4366 @@
+/*
+filename    basis
+password    screwloose
+changedby   Whistler
+EmailAdd     HTMLCOMPILED
+request     compile
+version     1
+END HEADER*/
+
+#include <macros.h>
+
+%zone                                  basis
+reset RESET_NOT
+
+weather 1040
+
+creators {"papi"}
+
+notes
+"This is the basis zone. Dont let any rooms point to this zone, or use any
+objects from this zone without special permission. Do not slime objects from
+this zone."
+
+help
+"This zone is not intended for players, unless you are in void or dead.
+The great god Papi created this realm."
+/*Colour test (blue background):<br/><br/>
+
+Black.<br/>
+Red.<br/>
+Green.<br/>
+Yellow.<br/>
+Blue.<br/>
+Magenta.<br/>
+Cyan.<br/>
+White.<br/>
+Bright Black.<br/>
+Bright Red.<br/>
+Bright Green.<br/>
+Bright Yellow.<br/>
+Bright Blue.<br/>
+Bright Magenta.<br/>
+Bright Cyan.<br/>
+Bright White.<br/>
+
+"
+*/
+
+/* used for a quest fix */
+
+%dil
+
+
+
+#define AVERAGE_SKILL_COST      10
+#define SKILL_POINT_FACTOR      (8) 
+#define ABILITY_POINT_FACTOR    (4)
+
+dilbegin integer buglostint(pc : unitptr, ip : integer, s : string);
+code
+{
+   secure(pc, lostpc);
+
+   :loop:
+   wait(SFB_CMD, 1==1);
+   goto loop;
+
+   :lostpc:
+   log("Lost PC in called function integer.");
+   return(0);
+}
+dilend
+
+
+dilbegin unitptr buglostpc(pc : unitptr);
+external
+   integer buglostint(pc : unitptr, ip : integer, s : string);
+var
+   i : integer;
+code
+{
+   secure(pc, lostpc);
+
+   :loop:
+   i := buglostint(pc, 42, "42");
+   if (pc == null)
+      log("PC is null");
+   else
+      log(pc.name);
+   wait(SFB_CMD, 1==1);
+   goto loop;
+
+   :lostpc:
+   exec("emote loses its grip.", self);
+   log("Lost PC in called function.");
+   pc := null;
+   return(pc);
+}
+dilend
+
+
+
+dilbegin string testsymname();
+code
+{
+   return(self.symname);
+}
+dilend
+
+dilbegin worms();
+var
+   u : unitptr;
+code
+{
+   heartbeat := 4*PULSE_SEC;
+   pause;
+   u := load("energyworms@basis");
+   link(u, self);
+   quit;
+}
+dilend
+
+/* MS2020. the command string "s" will be blocked and the two messages in stringlist sl */ 
+/* will be acted. Example: command_block("backstab",                                    */
+/* "You try to disarm $3n, but he dodges your attempt easily.",                         */
+/* "$1n tries to disarm $3n but he dodges $1n's attempt easily.")                       */
+
+dilbegin command_block(s : string, schar : string, srest : string);
+var
+   pc      : unitptr;
+   u       : unitptr;
+code
+{
+   :start:
+   wait(SFB_CMD,command("backstab") and (activator.type == UNIT_ST_PC) and (self.position >= POSITION_RESTING));
+   pc:=activator;
+   secure(pc,start);
+   block;
+   act(schar, A_SOMEONE,pc, null, self, TO_CHAR);
+   act(srest, A_SOMEONE,pc, null, self, TO_REST);
+   set_fighting(self,pc);
+   exec("kill "+pc.name,self);
+   goto start;
+}
+dilend
+
+
+dilbegin aware nospell();
+var
+        pc      : unitptr;
+
+code
+{
+heartbeat := PULSE_SEC*2;
+    on_activation((self.position <= POSITION_SLEEPING), skip);
+
+:start:
+wait(SFB_PRE, (command("cast") and (activator == self)));
+block;
+pc := activator;
+if(command("cast"))
+{
+ act("Much to your dismay, your magical abilities do not seem"+
+     " to function now!", A_ALWAYS, self, null, null, TO_CHAR);
+ act("$1n attempts to cast a spell, but $1s powers dissipate"+
+     " abruptly.", A_SOMEONE, self, null, null, TO_REST);
+     goto start;
+}
+}
+dilend
+
+// Clean old junk away
+dilbegin login_scrub(tgt : unitptr);
+external
+   login_clean@justice();
+   login_clean@guilds();
+var
+   i : integer;
+   ext : extraptr;
+code
+{
+   heartbeat := PULSE_SEC;
+
+   /* Following in from Eirinn to fix status */
+   i := dildestroy("status_dil@guild_paths", tgt);
+   i:=dildestroy("cmd_interpreter@commands", tgt);
+   i:=dildestroy("cmd_bugs@commands", tgt);
+   i:=dildestroy("cmd_ideas@commands", tgt);
+   i:=dildestroy("cmd_typos@commands", tgt);
+   i:=dildestroy("piset@commands", tgt);
+   subextra (tgt.quests,"$newbie guide is helping");
+
+   if ("$horse_owner" in self.extra)
+      subextra(tgt.extra,"$horse_owner");
+
+   if ("$RES_TIMER" in self.extra)
+      subextra(self.extra, "$RES_TIMER");
+
+  
+  
+   /* to fix a bjorni quest mess */
+   if ("Nidhogg's prize given" in tgt.quests)
+   {
+      subextra (tgt.quests,"Nidhogg's prize given");
+      addextra(tgt.quests, {"Replacing the Prize"}, "");
+      log("subed and added");
+   }
+   /* end bjorni quest mess fix */   
+
+   /* clan fix */
+    if ("$clan-_symbolic" in self.extra)
+	{
+		ext := "$clan-_symbolic" in self.extra;
+		addextra(self.extra, {"$clan_symbolic"}, ext.descr);
+		subextra (self.extra,"$clan-_symbolic");
+		log("Clan: " + self.name + " extra updated from $clan-_symbolic to $clan_symbolic. Descr is: " + ext.descr);
+	}
+   /* end clan fix */
+   
+   /* Following mess to fix the mess with night and night1 zones by Ratlin */
+   /*added fix for removing quest flags for heulhous and heul2 quests ZT 080808*/
+                  
+   subextra (tgt.quests,"Saint Steven's Request Ongoing");      //ZT 080808
+   subextra (tgt.quests,"Saint Steven's Request Completed");    //ZT 080808
+   subextra (tgt.quests,"Saint Steven's Request Refused");      //ZT 080808
+   subextra (tgt.quests,"Piers's Request Ongoing");             //ZT 080808
+   subextra (tgt.quests,"Piers's Request Completed");           //ZT 080808
+   subextra (tgt.quests,"Piers's Request Refused");             //ZT 080808
+   subextra (tgt.quests,"Helping a Hamadryad");                 //ZT 080808
+   subextra (tgt.quests,"Hamadryad Helped");                    //ZT 080808
+   subextra (tgt.quests,"Helped prevent a war");
+   subextra (tgt.quests,"The kings wife resurrected");
+   subextra (tgt.quests,"Tower Quest Ongoing");
+   subextra (tgt.quests,"Tower Quest Completed");
+   subextra (tgt.quests,"Markus Lowbie Quest Completed");
+   subextra (tgt.quests,"Markus Quest Complete");
+   subextra (tgt.quests,"Markus Lowbie Quest Ongoing");
+   subextra (tgt.quests,"Markus Quest Ongoing");
+   subextra (tgt.quests,"Markus Quest Finished");
+   subextra (tgt.quests,"Eiyonel's Quest Ongoing");
+   subextra (tgt.quests,"Eiyonel's Quest Complete");
+   subextra (tgt.quests,"Aristol's Quest Ongoing");
+   subextra (tgt.quests,"Aristol's Quest Complete");
+   subextra (tgt.quests,"Drynmyr's Quest Ongoing");
+   subextra (tgt.quests,"Drynmyr's Quest Complete");
+   subextra (tgt.quests,"Kithyrn Tower Traversed");
+   subextra (tgt.quests,"Killed Jewel Djinn");
+   subextra (tgt.quests,"Sabbath Ongoing");
+   subextra (tgt.quests,"Sabbath Complete");
+   subextra (tgt.quests,"Samia Ongoing");
+   subextra (tgt.quests,"Samia Complete");
+   subextra (tgt.quests,"Nobility Ongoing");
+   subextra (tgt.quests,"Nobility Complete");
+   subextra (tgt.quests,"Knight Ongoing");
+   subextra (tgt.quests,"Knight Complete");
+   subextra (tgt.quests,"Reputation Ongoing");
+   subextra (tgt.quests,"Reputation Complete");
+   subextra (tgt.quests,"Sentinel Ongoing");
+   subextra (tgt.quests,"Sentinel Complete");
+   subextra (tgt.quests,"Beren Ongoing");
+   subextra (tgt.quests,"Beren Complete");
+   subextra (tgt.quests,"Lancetorn Ongoing");
+   subextra (tgt.quests,"Lancetorn Complete");
+   subextra (tgt.quests,"Galanor Ongoing");
+   subextra (tgt.quests,"Galanor Complete");
+   subextra (tgt.quests,"Riddler Ongoing");
+   subextra (tgt.quests,"Riddler Complete");
+   subextra (tgt.quests,"Morrion Ongoing");
+   subextra (tgt.quests,"Morrion Complete");
+   subextra (tgt.quests,"Pact Sealed");
+   subextra (tgt.quests,"$revenge");
+   subextra (tgt.quests,"Gather Ongoing");
+   subextra (tgt.quests,"Gather Complete");
+   subextra (tgt.quests,"Ongoing");
+   subextra (tgt.quests,"Book of Vile Darkness Ongoing");
+   subextra (tgt.quests,"Book of Vile Darkness Completed");
+   subextra (tgt.quests,"Blood Quest Ongoing");
+   subextra (tgt.quests,"Book of Vile Darkness Reject");
+   subextra (tgt.quests,"Blood Quest Completed");
+   subextra (tgt.quests,"Homefire Quest Complete");
+   subextra (tgt.quests,"Homefire Quest Ongoing");
+   subextra (tgt.quests,"Darkstar Quest Ongoing");
+   subextra (tgt.quests,"Darkstar Quest Complete");
+   subextra (tgt.quests,"Mornick's Quest Ongoing");
+   subextra (tgt.quests,"Mornick's Quest Complete");
+   subextra (tgt.quests,"Zoat's quest ongoing");
+   subextra (tgt.quests,"Brother Maynard's Quest Ongoing");
+   subextra (tgt.quests,"Brother Maynard's Quest Complete");
+   subextra (tgt.quests,"Sun Quest Ongoing");
+   subextra (tgt.quests,"Golem Quest Ongoing");
+   subextra (tgt.quests,"Golem Quest Complete");
+   subextra (tgt.quests,"Sun Sword Quest Complete");
+   subextra (tgt.extra,"$NO_DEC03");    
+   subextra (tgt.extra,"$NO_DEC2402");
+   subextra (tgt.extra,"$NO_DEC02");
+   subextra (tgt.extra,"$NOXMAS2");
+   subextra (tgt.extra,"$NO_DEC06");
+
+   login_clean@justice();
+   login_clean@guilds();
+   return;
+}
+dilend
+
+
+
+dilbegin login_modify(tgt : unitptr);
+external
+   login_scrub@basis(tgt : unitptr);
+
+var
+   i : integer;
+   exd : extraptr;
+code
+{
+   heartbeat := PULSE_SEC;
+
+   // Make sure we have a current DIL running
+   i := dildestroy("send_prompt@update", self);
+   dilcopy("send_prompt@update",self);
+
+   exd := "$channels" in self.info;
+   if (exd == null)
+   {
+      // Setup default comm channels
+      addextra(self.info, {"$channels", "newbie", "mud", "builder"}, "");
+   }
+
+   // Also set channel for immortals
+   i := dildestroy("channel@function", self);
+   dilcopy("channel@function", self);
+
+   if (self.level<200)
+   {   
+      i := dildestroy("remote_train@basis", self);
+
+      if (self.level < 10)
+      {
+         //dilcopy("remote_train@basis",self);
+         dilcopy("train_nag@basis",self);
+      }
+      else
+      {
+         i := dildestroy("train_nag@basis", self);
+      }
+
+      if (self.level <= 5)
+      {
+         dilcopy("still_newbie@udgaard", self);
+         dilcopy("odinshand@basis", self);
+      }
+
+      i := dildestroy("regen_pc@update", self);
+      dilcopy("regen_pc@update",self);
+
+      i := dildestroy("stomach@update", self);
+      dilcopy("stomach@update",self);
+
+      dilcopy("fixwt@basis()", self);
+      dilcopy("break_eq@basis()", self);
+
+
+      if (not(dilfind("pk_timer@basis", self)))
+         dilcopy("pk_timer@basis()", self);
+
+      if ("$PK_EXTRA" in self.extra)
+         dilcopy("pk_erase@basis()", self);
+
+   }
+
+   login_scrub(self);
+   dilcopy("got_mail@mail()", self);
+
+   return;
+}
+dilend
+
+
+
+dilbegin aware unique fnpri(FN_PRI_SYS) link_dead();
+var
+   t:integer;
+   c:integer;
+
+code
+{
+   heartbeat := PULSE_SEC*30;
+   pause; // Take a 30 second break.
+
+   sendto("linkdead", self);
+
+   t:=realtime;
+   if(self.level >= IMMORTAL_LEVEL)
+      goto wiz;
+ 
+   if (self.extra.["$PK_TIMER"]==null)
+   {
+      act ("$1n leaves the world for another realm.", A_SOMEONE,self,null,null,TO_REST);
+      destroy (self);
+   }
+
+   :start:
+   if (self.fighting!=null)
+      goto fgting;
+
+   c:=realtime-atoi(self.extra.["$PK_TIMER"].descr);
+   if (c>300)
+   {
+      act ("$1n leaves the world for another realm.", A_SOMEONE,self,null,null,TO_REST);
+      destroy (self);
+   }
+
+   heartbeat:=PULSE_SEC*30;
+
+   :fgting:
+   wait(SFB_TICK,TRUE);
+   goto start;
+
+:wiz:
+destroy(self);
+quit;
+}
+dilend
+
+
+dilbegin informer();
+external
+   string whostring@comm();
+var
+   tgt : unitptr;
+   w : string;
+   exd : extraptr;
+code
+{
+   heartbeat := PULSE_SEC;
+
+   tgt := ghead();
+
+   while (tgt.type == UNIT_ST_PC)
+   {
+      if ((isset(tgt.pcflags,PC_INFORM)) and (tgt != self))
+      {
+         if(visible(tgt,self))
+         {
+            if (self.outside == tgt.outside)
+               sendtext(self.name+" has arrived.<br/>", tgt);
+            else
+               sendtext(self.name+" has entered the world.<br/>", tgt);
+         }
+      }
+
+      tgt := tgt.gnext;
+   }
+
+   if (self.minv < IMMORTAL_LEVEL)
+   {
+      // Notify of newbies on the newbie channel
+      if (self.level < 2)
+      {
+         tgt := findroom("void@basis");
+         exd := "$newbies" in tgt.extra;
+         if (exd == null)
+         {
+            addextra(tgt.extra, {"$newbie"}, "");
+            exd := "$newbies" in tgt.extra;
+         }
+
+         if (not(self.name in exd.names))
+         {
+            addstring(exd.names, self.name);  // Persists until reboot
+            dispatch("discord msg #newbie Welcome **@" + self.name + "** to Valhalla MUD."); // Send to dispatcher.py via pipeDispatcher
+         }
+      }
+
+      w := whostring@comm();
+      dispatch("discord who " + w); // Send to dispatcher.py via pipeDispatcher
+   }
+
+   return;
+}
+dilend
+
+
+// Rescue level 0,1,2 players that are about to die from minor
+// combat. A huge blow is going to kill them though. So save
+// them only from fights their own size.
+//
+dilbegin fnpri(FN_PRI_BODY-2) unique aware odinshand();
+var
+   u : unitptr;
+code
+{
+   heartbeat := PULSE_SEC * 5;
+
+   :loop:
+   wait(SFB_TICK | SFB_CMD,  TRUE);
+
+   if (self.hp < 1)
+   {
+      if (self.level >= 3)
+         quit;
+
+      if (dilfind("death_seq@death",self) or dilfind("raw_kill@death",self))
+         return;
+
+      self.hp := 1;
+
+      act("Just as things are looking bleak for $1n $1e suddenly vanishes in a puff of smoke.", A_ALWAYS, self, null, null, TO_ROOM);
+
+      u := findroom("heal_room@udgaard");
+      if (u == null)
+      {
+         log("Unable to locate heal_room@udgaard in odinshand() DIL");
+         quit;
+      }
+
+      stop_fighting(self, null);
+      link(self, u);
+      self.position := POSITION_RESTING;
+
+      act("The hand of Odin puts $1n on the ground.", A_ALWAYS, self, null, null, TO_ROOM);
+      act("Just when all seems lost you feel Odin's magnificent power aid you.", A_ALWAYS, self, null, null, TO_CHAR);
+      exec("look", self);
+   }
+   goto loop;
+}
+dilend
+
+
+// I believe this is the first DIL to be called when someone logs on
+//
+dilbegin aware unique fnpri(FN_PRI_SYS) on_connect();
+external
+   informer();
+   login_modify(tgt : unitptr);
+   string dlrdump@commands(pfx : string);
+   login_event@bounty();
+
+
+var
+   wizlvl : integer;
+   i:integer;
+   err : integer;
+   motd : string;
+   welcome : string;
+   goodbye : string;
+   s : string;
+   exd : extraptr;
+
+code
+{
+   heartbeat := PULSE_SEC;
+
+   err := loadstr("motd",motd);
+
+   if (err > 0)
+   {
+      motd := textformat(motd);
+      sendtext(motd+"<br/>", self);
+   }
+
+   err := loadstr("welcome",welcome);
+
+   s := dlrdump@commands("$alias");
+   sendtext(s, self);
+   s := dlrdump@commands("$var");
+   sendtext(s, self);
+   s := dlrdump@commands("$trigger");
+   sendtext(s, self);
+
+   if (self.level < 200)
+   {
+      if(err > 0)
+         sendtext("<br/>"+welcome+"<br/><br/>", self);
+      gamestate(self, GS_PLAY);
+      informer();
+      login_modify(self);
+      exec("look", self);
+      login_event@bounty();
+      quit;
+   }
+
+   //gamestate(self, GS_MENU);
+
+   :wiz_menu:
+   sendtext("Welcome to Valhalla<br/><br/>", self);
+   sendtext("1) Enter Valhalla<br/>", self);
+   sendtext("W) Change Wizinv level ["+itoa(self.minv)+"]<br/>",self);
+   sendtext("0) Exit Valhalla<br/><br/>", self);
+   sendtext("Make your choice: ", self);
+   wait(SFB_CMD, TRUE);
+
+   if (command("1"))
+   {
+      if(err > 0)
+         sendtext("<br/>"+welcome+"<br/><br/>", self);
+      gamestate(self, GS_PLAY);
+      informer();
+      login_modify(self);
+      exec("look", self);
+      quit;
+   }
+   else if (command("0") )
+   {
+      err := loadstr("goodbye",goodbye);
+      if (err > 0)
+      {
+         goodbye := textformat(goodbye);
+         sendtext(goodbye, self);
+      }
+      destroy(self);
+      quit;
+   }
+   else if (command("w") )
+   {
+      sendtext("Enter new WizInv Level: ", self);
+      wait(SFB_CMD, TRUE);
+      wizlvl := atoi(cmdstr);
+      if (wizlvl > self.level)
+         wizlvl := self.level;
+      self.minv := wizlvl;
+   }
+   else
+   {
+      sendtext("Invalid Selection<br/><br/>", self);
+      goto wiz_menu;
+   }
+}
+dilend
+
+
+dilbegin aware pk_timer();
+code
+{
+heartbeat:=PULSE_SEC*3;
+:start:
+wait (SFB_COM,activator==self);
+if (self.fighting.type==UNIT_ST_PC)
+ {
+ subextra(self.extra,"$PK_TIMER");
+ addextra (self.extra,{"$PK_TIMER"},itoa(realtime));
+ }
+goto start;
+}
+dilend
+
+dilbegin aware pk_erase();
+code
+{
+heartbeat:=PULSE_SEC*3;
+while ("$PK_EXTRA" in self.extra){
+ subextra(self.extra,"$PK_EXTRA");}
+ quit;
+}
+dilend
+
+/* morph_corpse disabled per Whistler's request */
+
+dilbegin morph_corpse ();
+
+var
+   pc       : unitptr;
+   corpse   : unitptr;
+   dest     : unitptr;
+   u        : unitptr;
+
+   roomid   : string;
+   temp_str : string;
+   pc_name  : string;
+
+code
+{
+:init:
+   heartbeat := PULSE_SEC*10;
+
+:start:
+   wait(SFB_TICK, TRUE);
+
+/*
+Unit status: OBJECT  [corpse@death] 36 copies (CRC 36476746)
+Namelist: {"corpse of Dracik","corpse"}
+*/
+   foreach(UNIT_ST_OBJ, u)
+   {
+      if (u == self) continue;
+      if ( (u.nameidx + u.zoneidx) == "corpsebasis")
+      {
+         temp_str := u.names.[1];
+         pc_name  := getword(temp_str);
+         pc_name  := getword(temp_str);
+         pc_name  := temp_str;
+
+         if ((pc_name == "") or (pc_name == "%s"))
+            link(u, findroom("udonate@udgaard"));
+
+         else
+         {
+            pc := findunit(u, pc_name, FIND_UNIT_WORLD, null);
+             if(pc == null)
+             {
+              link(u, findroom("udonate@udgaard"));
+              goto start;
+             }
+            roomid := pc.names.[(length(pc.names) - 1)];
+            link(u,findroom(roomid));
+            substring(pc.names, roomid);
+         }
+      }
+   }
+  goto start;
+
+}
+dilend /* morph_corpse */
+
+dilbegin cheat_del();
+var
+ u:unitptr;
+ ut:unitptr;
+code
+{
+heartbeat := PULSE_SEC;
+if (not("$Chaos Lords" in self.quests)) quit;
+u:=self.inside;
+while (u!=null)
+ {
+ ut:=u.next;
+ destroy (u);
+ u:=ut;
+ }
+
+sendtext ("Your equipment has been deleted for using illegal dils on your equipment.<br/>",self);
+sendtext ("If this has acted on you and you think it is in error contacted Whistler@blinksoft.com<br/>",self);
+}
+dilend
+
+dilbegin fixstorage();
+var
+   u:unitptr;
+code
+{
+   heartbeat := PULSE_SEC;
+   self.capacity := 300;
+   self.alignment := 0;
+
+   u:=self.inside;
+   while (u)
+   {
+      self.alignment:=self.alignment+u.weight;
+      u := u.next;
+   }
+   quit;
+}
+dilend
+
+
+dilbegin fixwt();
+external
+   integer fixweight(u:unitptr);
+   integer carry_w_limit@function(u:unitptr);
+
+var
+   item:unitptr;
+   wgt:integer;
+
+code
+{
+   heartbeat := PULSE_SEC;
+   fixweight(self);
+
+   /*
+
+   This is commented out and replaced with a move check that
+   alerts a player. Allows you to carry more than you can but
+   at a movement EP penalty.
+
+   wgt := self.baseweight + carry_w_limit@function(self);
+   if (self.weight > wgt)
+   {
+      wgt := self.weight - wgt;
+      sendtext ("WARNING!! Your characters weight has been fixed.<br/>",self);
+      // sendtext ("You are "+itoa(wgt)+" pounds over weight<br/>",self);
+      log (self.name +" was over weight by "+itoa(wgt));
+      sendtext("Weight bugs make it so that combat is not always good for you as a player.<br/>",self);
+      sendtext("So we suggest you drop all in a safe location and get all and make sure you can carry everything.<br/>",self);
+   }*/
+   quit;
+}
+dilend
+
+
+dilbegin integer fixweight(u:unitptr);
+var
+   wgt:integer;
+   item:unitptr;
+
+code
+{
+   heartbeat := PULSE_SEC;
+   wgt:=0;
+
+   if ((u.names.[0]=="storage container") and (u.minv>=200))
+   {
+      //log(u.symname + " base = " + itoa(u.baseweight) + " weight= " + itoa(u.weight)+ " pre-set");
+      set_weight_base(u, 0);
+      set_weight(u, 0);
+      dilcopy("fixstorage@basis()",u);
+      return(0);
+	}
+
+   // Presume wizi items are storage containers
+   if (u.minv > 0)
+   {
+      return(u.weight);
+   }
+
+   if (u.inside == null)
+   {
+      if (u.weight != u.baseweight)
+      {
+         log(u.symname + " weight " + itoa(u.weight) + " !=  baseweight of " + itoa(u.baseweight) + ". Resetting.");
+         set_weight(u, u.baseweight);
+      }
+      return(u.weight);
+   }
+
+   item := u.inside;
+
+   while (item != null)
+   {
+      wgt:=wgt+fixweight(item);
+      item:=item.next;
+   }
+
+   //log("Setting " + u.symname + " to base + weight= " + itoa(wgt));
+   if (u.weight != u.baseweight + wgt)
+   {
+      log("container " + u.symname + " weight " + itoa(u.weight) + " !=  baseweight of " + itoa(u.baseweight) + ". Resetting.");
+      set_weight(u, u.baseweight+wgt);
+   }
+
+   return (u.weight);
+}
+dilend
+
+
+dilbegin break_eq ();
+var
+ item:unitptr;
+code
+{
+   heartbeat := PULSE_SEC;
+   if (self.level >=200)
+       quit;
+
+   item := self.inside;
+   while(item)
+   {
+      if ((item.hp<=-1) and (item.type==ITEM_TRASH))
+      {
+         item.manipulate:=0;
+         item.manipulate:=MANIPULATE_TAKE;
+      }
+      if ((item.hp<-1) and (item.objecttype!=ITEM_TRASH)
+         and (item.zoneidx!="treasure") and (item.zoneidx!="newbie"))
+      {
+         if (item.equip==0)
+         {
+            act ("Your $2N falls off.",A_ALWAYS,self,item,null,TO_CHAR);
+            act ("$1n's $2N falls off.",A_ALWAYS, self,item,null,TO_REST);
+         }
+
+         addextra (item.extra,item.names,"Whatever this was it looks like broken garbage now.");
+         item.title:=item.title+" Broken";
+         item.objecttype := ITEM_TRASH;
+         item.manipulate:=MANIPULATE_TAKE;
+         unequip (item);
+      }
+      item := item.next;
+   }
+   quit;
+}
+dilend
+
+
+
+dilbegin color_arg(); /* new arg */
+
+var
+  newarg      : string;
+  victim_name : string;
+  sending     : string;
+  pc          : unitptr;
+
+code
+{
+heartbeat := PULSE_SEC;
+:start:
+   wait(SFB_CMD,((command("carg") or command("cmes") or command("cech"))
+       and (activator.level>=235) and (activator==self.outside)));
+      if (cmdstr=="carg") goto carg_it;
+      if (cmdstr=="cmes") goto cmes_it;
+      if (cmdstr=="cech") goto cech_it;
+      goto start;
+
+:carg_it:
+   block;
+   if ("\\" in argument)
+   {
+      act("You may not use backslash escape characters!",A_ALWAYS,activator,null,null,TO_CHAR);
+      log(activator.name + " attempted to use newline characters in a colour object statement!");
+      goto start;
+   }
+   newarg := argument;
+   newarg := replace("&lt;","<",newarg);
+   newarg := replace("&gt;",">",newarg);
+   exec(newarg, activator);
+
+goto start;
+
+:cmes_it:
+   block;
+   if ("\\" in argument)
+   {
+   act("You may not use backslash characters!",A_ALWAYS,activator,null,null,TO_CHAR);
+   log(activator.name + " attempted to use newline characters in a colour object statement!");
+      goto start;
+   }
+   victim_name := getword(argument);
+   sending := argument;
+   sending := replace("&lt;","<",sending);
+   sending := replace("&gt;",">",sending);
+   
+   pc := findunit(activator, victim_name, FIND_UNIT_WORLD, null);
+   if (pc.type != UNIT_ST_PC)
+      {
+         act("Not a PC.", A_ALWAYS, activator, null, null, TO_CHAR);
+      }
+   else
+      {
+         act(sending, A_ALWAYS, pc, null, null, TO_CHAR);
+         act("Done.",A_ALWAYS, self.outside, null, null, TO_CHAR);
+   log(activator.name + " messaged " + pc.name + " in colour: " + argument);
+      }
+   goto start;
+
+:cech_it:
+   block;
+
+   if ("\\" in argument)
+   {
+act("You may not use backslash characters!",A_ALWAYS,activator,null,null,TO_CHAR);
+log(activator.name + " attempted to use backslash characters in a colour object statement!");
+      goto start;
+   }
+   sending := argument;
+   sending := replace("&lt;","<",sending);
+   sending := replace("&gt;",">",sending);
+
+   act(sending, A_SOMEONE, self.outside, null, null, TO_ROOM);
+   act(sending, A_ALWAYS, self.outside, null, null, TO_CHAR);
+   log(self.outside.name + " echoed " + argument + " in colour.");
+   goto start;
+
+
+goto start;
+}
+dilend /*color_arg*/
+
+
+dilbegin color_bc();
+
+var
+  pc     :unitptr;
+  newarg :string;
+code
+{
+	heartbeat := PULSE_SEC;
+	
+:start:
+	wait(SFB_CMD,((command("cb")) and (activator.level>=242) and (activator==self.outside)));
+	block;
+	pc:=activator;
+	if (("\\" in argument) and (activator.level<253))
+	{
+		act("You may not use newline characters!",A_ALWAYS,pc,null,null,TO_CHAR);
+		log(pc.name + " attempted to use newline characters in a "
+			+"broadcast below level 253!");
+		goto start;
+	}
+	if ("\\" in argument)
+	{
+		act("You may not change the background color, sorry.",A_ALWAYS,pc,null,null,TO_CHAR);
+		goto start;
+	}
+	newarg := argument;
+	newarg := replace("&lt;","<",newarg);
+	newarg := replace("&gt;",">",newarg);
+
+	while (pc.gprevious.type==UNIT_ST_PC)
+		pc := pc.gprevious;
+
+	while (pc.type==UNIT_ST_PC)
+	{
+		sendtext(newarg,pc);
+		pc:=pc.gnext;
+	}
+	goto start;
+}
+dilend /* color_bc */
+
+
+dilbegin color_title(); /* titles and names */
+external
+	string do_color@function(arg : string);
+var
+  pc          : unitptr;
+  victim_name : string;
+  victim      : unitptr;
+  newtitle    : string;
+  newname     : string;
+  commd       : string;
+code
+{
+heartbeat := PULSE_SEC;
+
+:start:
+	wait(SFB_CMD,((command("cname") or command("coltitle"))
+		and (activator.level>=240) and (activator==self.outside)));
+
+	pc:=self.outside;
+	secure(pc,lostem);
+	if (cmdstr=="cname") goto change_name;
+	if (cmdstr=="coltitle") goto change_title;
+
+:lostem:
+	unsecure(pc);
+	unsecure(victim);
+	goto start;
+
+:noperson:
+	act("No such person in world.",A_ALWAYS, pc, null, null, TO_CHAR);
+	goto lostem;
+
+:change_title:
+	block;
+	victim_name := getword(argument);
+	newtitle := argument;
+	newtitle := do_color@function(newtitle);
+   
+	if (victim_name == "")
+	{
+        act("No such thing in room, or no such person in world.",
+            A_ALWAYS, pc, null, null, TO_CHAR);
+        goto lostem;
+	}
+	if (argument == "")
+	{
+		act("Title is blank.",A_ALWAYS, pc, null, null, TO_CHAR);
+		goto lostem;
+	}
+
+	victim := findunit(pc, victim_name, FIND_UNIT_INVEN, null);
+	if (victim==null)
+	{
+        victim := findunit(pc, victim_name, FIND_UNIT_EQUIP, null);
+        if (victim==null)
+        {
+            victim := findunit(pc, victim_name, FIND_UNIT_SURRO, null);
+            if (victim==null)
+            {
+               victim := findunit(pc, victim_name, FIND_UNIT_WORLD, null);
+               if (victim.type!=UNIT_ST_PC) goto noperson;
+            }
+        }
+	}
+	secure(victim,lostem);
+	if ((victim.type==UNIT_ST_PC) and (activator.level<240))
+	{
+        act("You must be level 245 or higher to color title players.",
+            A_ALWAYS, pc, null, null, TO_CHAR);
+        goto lostem;
+	}
+	if ((victim.type!=UNIT_ST_OBJ) and (victim.type!=UNIT_ST_PC))
+	{
+        act("You cannot title that.",A_ALWAYS, pc, null, null, TO_CHAR);
+        goto lostem;
+	}
+
+	if (victim.level >= self.level)
+	{
+		act("I think $3e might object to that.",A_ALWAYS, pc, null, victim, TO_CHAR);
+		goto lostem;
+	}
+
+:set_title:
+	victim.title:=newtitle;
+	if (victim.type == UNIT_ST_OBJ)
+	{
+		log (pc.name + " color titled " + victim.name + ".");
+		act("You have received a new title.", A_ALWAYS, victim, null, null, TO_CHAR);
+	}
+	act("You have titled: " + victim.name +".", A_ALWAYS, pc, null, null, TO_CHAR);
+	goto lostem;
+
+
+:change_name:
+	block;
+	victim_name := getword(argument);
+	newname := argument;
+	newname := replace("&lt;","<",newname);
+	newname := replace("&gt;",">",newname);
+
+	if (victim_name == "")
+	{
+        :noobject:
+        act("No such thing here.", A_ALWAYS, pc, null, null, TO_CHAR);
+        goto lostem;
+	}
+	if (argument == "")
+	{
+		act("Name is blank.", A_ALWAYS, pc, null, null, TO_CHAR);
+        goto lostem;
+	}
+	victim := findunit(pc, victim_name, (FIND_UNIT_IN_ME + FIND_UNIT_SURRO),null);
+	secure(victim, lostem);
+	if (victim==null) goto noobject;
+	if (victim.type!=UNIT_ST_OBJ)
+	{
+        act("You can only rename items.",A_ALWAYS, pc, null, null, TO_CHAR);
+        goto lostem;
+	}
+
+:set_name:
+	addstring(victim.names,newname);
+	log(pc.name + " color-renamed " + victim.name + ".");
+	act(victim.name + " has been given a name by you.",A_ALWAYS, pc, null, null, TO_CHAR);
+	goto lostem;
+}
+dilend /* color_title */
+
+/* END COLOR DIL */
+
+
+dilbegin string listselector(sl : stringlist);
+var
+   i : integer;
+   j : integer;
+   s : string;
+code
+{
+   i := length(sl);
+   j := 0;
+   s := "";
+
+   while (j < i)
+   {
+      if (j < 9)
+         s := s + " &nbsp;";
+      else
+         s := s + " ";
+
+      s := s + itoa(j+1)+") "+sl.[j]+"<br/>";
+      j := j + 1;
+   }
+
+   return(s);
+}
+dilend
+
+
+/* MS2020 replaced guilds with professions. Guilds are joined in-game */
+/* whereas profession is more permanent and chosen just once          */
+/*                                                                    */
+dilbegin nanny_guild( arg : string );
+external
+   string listselector(sl : stringlist);
+   JoinGuild@guilds(pc : unitptr, sGuild : string);
+   NewPlayerProf@professions(pc : unitptr, prof : integer);
+var
+   exdp      : extraptr;
+   state     : integer;
+   n         : integer;
+   s         : string;
+   sl        : stringlist;
+   err       : integer;
+
+code
+{
+   heartbeat := PULSE_SEC;
+   exdp  := "$nanny" in self.extra;
+   state := atoi(exdp.descr);
+
+   sl := {GUILD_UDG_FIGHTER, GUILD_UDG_THIEF, GUILD_UDG_CLERIC, GUILD_UDG_MAGE};
+   if (state == 0)
+   {
+      s := listselector(sl);
+      sendtext("<br/><br/>Please choose your profession (many more avaialble later in the game):<br/>"
+	   +" &nbsp;&nbsp;&nbsp;&nbsp;<u>Profession</u><br/>" + s
+	   +"<br/>Please select the number above or Help: ",self);
+
+      exdp.descr := "1";
+      return;
+   }
+   else if (state == 1)
+   {
+      s := getword(arg);
+
+      if (s == "help")
+      {
+         // Would have been nice with a load string here
+         err:=loadstr("profession.logon", s);
+         if (err<1)
+            sendtext ("Profession logon help is not set please tell an admin when you log on.<br/>",self);
+         else
+         {
+            sendtext(s, self);
+	         sendtext("<br/>Please select the number above or Help or X to show the list again: ",self);
+         }
+
+         exdp.descr := "1";
+         return;
+      }
+
+      if (s == "X")
+      {
+         sendtext("Returning to previous menu.<br/>", self);
+         exdp.descr := "0";
+         nanny_guild("");
+         return;
+      }
+
+      n := atoi(s);
+
+      if ((n < 1) or (n > 4))
+      {
+         sendtext("No such profession is currently available to you. Please "
+   		 +"select one of the guilds (1 - 4) or X: ", self);
+         exdp.descr := "1";
+         return;
+      }
+
+      JoinGuild@guilds(self, sl.[n-1]);
+      
+      if (n == 1)
+         NewPlayerProf@professions(self, PROFESSION_FIGHTER);
+      else if (n == 2) 
+         NewPlayerProf@professions(self, PROFESSION_THIEF);
+      else if (n == 3)
+         NewPlayerProf@professions(self, PROFESSION_PRIEST);
+      else
+         NewPlayerProf@professions(self, PROFESSION_CONJURER);
+
+      // Now let's move Nanny to the next step
+      substring(exdp.names, "login guilds");
+      addstring(exdp.names, "personality");
+      exdp.descr := "0";
+   }
+   return;
+}
+dilend /* nanny_guild */
+
+
+
+/*
+ * This needs to be here because setting the profession requires
+ * adminsitrative privileges.
+ *
+ */
+dilbegin aware profess_choose();
+external
+   string listselector@basis(sl : stringlist);
+
+var
+   ch : unitptr;
+   i : integer;
+   sl : stringlist;
+   s  : string;
+
+code
+{
+   heartbeat := PULSE_SEC*4;
+   sl := {PROFESSION_STRINGS};
+
+   :loop:
+   wait(SFB_CMD, command("professions"));
+
+   :loopa:
+   block;
+   ch :=activator;
+   if ((ch.profession >= 0) and (ch.profession < length(sl)))
+   {
+      sendtext("Your profession is already set."+itoa(ch.profession)+"<br/>", ch);
+      goto loop;
+   }
+
+   sendtext("Please choose a profession:<br/>", ch);
+   s := listselector@basis(sl);
+   sendtext(s, ch);
+   sendtext("Please choose a profession:<br/>", ch);
+
+   sendtext("<br/>Type 'choose [number]' to pick your profession<br/>", ch);
+   secure(ch, lost);
+
+   :loop2:
+   wait(SFB_CMD, TRUE);
+
+   if (command("professions"))
+   {
+      if (activator != ch)
+      {
+         act("$1n says, '$3n, I'm busy helping out $2n, please be patient.'",
+              A_SOMEONE, self, ch, activator, TO_ROOM);
+         block;
+         goto loop2;
+      }
+      unsecure(ch);
+      goto loopa;
+   }
+
+   if (activator != ch)
+      goto loop2;
+
+   if (not command("choose"))
+      goto loop2;
+
+   block;
+   unsecure(ch);
+   
+   i := atoi(argument);
+
+   if ((i < 1) or (i > length(sl)))
+   {
+      sendtext("You must pick a valid number. Start over by typing 'professions'<br/>", ch);
+      goto loop;
+   }
+ 
+   i := i - 1;
+
+   sendtext("Your profession has been set. Congratulations.<br/>", ch);
+
+   ch.profession := i;
+   goto loop;
+
+   :lost:
+   exec("say How rude.", self);
+   exec("emote looks perplexed.", self);
+   goto loop;
+}
+dilend
+
+
+
+dilbegin nanny_alignment( arg : string );
+external
+   integer IsInGuild@guilds(pc : unitptr, sGuild : string);
+
+var
+   exdp   : extraptr;
+   state  : integer;
+   s      : string;
+   cat    : integer;
+   buf:string;
+   err:integer;
+
+code
+{
+   heartbeat := PULSE_SEC;
+   exdp  := "$nanny" in self.extra;
+   state := atoi(exdp.descr);
+/*
+   if ((self.race == RACE_HALFLING) or (self.race == RACE_ELF) or
+       (self.race == RACE_HALF_ELF) or (self.race == RACE_BROWNIE))
+*/
+   if (IsInGuild@guilds(self, GUILD_UDG_CLERIC) or IsInGuild@guilds(self, GUILD_NYM_RANGER))
+     cat := 1; // Good and Neutral 
+   else if (IsInGuild@guilds(self, GUILD_PALADIN))
+     cat := 2;
+/*
+   else if ((self.race == RACE_GROLL) or (self.race == RACE_HALF_ORC) or
+     (self.race == RACE_HALF_OGRE))
+     cat := 2;  Evil or Neutral */
+
+ /*  else if (self.race == RACE_DARK_ELF)
+   {
+      self.alignment := -1000;
+      goto done;
+   } */
+
+   else if (IsInGuild@guilds(self, GUILD_NECROMANCER) or IsInGuild@guilds(self, GUILD_KNIGHT))
+     cat := 3;
+
+   else
+     cat := 4; /* Player's choice */
+
+   if (state == 0)
+   {
+      if (cat == 1)
+ sendtext("<br/>Please choose your personality:<br/>"+
+   "  1) A saint             (Good)<br/>"+
+   "  2) Who cares?          (Neutral)<br/>"+
+   "Please select 1, 2 or Help: ", self);
+      else if (cat == 2)
+        sendtext("<br/>Please choose your personality (Only 1 choice):<br/>"+
+                 "  1) A saint             (Good)<br/>"+
+                 "Please select 1 or Help: ", self);
+      else if (cat == 3)
+ sendtext("<br/>Please choose your personality (Only 1 choice):<br/>"+
+   "  3) The devil's brother (Evil)<br/>"+
+   "Please select 3 or Help: ", self);
+      else
+ sendtext("<br/>Please choose your personality:<br/>"+
+   "  1) A saint             (Good)<br/>"+
+   "  2) Who cares?          (Neutral)<br/>"+
+   "  3) The devil's brother (Evil)<br/>"+
+   "Please select 1, 2, 3 or Help: ", self);
+
+      exdp.descr := "1";
+      return;
+   }
+
+   s := getword(arg);
+
+if (s=="help")
+{
+err:=loadstr ("alignment.logon",buf);
+if (err<1)
+sendtext ("The alignment logon help is not set please tell an admin when you log on.",self);
+else
+{
+buf:=textformat (buf);
+sendtext (buf,self);
+}
+
+if (cat == 1)
+sendtext("Please select 1, 2 "+
+"or Help: ", self);
+else if (cat == 2)
+sendtext("Please select 1 "+
+"or Help: ", self);
+else if (cat == 3)
+sendtext("Please select 3 " +
+"or Help: ", self);
+else
+sendtext("Please select 1, 2, 3 "+
+"or Help: ", self);
+
+return;
+}
+else    if ((s == "1") and (cat != 3))
+   {
+      sendtext("You are now a saint.<br/><br/>", self);
+      self.alignment := 850;
+   }
+   else if ((s == "2") and ((cat != 2) and (cat != 3)))
+   {
+      sendtext("Who cares about it anyway?<br/><br/>", self);
+      self.alignment := 0;
+   }
+   else if ((s == "3") and ((cat != 1) and (cat !=2)))
+   {
+      sendtext("So be it...<br/><br/>", self);
+      self.alignment := -850;
+   }
+   else
+   {
+      if (cat == 1)
+ sendtext("No such personality, please select 1, 2 "+
+   "or Help: ", self);
+      else if (cat == 2)
+ sendtext("No such personality, please select 1 "+
+   "or Help: ", self);
+      else if (cat == 3)
+        sendtext("No such personality, please select 3 " +
+                 "or Help: ", self);
+      else
+ sendtext("No such personality, please select 1, 2, 3 "+
+   "or Help: ", self);
+      return;
+   }
+
+   :done:
+
+                                          substring(exdp.names, "personality");
+  addstring(exdp.names, "newbie_text");
+  exdp.descr := "0";
+   return;
+}
+dilend
+
+//
+//Set player starting abilities and skills but nothing else.
+//this needs to be callable from both a new player init and
+//a rebirth
+//
+dilbegin pcinitabils();
+code
+{
+   heartbeat := 4;
+
+   // If a player figures out how to train on level 0 let them try once
+   self.ability_points := 10;
+   self.skill_points   := 10;
+
+   if (self.race==RACE_HUMAN)
+   {
+      self.abilities[ABIL_STR] := 4;
+      self.abilities[ABIL_CON] := 4;
+      self.abilities[ABIL_HP ] := 4;
+      self.abilities[ABIL_DEX] := 4;
+      self.abilities[ABIL_BRA] := 4;
+      self.abilities[ABIL_CHA] := 4;
+      self.abilities[ABIL_DIV] := 4;
+      self.abilities[ABIL_MAG] := 4;
+   }
+   else if (self.race==RACE_DWARF)
+   {
+      self.abilities[ABIL_STR] := 6;
+      self.abilities[ABIL_CON] := 4;
+      self.abilities[ABIL_HP ] := 6;
+      self.abilities[ABIL_DEX] := 2;
+      self.abilities[ABIL_BRA] := 4;
+      self.abilities[ABIL_CHA] := 2;
+      self.abilities[ABIL_DIV] := 4;
+      self.abilities[ABIL_MAG] := 4;
+   }
+   else if (self.race==RACE_ELF)
+   {
+      self.abilities[ABIL_STR] := 2;
+      self.abilities[ABIL_CON] := 4;
+      self.abilities[ABIL_HP ] := 4;
+      self.abilities[ABIL_DEX] := 4;
+      self.abilities[ABIL_BRA] := 4;
+      self.abilities[ABIL_CHA] := 4;
+      self.abilities[ABIL_DIV] := 6;
+      self.abilities[ABIL_MAG] := 4;
+   }
+   else if (self.race==RACE_HALFLING)
+   {
+      self.abilities[ABIL_STR] := 4;
+      self.abilities[ABIL_CON] := 6;
+      self.abilities[ABIL_HP ] := 4;
+      self.abilities[ABIL_DEX] := 6;
+      self.abilities[ABIL_BRA] := 4;
+      self.abilities[ABIL_CHA] := 2;
+      self.abilities[ABIL_DIV] := 4;
+      self.abilities[ABIL_MAG] := 2;
+   }
+   else if (self.race==RACE_GNOME)
+   {
+      self.abilities[ABIL_STR] := 2;
+      self.abilities[ABIL_CON] := 4;
+      self.abilities[ABIL_HP ] := 4;
+      self.abilities[ABIL_DEX] := 4;
+      self.abilities[ABIL_BRA] := 6;
+      self.abilities[ABIL_CHA] := 4;
+      self.abilities[ABIL_DIV] := 4;
+      self.abilities[ABIL_MAG] := 4;
+   }
+   else if (self.race==RACE_HALF_OGRE)
+   {
+      self.abilities[ABIL_STR] := 6;
+      self.abilities[ABIL_CON] := 6;
+      self.abilities[ABIL_HP ] := 8;
+      self.abilities[ABIL_DEX] := 2;
+      self.abilities[ABIL_BRA] := 2;
+      self.abilities[ABIL_CHA] := 2;
+      self.abilities[ABIL_DIV] := 4;
+      self.abilities[ABIL_MAG] := 2;
+   }
+   else if (self.race==RACE_HALF_ORC)
+   {
+      self.abilities[ABIL_STR] := 6;
+      self.abilities[ABIL_CON] := 6;
+      self.abilities[ABIL_HP ] := 6;
+      self.abilities[ABIL_DEX] := 4;
+      self.abilities[ABIL_BRA] := 2;
+      self.abilities[ABIL_CHA] := 2;
+      self.abilities[ABIL_DIV] := 4;
+      self.abilities[ABIL_MAG] := 2;
+   }
+   else if (self.race==RACE_BROWNIE)
+   {
+      self.abilities[ABIL_STR] := 2;
+      self.abilities[ABIL_CON] := 4;
+      self.abilities[ABIL_HP ] := 4;
+      self.abilities[ABIL_DEX] := 4;
+      self.abilities[ABIL_BRA] := 6;
+      self.abilities[ABIL_CHA] := 4;
+      self.abilities[ABIL_DIV] := 2;
+      self.abilities[ABIL_MAG] := 6;
+   }
+   else if (self.race==RACE_HALF_ELF)
+   {
+      self.abilities[ABIL_STR] := 4;
+      self.abilities[ABIL_DEX] := 4;
+      self.abilities[ABIL_CON] := 4;
+      self.abilities[ABIL_MAG] := 4;
+      self.abilities[ABIL_DIV] := 4;
+      self.abilities[ABIL_CHA] := 4;
+      self.abilities[ABIL_BRA] := 4;
+      self.abilities[ABIL_HP ] := 4;
+   }
+   else if (self.race==RACE_GROLL)
+   {
+      self.abilities[ABIL_STR] := 6;
+      self.abilities[ABIL_DEX] := 2;
+      self.abilities[ABIL_CON] := 8;
+      self.abilities[ABIL_MAG] := 2;
+      self.abilities[ABIL_DIV] := 2;
+      self.abilities[ABIL_CHA] := 2;
+      self.abilities[ABIL_BRA] := 2;
+      self.abilities[ABIL_HP ] := 8;
+   }
+   else if (self.race==RACE_DARK_ELF)
+   {
+      self.abilities[ABIL_STR] := 4;
+      self.abilities[ABIL_DEX] := 4;
+      self.abilities[ABIL_CON] := 2;
+      self.abilities[ABIL_MAG] := 6;
+      self.abilities[ABIL_DIV] := 2;
+      self.abilities[ABIL_CHA] := 4;
+      self.abilities[ABIL_BRA] := 6;
+      self.abilities[ABIL_HP ] := 4;
+   }
+   else
+   {
+      log("ERROR: playerinit() unknown self.race");
+      self.abilities[ABIL_STR] := 4;
+      self.abilities[ABIL_DEX] := 4;
+      self.abilities[ABIL_CON] := 4;
+      self.abilities[ABIL_MAG] := 4;
+      self.abilities[ABIL_DIV] := 4;
+      self.abilities[ABIL_CHA] := 4;
+      self.abilities[ABIL_BRA] := 4;
+      self.abilities[ABIL_HP ] := 4;
+   }
+
+   self.skills[SKI_FLEE]        := 50;
+   self.skills[SKI_CONSIDER]    := 50;
+   self.skills[SKI_DIAGNOSTICS] := 50;
+   self.skills[SKI_SKIN]        :=  5;
+
+   if (self.profession == PROFESSION_FIGHTER)
+   {
+      self.abilities[ABIL_STR] :=self.abilities[ABIL_STR]+4;
+      self.abilities[ABIL_DEX] :=self.abilities[ABIL_DEX]+2;
+      self.abilities[ABIL_CON] :=self.abilities[ABIL_CON]+2;
+      self.abilities[ABIL_HP]  :=self.abilities[ABIL_HP]+4;
+      self.abilities[ABIL_DIV] :=self.abilities[ABIL_DIV]-2;
+      self.abilities[ABIL_MAG] :=self.abilities[ABIL_MAG]-2;
+      self.abilities[ABIL_CHA] :=self.abilities[ABIL_CHA];
+      self.abilities[ABIL_BRA] :=self.abilities[ABIL_BRA];
+
+      self.weapons[WPN_FIST]        :=  5;
+      self.weapons[WPN_DAGGER]      :=  5;
+      self.weapons[WPN_HAND_AXE]    :=  5;
+      self.weapons[WPN_LONG_SWORD]  :=  5;
+      self.skills[SKI_SKIN]         :=  5;
+   }
+   else if (self.profession == PROFESSION_THIEF)
+   {
+      self.abilities[ABIL_STR] :=self.abilities[ABIL_STR]+2;
+      self.abilities[ABIL_DEX] :=self.abilities[ABIL_DEX]+6;
+      self.abilities[ABIL_CON] :=self.abilities[ABIL_CON]+2;
+      self.abilities[ABIL_HP]  :=self.abilities[ABIL_HP];
+      self.abilities[ABIL_DIV] :=self.abilities[ABIL_DIV]-2;
+      self.abilities[ABIL_MAG] :=self.abilities[ABIL_MAG];
+      self.abilities[ABIL_CHA] :=self.abilities[ABIL_CHA]+2;
+      self.abilities[ABIL_BRA] :=self.abilities[ABIL_BRA]-2;
+
+      self.skills[SKI_SEARCH]    := 5;
+      self.skills[SKI_SNEAK]     := 5;
+      self.skills[SKI_SKIN]      := 5;
+      self.skills[SKI_BACKSTAB]  := 5+5;
+
+      self.weapons[WPN_FIST]         :=  5;
+      self.weapons[WPN_DAGGER]       :=  5+6;
+      self.weapons[WPN_SHORT_SWORD]  :=  5;
+   }
+   else if (self.profession == PROFESSION_PRIEST)
+   {
+      self.abilities[ABIL_STR] :=self.abilities[ABIL_STR];
+      self.abilities[ABIL_DEX] :=self.abilities[ABIL_DEX]+2;
+      self.abilities[ABIL_CON] :=self.abilities[ABIL_CON];
+      self.abilities[ABIL_HP]  :=self.abilities[ABIL_HP];
+      self.abilities[ABIL_DIV] :=self.abilities[ABIL_DIV]+4;
+      self.abilities[ABIL_MAG] :=self.abilities[ABIL_MAG]-2;
+      self.abilities[ABIL_CHA] :=self.abilities[ABIL_CHA]+2;
+      self.abilities[ABIL_BRA] :=self.abilities[ABIL_BRA]+2;
+
+      self.weapons[WPN_FIST]          :=  5;
+      self.weapons[WPN_MACE]          :=  5+5;
+      self.spells[SPL_CURE_WOUNDS_1]  :=  5+5;
+      self.spells[SPL_CAUSE_WOUNDS_1] :=  5+5;
+      self.skills[SKI_FIRST_AID]      :=  5+5;
+      self.skills[SKI_SKIN]  := 5;
+   }
+   else if (self.profession == PROFESSION_PALADIN)
+   {
+      self.abilities[ABIL_STR] :=self.abilities[ABIL_STR]+2;
+      self.abilities[ABIL_DEX] :=self.abilities[ABIL_DEX]+2;
+      self.abilities[ABIL_CON] :=self.abilities[ABIL_CON];
+      self.abilities[ABIL_HP]  :=self.abilities[ABIL_HP] +2;
+      self.abilities[ABIL_DIV] :=self.abilities[ABIL_DIV]+2;
+      self.abilities[ABIL_MAG] :=self.abilities[ABIL_MAG]-2;
+      self.abilities[ABIL_CHA] :=self.abilities[ABIL_CHA]+2;
+      self.abilities[ABIL_BRA] :=self.abilities[ABIL_BRA];
+
+      self.weapons[WPN_FIST]          := 5;
+      self.weapons[WPN_LONG_SWORD]    := 5 + 5;
+      
+      self.spells[SPL_CALM]           := 5 + 5;
+
+      self.skills[SKI_RESCUE]         := 5;
+      self.skills[SKI_SKIN]           := 5;
+   }
+   else if (self.profession == PROFESSION_SORCERER)
+   {
+      self.abilities[ABIL_STR] :=self.abilities[ABIL_STR];
+      self.abilities[ABIL_DEX] :=self.abilities[ABIL_DEX]+2;
+      self.abilities[ABIL_CON] :=self.abilities[ABIL_CON]-2;
+      self.abilities[ABIL_HP]  :=self.abilities[ABIL_HP];
+      self.abilities[ABIL_MAG] :=self.abilities[ABIL_MAG]+4;
+      self.abilities[ABIL_DIV] :=self.abilities[ABIL_DIV]-2;
+      self.abilities[ABIL_CHA] :=self.abilities[ABIL_CHA]+2;
+      self.abilities[ABIL_BRA] :=self.abilities[ABIL_BRA]+4;
+
+      self.weapons[WPN_DAGGER]       :=  5+10;
+
+      self.skills[SKI_SCROLL_USE]    :=  5;
+      self.skills[SKI_WAND_USE]      :=  5;
+      self.skills[SKI_SKIN]          :=  5;
+
+      self.spells[SPL_LIGHTNING_1]  :=  5+5;
+      self.spells[SPL_FIREBALL_1]   :=  5+5;
+   }
+   else if (self.profession == PROFESSION_RANGER)
+   {
+      self.abilities[ABIL_STR] :=self.abilities[ABIL_STR];
+      self.abilities[ABIL_DEX] :=self.abilities[ABIL_DEX]+4;
+      self.abilities[ABIL_CON] :=self.abilities[ABIL_CON];
+      self.abilities[ABIL_HP]  :=self.abilities[ABIL_HP] +2;
+      self.abilities[ABIL_DIV] :=self.abilities[ABIL_DIV];
+      self.abilities[ABIL_MAG] :=self.abilities[ABIL_MAG]-2;
+      self.abilities[ABIL_CHA] :=self.abilities[ABIL_CHA]+2;
+      self.abilities[ABIL_BRA] :=self.abilities[ABIL_BRA]+2;
+
+      self.weapons[WPN_FIST]       := 5;
+      self.weapons[WPN_SLING]      := 5+5;
+      self.weapons[WPN_LONG_SWORD] := 5+5;
+
+      self.skills[SKI_RESCUE]      := 5;
+      self.skills[SKI_SCAN]        := 5;
+      self.skills[SKI_SKIN]        := 5;
+   }
+   else if (self.profession == PROFESSION_DRUID)
+   {
+      self.abilities[ABIL_STR] :=self.abilities[ABIL_STR];
+      self.abilities[ABIL_DEX] :=self.abilities[ABIL_DEX];
+      self.abilities[ABIL_CON] :=self.abilities[ABIL_CON];
+      self.abilities[ABIL_HP]  :=self.abilities[ABIL_HP];
+      self.abilities[ABIL_DIV] :=self.abilities[ABIL_DIV]+4;
+      self.abilities[ABIL_MAG] :=self.abilities[ABIL_MAG];
+      self.abilities[ABIL_CHA] :=self.abilities[ABIL_CHA];
+      self.abilities[ABIL_BRA] :=self.abilities[ABIL_BRA]+4;
+
+      self.weapons[WPN_FIST]         := 5;
+      self.weapons[WPN_DAGGER]       := 5;
+      self.weapons[WPN_QUARTERSTAFF] := 5 + 5;
+
+      self.spells[SPL_SENSE_LIFE]    := 5;
+      self.spells[SPL_THORN_STRIKE]  := 5 + 5;
+
+      self.skills[SKI_HERBS]         := 5 + 5;
+      self.skills[SKI_SKIN]          := 5 + 5;
+   }
+   else if (self.profession == PROFESSION_KNIGHT)
+   {
+      self.abilities[ABIL_STR] :=self.abilities[ABIL_STR]+2;
+      self.abilities[ABIL_DEX] :=self.abilities[ABIL_DEX]+2;
+      self.abilities[ABIL_CON] :=self.abilities[ABIL_CON];
+      self.abilities[ABIL_HP]  :=self.abilities[ABIL_HP] +2;
+      self.abilities[ABIL_DIV] :=self.abilities[ABIL_DIV]+2;
+      self.abilities[ABIL_MAG] :=self.abilities[ABIL_MAG];
+      self.abilities[ABIL_CHA] :=self.abilities[ABIL_CHA];
+      self.abilities[ABIL_BRA] :=self.abilities[ABIL_BRA];
+
+      self.weapons[WPN_LONG_SWORD] := 5 + 5;
+      self.weapons[WPN_HAND_AXE]   := 5 + 5;
+
+      self.spells[SPL_MIRE]        := 5 + 5;
+      self.spells[SPL_PRO_GOOD]    := 5;
+      self.skills[SKI_BASH]        := 5;
+      self.skills[SKI_SKIN]        := 5;
+   }
+   else if (self.profession == PROFESSION_NECROMANCER)
+   {
+      self.abilities[ABIL_STR] :=self.abilities[ABIL_STR];
+      self.abilities[ABIL_DEX] :=self.abilities[ABIL_DEX];
+      self.abilities[ABIL_CON] :=self.abilities[ABIL_CON];
+      self.abilities[ABIL_HP]  :=self.abilities[ABIL_HP];
+      self.abilities[ABIL_DIV] :=self.abilities[ABIL_DIV]+4;
+      self.abilities[ABIL_MAG] :=self.abilities[ABIL_MAG]-2;
+      self.abilities[ABIL_CHA] :=self.abilities[ABIL_CHA]+2;
+      self.abilities[ABIL_BRA] :=self.abilities[ABIL_BRA]+4;
+
+      self.weapons[WPN_DAGGER]        := 5 + 5;
+      self.weapons[WPN_FIST]          := 5;
+
+      self.spells[SPL_DET_UNDEAD]     := 5;
+      self.spells[SPL_CAUSE_WOUNDS_1] := 5 + 5;
+      self.skills[SKI_SKIN]           := 5;
+   }
+   else if (self.profession == PROFESSION_CONJURER)
+   {
+      self.abilities[ABIL_STR] :=self.abilities[ABIL_STR]-2;
+      self.abilities[ABIL_DEX] :=self.abilities[ABIL_DEX]+2;
+      self.abilities[ABIL_CON] :=self.abilities[ABIL_CON]-2;
+      self.abilities[ABIL_HP]  :=self.abilities[ABIL_HP];
+      self.abilities[ABIL_MAG] :=self.abilities[ABIL_MAG]+6;
+      self.abilities[ABIL_DIV] :=self.abilities[ABIL_DIV]-2;
+      self.abilities[ABIL_CHA] :=self.abilities[ABIL_CHA]+2;
+      self.abilities[ABIL_BRA] :=self.abilities[ABIL_BRA]+4;
+
+      self.weapons[WPN_DAGGER]       :=  5 + 5;
+
+      self.skills[SKI_SCROLL_USE]    :=  5;
+      self.skills[SKI_WAND_USE]      :=  5;
+      self.skills[SKI_SKIN]          :=  5;
+
+      self.spells[SPL_DET_MAGIC]     :=  5;
+      self.spells[SPL_ENERGY_BOLT]   :=  5+5;
+   }
+   else if (self.profession == PROFESSION_ASSASSIN)
+   {
+      self.abilities[ABIL_STR] := self.abilities[ABIL_STR];
+      self.abilities[ABIL_DEX] := self.abilities[ABIL_DEX]+6;
+      self.abilities[ABIL_CON] := self.abilities[ABIL_CON]+2;
+      self.abilities[ABIL_HP]  := self.abilities[ABIL_HP];
+      self.abilities[ABIL_DIV] := self.abilities[ABIL_DIV]-2;
+      self.abilities[ABIL_MAG] := self.abilities[ABIL_MAG];
+      self.abilities[ABIL_CHA] := self.abilities[ABIL_CHA];
+      self.abilities[ABIL_BRA] := self.abilities[ABIL_BRA]+2;
+
+      self.skills[SKI_BACKSTAB]    := 5+5;
+      self.skills[SKI_CLIMB]       := 5;
+      self.weapons[WPN_FIST]       := 5+5;
+      self.weapons[WPN_DAGGER]     := 5+10;
+      self.skills[SKI_SKIN]        := 5;
+   } 
+   else if (self.profession == PROFESSION_BARBARIAN)
+   {
+      self.abilities[ABIL_STR] := self.abilities[ABIL_STR]+6;
+      self.abilities[ABIL_DEX] := self.abilities[ABIL_DEX]+2;
+      self.abilities[ABIL_CON] := self.abilities[ABIL_CON]+4;
+      self.abilities[ABIL_HP]  := self.abilities[ABIL_HP] +4;
+      self.abilities[ABIL_DIV] := self.abilities[ABIL_DIV]-2;
+      self.abilities[ABIL_MAG] := self.abilities[ABIL_MAG]-2;
+      self.abilities[ABIL_CHA] := self.abilities[ABIL_CHA]-2;
+      self.abilities[ABIL_BRA] := self.abilities[ABIL_BRA]-2;
+
+      self.weapons[WPN_FIST]         := 5;
+      self.weapons[WPN_HAND_AXE]     := 5 + 5;
+      self.weapons[WPN_MACE]         := 5 + 5;
+      self.skills[SKI_FRENZY]        := 10;
+      self.skills[SKI_RAGE]          := 5;
+   }
+   else
+   {
+      log("ERROR: playerinit() unknown self.profession");
+   }
+
+   if (self.abilities[ABIL_STR] < 0) self.abilities[ABIL_STR] := 0;
+   if (self.abilities[ABIL_DEX] < 0) self.abilities[ABIL_DEX] := 0;
+   if (self.abilities[ABIL_CON] < 0) self.abilities[ABIL_CON] := 0;
+   if (self.abilities[ABIL_CHA] < 0) self.abilities[ABIL_CHA] := 0;
+   if (self.abilities[ABIL_BRA] < 0) self.abilities[ABIL_BRA] := 0;
+   if (self.abilities[ABIL_MAG] < 0) self.abilities[ABIL_MAG] := 0;
+   if (self.abilities[ABIL_DIV] < 0) self.abilities[ABIL_DIV] := 0;
+   if (self.abilities[ABIL_HP] < 0)  self.abilities[ABIL_HP]  := 0;
+
+   return;
+}
+dilend
+
+
+dilbegin aware playerinit();
+external
+   informer();
+   pcinitabils();
+
+var
+   expd : extraptr;
+   i:integer;
+   err:integer;
+   new_text:string;
+
+code
+{
+   heartbeat := 4;
+
+   err := loadstr("welcome",new_text);
+   if (err>0)
+      pagestring(new_text,self);
+
+   informer();
+
+   self.prompt:= "%mana%m/%e%e/%hp%h> ";
+   i:=dildestroy("send_prompt@update",self);
+   dilcopy("send_prompt@update",self);
+
+   if (self.level < 200)
+   {
+      dilcopy ("regen_pc@update",self);
+      dilcopy ("stomach@update",self);
+   }
+
+   addextra (self.extra ,{"$NOREROLL"},"whistler");
+   addextra (self.extra ,{"$CLAN_CLEAR"},"whistler");
+   
+   pcinitabils();
+
+   self.hometown := "temple@udgaard";
+
+   if (self.outside != findroom(self.hometown))
+   {
+      act("$1n is taken away to start a new life.", A_HIDEINV, self, null, null, TO_ROOM);
+      link(self, findroom(self.hometown));
+      act("$1n appears from thin air.", A_HIDEINV, self, null, null, TO_ROOM);
+   }
+
+   exec("pray odin", self);
+   exec("wear all", self);
+   //exec("claim dictionary", self);
+
+   if (self.profession == PROFESSION_FIGHTER)
+   {
+      exec("alias kd kill deer", self);
+      exec("alias kb kill badger", self);
+      exec("alias kf kill fox", self);
+      exec("alias kr kill rabbit", self);
+      exec("alias ks kill skunk", self);
+   }
+   else if (self.profession == PROFESSION_THIEF)
+   {
+      exec("alias kd backstab deer", self);
+      exec("alias kb backstab badger", self);
+      exec("alias kf backstab fox", self);
+      exec("alias kr backstab rabbit", self);
+      exec("alias ks backstab skunk", self);
+   }
+   else if (self.profession == PROFESSION_PRIEST)
+   {
+      exec("alias cu cast cure light wounds $0", self);
+      exec("alias ca cast cause light wounds $0", self);
+      exec("alias kk ca $0; kill $0", self);
+
+      exec("alias kd kk deer", self);
+      exec("alias kb kk badger", self);
+      exec("alias kf kk fox", self);
+      exec("alias kr kk rabbit", self);
+      exec("alias ks kk skunk", self);
+   }
+   else if (self.profession == PROFESSION_PALADIN)
+   {
+      exec("alias cu cast cure light wounds $0", self);
+      exec("alias kk kill $0", self);
+
+      exec("alias kd kk deer", self);
+      exec("alias kb kk badger", self);
+      exec("alias kf kk fox", self);
+      exec("alias kr kk rabbit", self);
+      exec("alias ks kk skunk", self);
+   }
+   else if (self.profession == PROFESSION_SORCERER)
+   {
+      exec("alias cb cast burn $0", self);
+      exec("alias es cast electrical shock $0", self);
+      exec("alias kk  es $0; kill $0;", self);
+
+      exec("alias kd kk deer", self);
+      exec("alias kb kk badger", self);
+      exec("alias kf kk fox", self);
+      exec("alias kr kk rabbit", self);
+      exec("alias ks kk skunk", self);
+   }
+   else if (self.profession == PROFESSION_RANGER)
+   {
+      exec("alias kd kill deer", self);
+      exec("alias kb kill badger", self);
+      exec("alias kf kill fox", self);
+      exec("alias kr kill rabbit", self);
+      exec("alias ks kill skunk", self);
+   }
+   else if (self.profession == PROFESSION_DRUID)
+   {
+      exec("alias ts cast thorn strike $0", self);
+      exec("alias kk  ts $0; kill $0", self);
+
+      exec("alias kd kk deer", self);
+      exec("alias kb kk badger", self);
+      exec("alias kf kk fox", self);
+      exec("alias kr kk rabbit", self);
+      exec("alias ks kk skunk", self);
+   }
+   else if (self.profession == PROFESSION_KNIGHT)
+   {
+      exec("alias kd kill deer", self);
+      exec("alias kb kill badger", self);
+      exec("alias kf kill fox", self);
+      exec("alias kr kill rabbit", self);
+      exec("alias ks kill skunk", self);
+   }
+   else if (self.profession == PROFESSION_NECROMANCER)
+   {
+      exec("alias ca cast cause light wounds $0", self);
+      exec("alias kk ca $0; kill $0", self);
+
+      exec("alias kd kk deer", self);
+      exec("alias kb kk badger", self);
+      exec("alias kf kk fox", self);
+      exec("alias kr kk rabbit", self);
+      exec("alias ks kk skunk", self);
+   }
+   else if (self.profession == PROFESSION_CONJURER)
+   {
+      exec("alias dm cast detect magic $0", self);
+
+      exec("alias eb cast energy bolt $0", self);
+      exec("alias kk  eb $0; kill $0", self);
+
+      exec("alias kd kk deer", self);
+      exec("alias kb kk badger", self);
+      exec("alias kf kk fox", self);
+      exec("alias kr kk rabbit", self);
+      exec("alias ks kk skunk", self);
+   }
+   else if (self.profession == PROFESSION_ASSASSIN)
+   {
+      exec("alias kd backstab deer", self);
+      exec("alias kb backstab badger", self);
+      exec("alias kf backstab fox", self);
+      exec("alias kr backstab rabbit", self);
+      exec("alias ks backstab skunk", self);
+   }
+   else if (self.profession == PROFESSION_BARBARIAN)
+   {
+      exec("alias kd backstab deer", self);
+      exec("alias kb backstab badger", self);
+      exec("alias kf backstab fox", self);
+      exec("alias kr backstab rabbit", self);
+      exec("alias ks backstab skunk", self);
+   }
+   else
+   {
+      log("ERROR: playerinit() unknown self.profession");
+   }
+
+   sendtext("<br/>", self);
+
+   exec("look", self);
+
+   act("You are a guest here until you save yourself.<br/>If you need " +
+       "to get to your guild, use the guild medallion in your " +
+       "inventory. If you lose it, pray to the statue of Odin for another.",
+       A_ALWAYS, self, null, null, TO_CHAR);
+
+   subextra(self.quests, "$guild");
+   quit;
+}
+dilend
+
+
+dilbegin nanny_race( arg : string );
+var
+   exdp   : extraptr;
+   state  : integer;
+   s      : string;
+   buf:string;
+   err:integer;
+
+code
+{
+   heartbeat := PULSE_SEC;
+   exdp  := "$nanny" in self.extra;
+   state := atoi(exdp.descr);
+
+   if (state == 0)
+   {
+      sendtext("<br/>Please choose your race:<br/>"
+         +"  1) Human<br/>"
+         +"  2) Dwarf<br/>"
+         +"  3) Halfling<br/>"
+         +"  4) Gnome<br/>"
+         +"  5) Elf<br/>"
+         +"  6) Half-elf<br/>"
+         +"  7) Dark-Elf<br/>"
+         +"  8) Brownie<br/>"
+         +"  9) Groll<br/>"
+         +" 10) Half-Orc<br/>"
+         +" 11) Half-Ogre<br/>"
+         +"Please select 1 - 11 or Help: ", self);
+
+      exdp.descr := "1";
+      return;
+   }
+
+   s := getword(arg);
+
+   if (s=="next")
+   {
+      sendtext("Please choose 1 - 11 or Help: ", self);
+      return;
+   }
+   else if (s=="help")
+   {
+      exdp.descr := "99";
+      err:=loadstr ("races.logon",buf);
+      if (err<1)
+      {
+         sendtext ("The races logon help is not set please tell an admin when you log on.<br/>",self);
+         sendtext("Please choose 1 - 11 or Help: ", self);
+      }
+      else
+      {
+         pagestring (buf,self);
+         sendtext("<br/>Press Enter", self);
+
+         exdp.descr := "next";
+      }
+
+      return;
+   }
+   else if (s == "1")
+   {
+      sendtext("You are now a human.<br/>", self);
+      self.race := RACE_HUMAN;
+   }
+   else if (s == "2")
+   {
+      sendtext("You are now a dwarf.<br/>", self);
+      self.race := RACE_DWARF;
+   }
+   else if (s == "3")
+   {
+      sendtext("You are now a halfling.<br/>", self);
+      self.race := RACE_HALFLING;
+   }
+   else if (s == "4")
+   {
+      sendtext("You are now a gnome.<br/>", self);
+      self.race := RACE_GNOME;
+   }
+   else if (s == "5")
+   {
+      sendtext("You are now an elf.<br/>", self);
+      self.race := RACE_ELF;
+   }
+   else if (s == "6")
+   {
+      sendtext("You are now a half-elf.<br/>", self);
+      self.race := RACE_HALF_ELF;
+   }
+   else if (s == "7")
+   {
+      sendtext("You are now a dark-elf.<br/>", self);
+      self.race := RACE_DARK_ELF;
+   }
+   else if (s == "8")
+   {
+      sendtext("You are now a Brownie.<br/>", self);
+      self.race := RACE_BROWNIE;
+   }
+   else if (s == "9")
+   {
+      sendtext("You are now a Groll.<br/>", self);
+      self.race := RACE_GROLL;
+   }
+   else if (s == "10")
+   {
+      sendtext("You are now a half-orc.<br/>", self);
+      self.race := RACE_HALF_ORC;
+   }
+   else if (s == "11")
+   {
+      sendtext("You are now a half-ogre.<br/>", self);
+      self.race := RACE_HALF_OGRE;
+   }
+   else
+   {
+      sendtext("Please choose 1 - 11 or Help: ", self);
+      return;
+   }
+
+   substring(exdp.names, "login races");
+   addstring(exdp.names, "login guilds");
+   exdp.descr := "0";
+   return;
+}
+dilend
+
+
+dilbegin nanny_sex( arg : string );
+var
+   exdp   : extraptr;
+   state  : integer;
+   s      : string;
+   err:integer;
+   buf:string;
+code
+{
+   heartbeat := PULSE_SEC;
+   exdp  := "$nanny" in self.extra;
+   state := atoi(exdp.descr);
+
+   if (state == 0)
+   {
+      sendtext("<br/><br/>Please choose your gender:<br/>"+
+   "  1) Male<br/>"+
+   "  2) Female<br/>"+
+   "Please select 1, 2 or Help: ", self);
+      exdp.descr := "1";
+      return;
+   }
+
+   s := getword(arg);
+
+   if (s=="help")
+   {
+      err:=loadstr("sex.logon",buf);
+      if (err<1)
+         sendtext ("The gender logon help is not set please tell an admin when you log on.",self);
+      else
+      {
+         buf:=textformat (buf);
+         pagestring (buf,self);
+      }
+      sendtext("Please choose 1, 2 or Help: ", self);
+      return;
+   }
+   else if (s == "1")
+   {
+      sendtext("You are now a male.<br/>", self);
+      self.sex := SEX_MALE;
+   }
+   else if (s == "2")
+   {
+      sendtext("You are now a female.<br/>", self);
+      self.sex := SEX_FEMALE;
+   }
+   else
+   {
+      sendtext("Please choose 1, 2 or Help: ", self);
+      return;
+   }
+
+   substring(exdp.names, "genders");
+   addstring(exdp.names, "login races");
+   exdp.descr := "0";
+   return;
+}
+dilend
+
+
+dilbegin nanny_maiden( arg : string );
+var
+   exdp   : extraptr;
+   texdp  : extraptr;
+   state  : integer;
+   s      : string;
+      buf:string;
+   err:integer;
+
+code
+{
+   heartbeat := PULSE_SEC;
+   exdp  := "$nanny" in self.extra;
+   state := atoi(exdp.descr);
+
+   if (state == 0)
+   {
+      sendtext("<br/>Please enter your mother's maiden name or (Help): ", self);
+      exdp.descr := "1";
+   }
+   else if ((arg=="help") and (state==1))
+   {
+      err:=loadstr ("maiden.logon",buf);
+      if (err<1)
+      sendtext ("The maiden logon help is not set please tell an admin when you log on.",self);
+      else
+      {
+      buf:=textformat (buf);
+      pagestring (buf,self);
+      }
+      sendtext("<br/>Please enter your mother's maiden name or (Help): ", self);
+      return;
+   }
+   else if (state == 1)
+   {
+      texdp := "$maiden" in self.info;
+      if (not texdp)
+      {
+         addextra(self.info, {"$maiden"}, arg);
+         texdp := "$maiden" in self.info;
+      }
+      sendtext("<br/>Is '"+texdp.descr+"' correct (Y/N/H)? ", self);
+      exdp.descr := "2";
+   }
+   else if (state == 2)
+   {
+      s := " " + getword(arg);
+
+      if (" y" in s)
+      {
+         substring(exdp.names, "maiden name");
+         addstring(exdp.names, "personal email");
+         exdp.descr := "0";
+      }
+      else if (" n" in s)
+      {
+         subextra(self.info, "$maiden");
+         exdp.descr := "0";
+         nanny_maiden("");
+      }
+      else
+         sendtext("<br/>Please anwser Yes or No : ", self);
+   }
+   return;
+}
+dilend
+
+
+dilbegin nanny_email( arg : string );
+var
+   exdp   : extraptr;
+   texdp  : extraptr;
+   state  : integer;
+   s      : string;
+code
+{
+heartbeat := PULSE_SEC;
+   exdp  := "$nanny" in self.extra;
+   state := atoi(exdp.descr);
+
+   if (state == 0)
+   {
+      sendtext("<br/>You have the option of supplying your email now: ", self);
+      exdp.descr := "1";
+   }
+   else if (state == 1)
+   {
+      texdp := "$email" in self.info;
+      if (not texdp)
+      {
+  addextra(self.info, {"$email"}, arg);
+  texdp := "$email" in self.info;
+      }
+      sendtext("<br/>Is '"+texdp.descr+"' correct (Y/N/H)? ", self);
+      exdp.descr := "2";
+   }
+   else if (state == 2)
+   {
+      s := " " + getword(arg);
+
+      if (" y" in s)
+      {
+  :done:
+  substring(exdp.names, "personal email");
+  addstring(exdp.names, "genders");
+  exdp.descr := "0";
+      }
+      else if (" n" in s)
+      {
+  subextra(self.info, "$email");
+  exdp.descr := "0";
+  nanny_email("");
+      }
+      else
+ sendtext("<br/>Please anwser Yes or No : ", self);
+   }
+   return;
+}
+dilend
+
+
+dilbegin nanny_newbie( arg : string );
+external
+   on_connect@basis();
+   login_modify@basis(u : unitptr);
+
+var
+   exdp   : extraptr;
+   texdp  : extraptr;
+   state  : string;
+   s      : string;
+   buf:string;
+   err:integer;
+   rules:integer;
+   new_text:string;
+   newinfo:integer;
+
+code
+{
+   heartbeat := PULSE_SEC;
+   exdp  := "$nanny" in self.extra;
+
+   if ((exdp.descr == "0") or (exdp.descr == "9"))
+   {
+      if (exdp.descr == "0") 
+      {
+         rules:=0;
+         newinfo:=0;
+         sendtext ("There is a few things you need to read before entering Valhalla.<br/>",self);
+      }
+
+   :newbie_menu:
+      sendtext("1) Read Newbie information.<br/>",self);
+      sendtext("2) Read Rules.<br/>",self);
+      sendtext("3) Enter the game.<br/>",self);
+      sendtext("X) Exit Valhalla<br/><br/>", self);
+      sendtext("Make your choice: ", self);
+
+      exdp.descr := "1";
+      return;
+   }
+   else if (exdp.descr == "1")
+   {
+      state:=getword(arg);
+      if (state=="1")
+      {
+         err := loadstr("newbie.hlp",new_text);
+         if (err>0)
+            pagestring (new_text,self);
+         sendtext("Press RETURN to accept", self);
+
+         addstring(exdp.names,"newbieinfo");
+         exdp.descr := "9"; // Version read
+         return ;
+      }
+      else if (state=="2")
+      {
+         err := loadstr("rules.hlp",new_text);
+         if (err>0)
+            pagestring (new_text,self);
+         sendtext("Press RETURN to accept", self);
+         addstring(exdp.names,"rules"); 
+         exdp.descr := "9"; // Version read
+         return ;
+      }
+      else if (state=="3")
+      {
+         /* if (not("rules" in exdp.names))
+         {
+            sendtext ("You must read the newbie information and rules before entering the game<br/><br/>",self);
+         }
+         else if (not("newbieinfo" in exdp.names))
+         {
+            sendtext ("You must read the newbie information and rules before entering the game<br/><br/>",self);
+         }
+         else*/ 
+
+         log("nanny_newbie()");
+         login_modify@basis(self);
+         goto done;
+         exdp.descr := "9";
+         return ;
+      }
+      else if (state=="X")
+      {
+         sendtext ("Thanks for dropping in.<br/>",self);
+         delete_player(self.name);
+         subextra (self.extra,"$nanny");
+         return;
+      }
+      else
+      {
+         sendtext ("Please pick one of the menu choices they are as follows:<br/><br/>",self);
+         sendtext("1) Read Newbie information.<br/>",self);
+         sendtext("2) Read Rules.<br/>",self);
+         sendtext("3) Enter the game.<br/>",self);
+         sendtext("X) Exit Valhalla<br/><br/>", self);
+         sendtext("Make your choice: ", self);
+         exdp.descr := "1";
+         return;
+      }
+   }
+   exdp.descr := "9";
+   return;
+
+   :done:
+   subextra (self.extra,"$nanny");
+   return;
+}
+dilend
+
+
+/* Special notice: When "help" is chosen by the user, the "$nanny" extra
+   description's description field is subtracted one, effectively putting
+   the user at the state just before help was requested. */
+
+dilbegin nanny( arg : string );
+external
+   nanny_maiden( arg : string );
+   nanny_email( arg : string );
+   nanny_sex( arg : string );
+   nanny_race( arg : string );
+   nanny_guild( arg : string );
+   nanny_alignment( arg : string );
+   nanny_newbie( arg : string );
+
+var
+   exdp   : extraptr;
+
+code
+{
+   heartbeat := PULSE_SEC;
+   exdp := "$nanny" in self.extra;
+   if (not exdp)
+   {
+      //addextra(self.extra, {"$nanny", "maiden name"}, "0");
+      addextra(self.extra, {"$nanny", "genders"}, "0");
+      exdp := "$nanny" in self.extra;
+   }
+
+
+   if ("maiden name" in exdp.names)
+     nanny_maiden( arg );
+
+   if ("personal email" in exdp.names)
+     nanny_email( arg );
+
+   if ("genders" in exdp.names)
+     nanny_sex( arg );
+
+   if ("login races" in exdp.names)
+     nanny_race( arg );
+
+   if ("login guilds" in exdp.names)
+     nanny_guild( arg );
+
+   if ("personality" in exdp.names)
+     nanny_alignment( arg );
+
+   if ("newbie_text" in exdp.names)
+     nanny_newbie( arg );
+
+   quit;
+}
+dilend
+
+
+
+/* Put in here all actions that need to be considered */
+/* by players in Valhalla                             */
+dilbegin dead_only(msg : string);
+code
+{
+   heartbeat := PULSE_SEC;
+   :start:
+   wait(SFB_CMD, activator.type == UNIT_ST_PC);
+   if (activator.level >= ADMINISTRATOR_LEVEL)
+     goto start;
+
+   if (not isset(activator.pcflags, PC_SPIRIT))
+   {
+      act(msg, A_ALWAYS, activator, null, null, TO_CHAR);
+      act("$1n vanishes in a flash of light!",
+   A_HIDEINV, activator, null, null, TO_ROOM);
+
+      link(activator, findroom(activator.hometown));
+
+      act("$1n materializes.", A_HIDEINV, activator, null, null, TO_ROOM);
+      block;
+      goto start;
+   }
+
+   if (command("cast"))
+   {
+      act("Your powers do not work in the spirit world!",
+   A_ALWAYS, activator, null, null, TO_CHAR);
+      block;
+   }
+    if (command("wear") or command("hold") or command("wield"))
+   {
+      act("You have no need to dress you are dead!",
+   A_ALWAYS, activator, null, null, TO_CHAR);
+      block;
+   }
+   else if (command("kill") or command("hit") or command("kick") or
+     command("bash") or command("backstab") or
+     command("trip") or command ("disarm") or command ("elbow") or
+     command("knee") or command("hit") or command("punch") )
+   {
+      act("Return to the mortal world, then you can die again.",
+   A_ALWAYS, activator, null, null, TO_CHAR);
+      block;
+   }
+   else if (command("steal") or command("filch") or command("pickpocket"))
+   {
+   act ("You grasp but notice your body is not solid enough to steal.",
+   A_ALWAYS, activator, null, null, TO_CHAR);
+      block;
+   }
+   goto start;
+}
+dilend
+
+
+
+/* The guild stuff is the only part which interacts with nanny! If a guild
+   is chosen, then set self.guild to the chosen one, and nanny will
+   take care of the rest when the DIL programs are complete */
+
+dilbegin magic(u1 : unitptr);
+var
+   i : integer;
+code
+{
+   heartbeat := PULSE_SEC * 3;
+
+   log("magic doom  ");
+   if (u1 == null)
+      log("P: u1 is NULL");
+   log(u1.name);
+   log(u1.title);
+   log(u1.nameidx);
+   log(u1.zoneidx);
+   log("outside "+u1.outside.nameidx);
+
+
+   :loop:
+   i  := rnd(SPL_GROUP_MAX, SPL_TREE_MAX);
+   link(self, u1.outside);
+   self.hp   := self.max_hp;
+   self.mana := 100;
+   cast_spell(i, self, self, u1);
+   self.mana := 100;
+   cast_spell(i, self, self, self);
+   self.mana := 100;
+   u1 := null;
+   cast_spell(i, self, self, u1);
+   return;
+}
+dilend
+
+
+dilbegin doom(u1 : unitptr);
+var
+  s : string;
+code
+{
+   heartbeat := PULSE_SEC * 5;
+
+   s := u1.name;
+
+   link(self, u1.outside);
+   secure(u1, done);
+   exec("hit "+s, self);
+   log("hit "+s);
+
+   while (self.fighting)
+   {
+      pause;
+      exec("hit "+s, self);
+      self.hp   := self.max_hp;
+      self.mana := 80;
+   }
+
+   :done:
+   return;
+}
+dilend
+
+
+dilbegin aware unique train_nag();
+var
+   i : integer;
+   j : integer;
+code
+{
+   heartbeat := PULSE_SEC *60;
+   i := 0;
+
+   :loop:
+   wait(SFB_TICK|SFB_CMD, TRUE);
+   i := i + 1;
+
+   if (command(CMD_AUTO_TICK))
+   {
+      if (i % 5 == 0)
+      {
+         if (self.level == 0)
+            j := 10;
+         else
+            j := 20;
+ 
+         if (self.ability_points >= j)
+         {
+            sendtext("You should <a cmd='#'>practice auto</a> or go to your guild to practice.<br/>", self);
+            goto loop;
+         }
+
+         if (self.skill_points >= j)
+         {
+            sendtext("You should <a cmd='#'>practice auto</a> or go to your guild to practice.<br/>", self);
+            goto loop;
+         }
+      }
+      goto loop;
+   }
+
+   goto loop;
+}
+dilend
+
+dilbegin aware unique remote_train();
+var
+   arg : string;
+   s : string;
+   t : string;
+   u : unitptr;
+   room : unitptr;
+
+code
+{
+   quit;
+
+   :loop:
+   wait(SFB_CMD, (activator == self) and command("practice"));
+
+   if ((self.position == POSITION_FIGHTING) or (self.position < POSITION_SLEEPING))
+      goto loop;
+
+   arg := argument;
+   s := getword(arg);
+   if (s == "auto")
+   {
+      t := "base_abils@udgaard";
+   }
+   else
+   {
+      sendtext("To practice your skills, either type <a cmd='#'>practice auto</a> or find a teacher.<br/>"+
+               "You can find a teacher in Udgaard if you're a beginner. Or you can find your guild<br/>"+
+               "teachers. Use your guild medallion that you get from the statue of Odin to easily get to your guild.<br/>", self);
+      goto loop;
+   }
+
+   block;
+
+   u := findsymbolic(t);
+   if (not u)
+   {
+      sendtext("A teacher is missing so you cannot auto practice right now.<br/>", self);
+      goto loop;
+   }
+
+   room := self.outside;
+   link(self, u.outside);
+   exec("practice auto", self);
+   link(self, room);
+   goto loop;
+}
+dilend
+
+%rooms
+
+                                   ocean_void
+
+title "The Great Ocean"
+descr
+"   You drifting helplessly around in the great ocean."
+movement SECT_WATER_SAIL
+flags {UNIT_FL_NO_WEATHER}
+light 5
+end
+
+                                       discord
+
+names "Discord"
+title "The Discord Robot"
+descr
+"   This room is the sender of the discord messages."
+flags {UNIT_FL_NO_WEATHER}
+light 5
+end
+
+                                       void
+
+names "void"
+title "The Void"
+descr
+"   You are floating helplessly around in nothing. This is a very peculiar
+feeling, as everything around you is nothing, not even darkness."
+flags {UNIT_FL_NO_WEATHER}
+dilcopy reload_corpse@death();
+light 5
+end
+
+
+                                   destroy_room
+title "Destroy Room"
+descr
+"This room is used for storing units between each event that are supposed
+to be extracted."
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_NO_TELEPORT}
+light 5
+
+end
+
+
+                                   deathseq_room
+
+title "The Death Sequence Room"
+descr
+"   This is the Death Sequence Room. All players that are dead and
+being shown the death sequence are placed in this room."
+flags {UNIT_FL_NO_TELEPORT, UNIT_FL_NO_WEATHER}
+dilcopy dead_only@basis("You should not have been here, you are sent home.");
+/* dilcopy morph_corpse@death(); */
+light -2  /* Always dark for players... */
+end
+
+                                     timeout
+
+title "The Timeout Room"
+descr
+"   All players which are idle, are stored in this room."
+flags {UNIT_FL_NO_TELEPORT, UNIT_FL_NO_WEATHER}
+light 5
+dilcopy dead_only@basis("You should not have been here, you are sent home.");
+end
+
+
+                                     entry1
+/* This is where all wierd rooms meet. */
+
+title "The Astral Plane"
+descr
+"   You are floating around in colours of all kinds. Below you, a bright
+light is shining through a shimmering blue circle.  A tiny circle of light
+opens to the east."
+
+flags {UNIT_FL_NO_MOB, UNIT_FL_NO_WEATHER, UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+dilcopy dead_only@basis("You should not have been here, you are sent home.");
+light 5
+east to throne_room;
+end
+
+
+                                   throne_room
+names {"valhalla"}
+title "The Castle of Valhalla"
+descr
+"   You are inside the great dining hall of the Valhalla castle. Warriors
+fallen in battle and others equally worthy are brought here by the Valkyries.
+An exit leads up to the throne hall and down to a portion of hell.  To the
+west there might or might not be something."
+flags {UNIT_FL_NO_TELEPORT, UNIT_FL_NO_WEATHER}
+dilcopy dead_only@basis("You should not have been here, you are sent home.");
+light 5
+/*up to heaven_entry;
+down to hell_entry;
+*/
+west to entry1;
+end
+
+
+                                   throne_room2
+/*title "The Newbie Guide Throne Room"
+descr
+"   You are inside the great throne room of the Newbie Guide Ginger.  A large
+purple throne</div> sits in the center of the room.  Something about
+the worn out seat of the throne draws your attention.  Here is where the newbie
+player helpers come to socialize and talk about that darn newbie
+that just got them killed. A simple statue of Ginger - the Leader of the Newbie
+Guides lays along one wall.  An exit leads east but does not look like you can
+come back." */
+title "A Special Corner of Newbie Hell"
+descr
+"   You are inside a dreary room.  The heat is stifling, it is so hot the walls seem
+to shimmer in and out of existence.  There is a chair facing a blank wall on the
+north side of the room.  There are leather straps and steel buckles attached to
+the chair.  Somehow you know, this is where you are forced to relive your last 
+moments before you died trying to save a helpless newbie.  Along the south wall
+is a line of statues celebrating some of the more venerated Newbie Guides to
+have walked the realms of Valhalla.  There is an exit to the east, but it looks
+like a one way trip. "
+
+extra {"statues","guides"}
+"Each statue has a name on it Kuros, Ginger, Grift, Iaso, Malice, Ratlin, 
+Heulflodyn, Colwyn, Kalrai, Bloody and Cira are a few you see but many more
+are honored here for the blood, sweat, tears and more blood they dedicated to 
+newbies." 
+
+flags {UNIT_FL_NO_TELEPORT, UNIT_FL_NO_WEATHER}
+dilcopy dead_only@basis("You should not have been here, you are sent home.");
+light 5
+east to entry1;
+/*extra {"statue"}
+"It looks as in her mortal words 'Very deaded' and two red horns protrude
+from its head"
+extra {"worn seat","seat"}
+"It looks as if someone has spent many hours sitting here, one cushion shows a
+strange indention."
+extra {"indention"}
+"You can make out the words 'w*w.@vclh   a.com'."
+
+extra {"throne"}
+"The throne is very large and awe inspiring, you dare not approach it." */
+end
+
+
+
+                                   heaven_entry
+title "The Throne Hall"
+descr
+"   You are inside the great throne hall of Odin. The ceiling is made of
+the purest silver and in the far end of the hall is the throne of Odin,
+said to let anyone sitting in it, view the entire world. The dining hall
+is down."
+flags {UNIT_FL_NO_TELEPORT, UNIT_FL_NO_WEATHER}
+dilcopy dead_only@basis("You should not have been here, you are sent home.");
+light 5
+down to throne_room;
+extra {"ceiling", "silver"}
+"It is pure silver."
+extra {"throne"}
+"The throne is very large and awe inspiring, you dare not approach it."
+end
+
+
+                                    hell_entry
+title "Burning in Hel"
+descr "The walls around flame bright red.  Nothing could live here for very
+long not that you should worry....You ARE dead!</div>  Evil deeds must have
+got you to this place nothing good could stay here without destroying its
+soul.  Hot and taunting flames dance around pools of black liquids that look
+as if they have no bottom.  A more pleasant dining room is up from here."
+flags {UNIT_FL_NO_TELEPORT, UNIT_FL_NO_WEATHER}
+dilcopy dead_only@basis("You should not have been here, you are sent home.");
+light 5
+up to throne_room;
+
+end
+
+%objects
+
+		deadbug
+
+names {"dead bug","bug"}
+title "a dead bug"
+descr "A dead bug lies here."
+extra {}
+"The bug kind of looks like a black lady bug - and it's obviously quite dead. Perhaps someone squashed it. 
+You notice the word 'Papi' inscribed with tiny letters on the rim of its shield"
+cost 1 SILVER_PIECE
+rent 1 IRON_PIECE
+type ITEM_OTHER
+manipulate {MANIPULATE_TAKE}
+weight 0
+
+dilbegin aware unique issue42();
+external
+   integer skillchecksa@skills(skillidx : integer, abiidx : integer, difficulty : integer);
+
+var
+   i : integer;
+   ln : integer;
+   ext : extraptr;
+   s : string;
+   sl : stringlist;
+   u : unitptr;
+code
+{
+
+   :start:
+   wait(SFB_CMD, TRUE);
+
+   u := self.outside.inside;
+
+   while (u)
+   {
+      act("Affects on $2n", A_ALWAYS, activator, u, null, TO_CHAR);
+      sl := getaffects(u);
+      ln := length(sl);
+      i := 0;
+      
+      while (i < ln)
+      {
+         act("data: $2t $3t", A_ALWAYS, activator, sl.[i], sl.[i+1], TO_CHAR);
+         i := i + 2;
+      }
+
+      u := u.next;
+   }
+   act("Done scanning room.", A_ALWAYS, activator, u, null, TO_CHAR);
+   goto start;
+
+
+
+   quit;
+   heartbeat := PULSE_SEC;
+   :loop:
+   wait(SFB_CMD, TRUE);
+   ext := self.extra;
+   i := skillchecksa@skills(SKI_SEARCH, ABIL_BRA, ext.vals.[1]);
+   log(itoa(i));
+   goto loop;
+}
+dilend
+
+/* Program to test if a changed in compiled DIL will reset the recall counter
+dilbegin recall unique testbug();
+var
+   i : integer;
+code
+{
+   quit;
+   heartbeat := PULSE_SEC * 4;
+   i := rnd(1,10000);
+
+   :loop:
+   wait(SFB_TICK, TRUE);
+   log("My state is " + itoa(i));
+   //log("yay");
+   goto loop;
+
+   quit;
+}
+dilend*/
+
+end
+
+
+/* TEST */
+
+		teststaff
+
+names {"platinum staff","staff"}
+title "a platinum staff"
+descr "A platinum staff lies here."
+extra {}
+"This staff is fashioned from pure platinum.  You notice a large G carved
+into the end."
+cost 7 GOLD_PIECE
+rent 200 IRON_PIECE
+STAFF_DEF(60, 3, SPL_FROSTBALL_3, SPL_NONE)
+weight 20
+end
+
+/* MS2020 - needed for playing board games online */
+
+dice
+names {"magical dice","magic dice", "dices", "dice"}
+title "a magic dice"
+descr "A small dice lies on the ground here."
+
+extra {}
+"The magical dice has scintillating colors. Try to <a cmd='#'>roll 2d100</a> to cast two 100 sided dices.
+Looks like an excellent dice to be used with rolling dices online with your friends. Try adding text after the roll."
+manipulate {MANIPULATE_TAKE}
+type ITEM_OTHER
+
+dilbegin dice();
+var
+   pc : unitptr;
+   s  : string;
+   t  : string;
+   u  : string;
+   sl : stringlist;
+   slarg : stringlist;
+   i  : integer;
+   j  : integer;
+   k  : integer;
+   m  : integer;
+code
+{
+   :start:
+   wait(SFB_CMD, ((command("roll")) and (self.outside == activator)));
+   block;
+   pc := activator;
+   secure (pc,losthim);
+
+   /* Let's find out what to roll */
+   s := getword(argument);
+
+   if (s == "")
+   {
+      act("You fidget with the dice. Maybe try to <a cmd='#'>roll 2d8</a> ?",A_SOMEONE, pc, s, null, TO_CHAR);
+      goto losthim;
+   }
+   sl := split(s, "d");
+
+   if (length(sl) < 2)
+   {
+      act("If you want to roll the dice, try for example <a cmd='#'>roll 1d100</a>.",A_SOMEONE, pc, s, null, TO_CHAR);
+      goto losthim;
+   }
+
+   i := atoi(sl.[0]);
+   j := atoi(sl.[1]);
+
+   if ((i <= 0) or (j <= 0))
+   {
+      act("You must roll at least one dice, try for example <a cmd='#'>roll 1d6</a>.", A_SOMEONE, pc, null, null, TO_CHAR);
+      goto losthim;
+   }
+
+   if ((i > 10) or (j > 1000))
+   {
+      act("That's too much for the dice.", A_SOMEONE, pc, null, null, TO_CHAR);
+      goto losthim;
+   }
+
+   t := "";
+   k := 0;
+   while (i > 0)
+   {
+      m := rnd(1,j);
+      t := t + itoa(m) + " ";
+      k := k + m;
+      i := i - 1;
+   }
+
+   if (argument == "")
+      u:= ".";
+   else
+      u := ". Comment: '" + argument +"'";
+
+   act("You roll the " + s + " dice... the total is " + itoa(k)+u, A_SOMEONE, pc, null, null, TO_CHAR);
+   act("$1n rolls the " + s + " dice... the total is " + itoa(k)+u, A_SOMEONE, pc, null, null, TO_REST);
+   self.extra.descr :=  "The magical dice has scintillating colors. "+
+      "The last rool of " + s + " was " + itoa(k) + " rolled as "+ t + u;
+
+   :losthim:
+   unsecure (pc);
+   goto start;
+}
+dilend
+
+end
+
+
+color_object
+names {"color object", "color", "object"}
+title "a <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> object"
+descr "A <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div><div class='cpc'>f</div><div class='cpr'>u</div><div class='cpb'>l</div> object lies on the ground here."
+
+extra {}
+"This object is for adding <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> titles and names to objects, and <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> <br>
+titles, and names to players. With it, you can also execute any command (except wiz commands)<br>
+in <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div>. Please use restraint in your color schemes - we wish to avoid<br>
+gawdy titles/names. The syntax for its use follows HTML &ltdiv&gt tags, and<br>
+the CSS classes we've published. Static color codes are included in the CSS files<br>
+similar to previously avaialble ANSI colors. For example, the legacy &amp;c+r code<br>
+for the color <div class='cpr'>bright red</div>, would now look like &ltdiv class='cpr'&gtcolor red&lt/div&gt.<br>
+<br><br>
+
+To add a <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> title to an object:<br>
+
+<br>coltitle objectname title
+
+<br><br><div class='cpw'>eg:</div> coltitle enforcer &ltdiv class='cpb'&gtMy&lt/div&gt &ltdiv class='cg'&gtgreen&lt/div&gt &ltdiv class='cr'&gtaxe&lt/div&gt
+<br><div class='cpw'>result:</div> <div class='cpb'>My</div> <div class='cg'>green</div> <div class='cr'>axe</div>
+
+<br><br>To add a <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> name to an object:
+
+<br><br>cname objectname newname
+<br><br><div class='cpw'>eg:</div> cname enforcer &ltdiv class='cpb'&gtMy&lt/div&gt &ltdiv class='cg'&gtgreen&lt/div&gt &ltdiv class='cr'&gtaxe&lt/div&gt
+
+<br><br>To give a player a <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> title or guild-name, the procedure is identical
+   to giving (except only gods can have non-guild guild-names)
+   an object a <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> title, except use the person's name instead of the
+   objectname.
+
+<br><br>To execute a command in <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div>, do the following:
+
+<br><br>carg command arguments
+
+<br><br><div class='cpw'>eg:</div> carg shout &ltdiv class='cr'&gtred shout&lt/div&gt
+
+<br><br>
+   Only level 240+ gods may use the <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> object for naming and titling<br>
+   because its facilities are variants of the set command. The object<br>
+   may however be used by 235+ gods to execute normal commands (eg shout,<br>
+   tell, etc), but not wiz commands.
+
+<br><br>For level 242+ gods, it is possible to <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> broadcast.
+<br><div class='cpw'>To use this capability, do the following:</div><br>
+<br>cb &ltdiv class='cpr'&gtValhalla will be rebooting in 2 minutes.,&ltdiv&gt<br>
+<br>This would broadcast the message...
+<br><div class='cpr'>Valhalla will be rebooting in 2 minutes</div>
+<br>...in <div class='cpr'>bright red</div>.<br><br>
+
+   The command <div class='cpw'>cech</div> works like echo except it accepts <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> codes.<br>
+   The command <div class='cpw'>cmes</div> works like message except it accepts <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> codes.
+   
+   <br><br>For a full list of <div class='cpr'>c</div><div class='cpb'>o</div><div class='cpg'>l</div><div class='cpy'>o</div><div class='cpm'>r</div> codes examine the CSS docs."
+
+dilcopy color_title@basis();
+dilcopy color_bc@basis();
+dilcopy color_arg@basis();
+
+manipulate {MANIPULATE_TAKE,MANIPULATE_HOLD}
+
+weight 1
+type ITEM_OTHER
+
+end /* color_object */
+
+
+
+
+dust_bones
+names {"pile of dust","dust","pile"}
+title "a pile of dust"
+descr "A pile of dust and bones lies here."
+MATERIAL_EARTH("Ordinary dust")
+
+manipulate {MANIPULATE_TAKE,MANIPULATE_ENTER}
+extra{}
+"It looks like the remains of a zombie."
+weight 50
+CONTAINER_DEF(10)
+dilcopy blowaway@function (600,"A sudden wind scatters a pile of dust and bones.");
+end
+
+
+                                porkchop
+names {"pork chop", "pork", "chop"}
+title "a delicious pork chop"
+descr "A delicious pork chop has been left here."
+manipulate {MANIPULATE_TAKE}
+FOOD_DEF(36, 0)
+weight 6
+cost 10 IRON_PIECE
+dilcopy blowaway@function (120,"$1n returns to its origins.");
+end
+
+
+                               mug_beer
+
+names {"mug of tuborg", "tuborg", "mug", "beer"}
+title "a mug of Tuborg"
+descr "A mug of Tuborg has been dropped here."
+extra {}
+"Your mouth begins to water as you look at the cool and refreshing
+mug of Green Tuborg. You feel an urge to drink it as soon as
+possible and at the same time you are convinced that it will bring
+you new energy."
+manipulate {MANIPULATE_TAKE}
+LIQ_DEF("brown", 1,1,1,5,2,3,0)
+cost 7 IRON_PIECE
+
+dilbegin tuborg();
+external
+ sub_drink_info@commands(d:unitptr);
+var
+  u : unitptr;
+code
+{
+  :start:
+  wait(SFB_CMD, ( (command("drink")) or
+                 (command("sip")) or
+          (command("taste")) ) );
+ u := activator;
+ secure (u,start);
+if (findunit (activator,argument,FIND_UNIT_INVEN|FIND_UNIT_SURRO,null)!=self)
+ goto start;
+ if ( command("sip") or command("taste") )
+ {
+   block;
+   act("$1n tastes $2n enjoying every drop.", A_HIDEINV, u, self, null,
+        TO_ROOM);
+    act("The taste of the $2N is nothing less than divine.", A_HIDEINV, u, self,
+      null, TO_CHAR);
+   goto start;
+   }
+
+  if ( u.thirst >20 )
+  {
+    block;
+   act("You are not thirsty.", A_HIDEINV, u, null, null, TO_CHAR);
+     goto start;
+  }
+block;
+   act ("You drink $2n and it makes you feel more energetic!", A_HIDEINV, u, self,
+       null, TO_CHAR);
+   act ("$1n drinks $2n and looks more energetic!", A_HIDEINV, u, self,
+       null, TO_ROOM);
+
+  u.thirst := u.thirst + 10;
+  u.full := u.full + 10;
+  if (u.thirst > 24)
+  {
+    u.thirst := 24;
+  }
+
+  if (u.full > 24)
+  {
+    u.full := 24;
+  }
+  u.endurance := u.endurance+50;
+  if (u.endurance > u.max_endurance)
+  {
+    u.endurance := u.max_endurance;
+  }
+  sub_drink_info@commands(self);
+  quit;
+}
+dilend
+end
+
+
+                                  slime
+
+names {"green slime", "slime", "blob"}
+title "a blob of green slime"
+descr "A disgusting blob of green slime has been left here."
+extra {}
+"As you examine the blob closer you get the eerie feeling that it
+resembles an item you once used to possess - sort of a slimy
+deja-vu."
+manipulate {MANIPULATE_TAKE, MANIPULATE_HOLD, MANIPULATE_ENTER}
+CONTAINER_DEF(1)
+weight 1
+dilcopy blowaway@function (120,
+"The green slime seeps into the ground.");
+
+end
+
+
+                                     head
+names {"head"}
+title "a bloody head"
+descr "The decapitated head of %s is here."
+type ITEM_TRASH
+manipulate {MANIPULATE_TAKE}
+weight 1
+end
+
+
+                                     corpse
+names {"corpse"}
+title "a corpse"
+descr "The corpse of %s is here."
+type ITEM_TRASH
+manipulate {MANIPULATE_TAKE, MANIPULATE_ENTER}
+/* Rest of values are inserted at runtime */
+dilbegin bob_code ();
+var
+  arg:string;
+  pc:unitptr;
+  pars:string;
+  item:unitptr;
+  ex_ptr:extraptr;
+  splstr:string;
+  splno:integer;
+code
+{
+heartbeat:=PULSE_SEC*3;
+if (self.value[2]!=1) quit;
+interrupt (SFB_PRE,((command ("cast")) and
+(target==self)),bl_animate);
+
+:start:
+unsecure(pc);
+unsecure(item);
+interrupt (SFB_CMD, command("get") or command("take"), get_stuf);
+
+wait (SFB_CMD, command("get") or command("take"));
+:get_stuf:
+
+if (isset(self.flags,UNIT_FL_BURIED))
+ goto start;
+pc:=activator;
+secure (pc,start);
+
+arg:=argument;
+
+pars:=getword(argument);
+while ((pars!="") and (pars!="from"))
+  {
+  pars:=getword (argument);
+  }
+
+if (pars=="") goto start;
+
+item:=findunit (pc,argument, FIND_UNIT_SURRO,null);
+if ( item ==null)
+  goto start;
+secure (item,start);
+
+if (item!=self) goto start;
+
+if ((pc.type==UNIT_ST_NPC) and
+(pc.master))
+{
+block;
+goto start;
+}
+
+if ((("corpse of "+pc.name) == item.name)) goto start;
+
+block;
+
+act ("You can't loot a player corpse.", A_ALWAYS,pc,null,null,TO_CHAR);
+goto start;
+
+:bl_animate:
+if (self!=target) goto start;
+splstr:= getword(argument);
+splno:= atoi(splstr);
+if (splno==81)
+{
+power:=-1;
+  block;
+  act ("Making a Zombie from a fellow player's corpse is forbidden.",
+  A_ALWAYS,activator,null,null,TO_CHAR);
+  goto start;
+  }
+
+}
+dilend
+
+
+dilbegin report_corpse ();
+var
+ act_str:string;
+ empty:string;
+code
+{
+heartbeat := PULSE_SEC;
+if (self.value[2]!=1) quit;
+if (self.value[3]>20) quit;
+:start:
+wait (SFB_MSG,argument=="report");
+if (self.outside.type==UNIT_ST_PC)
+ act_str:=self.outside.name;
+else
+ act_str:=self.outside.title;
+
+if (self.inside==null)
+ empty:="[Empty]";
+else
+ empty:="[Not Empty]";
+act ("$3N in "+act_str+" "+empty,
+ A_ALWAYS,activator,null, self,TO_CHAR);
+ goto start;
+}
+dilend
+
+end
+
+/*money was 0 now 1 */
+                                iron_piece
+MONEY(IRON_PIECE, 1)
+/* Rest of values are inserted at runtime */
+end
+
+                                copper_piece
+MONEY(COPPER_PIECE, 1)
+/* Rest of values are inserted at runtime */
+end
+
+                                silver_piece
+MONEY(SILVER_PIECE, 1)
+/* Rest of values are inserted at runtime */
+end
+
+                                gold_piece
+MONEY(GOLD_PIECE, 1)
+/* Rest of values are inserted at runtime */
+end
+
+                                platinum_piece
+MONEY(PLATINUM_PIECE, 1)
+/* Rest of values are inserted at runtime */
+end
+
+                                       letter
+names {"letter", "paper"}
+title "a letter"
+descr
+"A letter has been left here on the ground."
+type ITEM_NOTE
+weight 1
+manipulate MANIPULATE_TAKE
+end
+
+                                    death_seq
+names {"death sequence"}
+title "Death Sequence"
+descr
+"A death sequence has carelessly been left here."
+type ITEM_TRASH
+flags {UNIT_FL_NO_TELEPORT}
+minv 254
+
+/* This object is transferred to players when they die */
+dilbegin noaction();
+code
+{
+heartbeat := PULSE_SEC;
+   :loop:
+   wait(SFB_CMD, activator == self.outside);
+
+   if (activator.level < IMMORTAL_LEVEL)
+   {
+      act("You are dead, don't move!",
+          A_ALWAYS, self.outside, null, null, TO_CHAR);
+      block;
+   }
+
+   goto loop;
+}
+dilend
+
+
+dilbegin recall death_obj();
+var
+   i : integer;
+code
+{
+heartbeat := PULSE_SEC;
+   destroy(self);
+   on_activation(self.outside.type != UNIT_ST_PC, abort);
+
+sendto("poisondie",self.outside);
+
+   if ("$ARENA" in self.outside.quests)
+     goto abort;
+
+   self.outside.hp  := self.outside.max_hp;
+
+   if (self.outside.level <= START_LEVEL + 5)
+     i := 2;
+   else if (self.outside.level <= 25)
+     i := 4;
+   else
+     i := 6;
+
+   addaff(self.outside, ID_VALHALLA, i, WAIT_SEC*30,
+   0, 0, 0, TIF_NONE, TIF_NONE, TIF_VALHALLA_RET,
+   APF_NONE);
+
+   on_activation(not isaff(self.outside, ID_VALHALLA), abort);
+
+   heartbeat := PULSE_SEC * 3;
+   sendto ("remove kill prottection",self.outside);
+dilcopy ("no_kill@function",self.outside);
+
+   pause;
+
+   act("There is complete silence, you are floating in utter darkness.",
+       A_ALWAYS, self.outside, null, null, TO_CHAR);
+   pause;
+
+   act("Through the darkness you see a white light in the distance.",
+       A_ALWAYS, self.outside, null, null, TO_CHAR);
+   pause;
+
+   act("The light grows larger and more intense, it seems to resemble a "+
+       "warrior flying through the darkness.",
+       A_ALWAYS, self.outside, null, null, TO_CHAR);
+   pause;
+
+   act("The warrior takes your soul, and at that very instant you can see
+the"+
+       " world around you. You are in the arms of a beautiful Valkyrie, she "+
+       "begins to fly towards the stars.",
+       A_ALWAYS, self.outside, null, null, TO_CHAR);
+   pause;
+
+   act("The world is rapidly disappearing below you, as the Valkyrie rides "+
+       "towards the stars at an amazing speed.",
+       A_ALWAYS, self.outside, null, null, TO_CHAR);
+   pause;
+if (self.outside.quests.["New Player Helper"] != null)
+ {
+   act("After a short ride she sets your spirit down inside Ginger's thrown room. "+
+   "You slowly regain a more material form.",
+       A_ALWAYS, self.outside, null, null, TO_CHAR);
+   act("$1n enters the castle of Valhalla.",
+       A_ALWAYS, self.outside, null, null, TO_ROOM);
+   link(self.outside, findsymbolic("throne_room2@basis"));
+  }
+
+ else if (self.outside.alignment>249)
+ {
+   act("After a short ride she sets your spirit down inside Valhalla. You "+
+       "slowly regain a more material form.",
+       A_ALWAYS, self.outside, null, null, TO_CHAR);
+   act("$1n enters the castle of Valhalla.",
+       A_ALWAYS, self.outside, null, null, TO_ROOM);
+   link(self.outside, findsymbolic("heaven_entry@basis"));
+  }
+ else if (self.outside.alignment<-249)
+ {
+   act("After a short ride she throws you down into the pits of hell.  You "+
+       "slowly regain a more material form instantly feeling the heat.",
+       A_ALWAYS, self.outside, null, null, TO_CHAR);
+   act("$1n enters the pits of hell.",
+       A_ALWAYS, self.outside, null, null, TO_ROOM);
+   link(self.outside, findsymbolic("hell_entry@basis"));
+  }
+ else
+ {
+   act("After a short ride she lets your spirit drift into
+the
+   astral planes."+
+   "You slowly regain your senses.",
+       A_ALWAYS, self.outside, null, null, TO_CHAR);
+   act("$1n floats into the astral planes.",
+       A_ALWAYS, self.outside, null, null, TO_ROOM);
+   link(self.outside, findsymbolic("entry1@basis"));
+  }
+
+   self.outside.position := POSITION_RESTING;
+
+   :abort:
+   destroy(self);
+}
+dilend
+
+end
+
+                                     scythe
+
+/* The ultimate weapon for the ultimate godess of death - Hel */
+names {"scythe of death", "scythe"}
+title "a scythe"
+descr
+"A great black scythe has been left here."
+extra {}
+"There are seven runes engraved into the blade of the scythe."
+extra {"runes"}
+"Each rune is very complex, and glow in a different colour."
+manipulate {MANIPULATE_TAKE, MANIPULATE_WIELD}
+WEAPON_DEF(WPN_SCYTHE, BONUS_ARTIFACT, BONUS_ARTIFACT)  // Xyzzy: +25,+25
+dilcopy level_restrict@function(51,0,0,"");
+end
+
+
+    dictionary
+names {"dictionary"}
+title "a dictionary"
+descr
+"Someone has carelessly dropped their dictionary here."
+extra {}
+"On the first page of the dictionary there is a small inscription."
+extra {"inscription", "first page"}
+"The inscription says in ancient letters written in a shaky hand:
+
+  You will probably get a lot more information if you type 'help alias'
+                                              Kind regards, Gnort."
+manipulate {MANIPULATE_TAKE, MANIPULATE_HOLD}
+type ITEM_OTHER
+cost 4 COPPER_PIECE
+special SFUN_DICTIONARY
+end
+
+/* ============ A D M I N I S T R A T O R    O B J E C T S ============= */
+
+
+                  admin_slime
+names {"slime object", "slime", "object"}
+title "a slime object"
+descr
+"Someone has carelessly dropped a blob of horrible green slime here."
+extra {}
+"This object contains the much feared slime command:
+
+   slime (add | remove | list) <symbolic file index>
+
+And all such units will be slimed from then on (including reset of zones,
+players entering the game, etc.). Do not slime this object!
+
+Example: slime add cloud_land/concluder"
+manipulate {MANIPULATE_TAKE, MANIPULATE_HOLD}
+type ITEM_OTHER
+special SFUN_SLIME_ADM
+end
+
+
+    admin_ball
+names {"crystal ball", "ball"}
+title "a crystal ball"
+descr
+"Someone has dropped a crystal ball here."
+extra {}
+"Usage: use crystal ball <num1> <num2>
+
+        Will find the top 10 items of type <num1> with
+        maximum values of value[<num2>].
+
+        Example: use ball 5 1
+          Will find the 10 weapons with the maximum quality."
+
+manipulate {MANIPULATE_TAKE, MANIPULATE_HOLD}
+type ITEM_OTHER
+special SFUN_CRYSTAL_BALL
+end
+
+/* ===================================================================== */
+
+
+    log_obj
+names {"log object","log","object"}
+title "a log object"
+descr
+"Someone has dropped a few pages of the log here."
+extra {}
+"It's really not that easy to read.  Maybe the command `log help' will
+give you more information."
+manipulate {MANIPULATE_TAKE, MANIPULATE_HOLD}
+type ITEM_OTHER
+special SFUN_LOG_OBJECT time WAIT_SEC*3
+end
+
+    rod_error
+names {"rod of error", "rod"}
+title "a rod of error cancellation"
+descr "A rod has carelessly been left here."
+extra {}
+"When this objects is held and used with the 'use rod' command all errors
+in the zone will be cleared."
+manipulate {MANIPULATE_TAKE, MANIPULATE_HOLD}
+type ITEM_OTHER
+special SFUN_ERROR_ERASE
+end
+
+    rod_info
+names {"rod of info", "rod"}
+title "a rod of user information cancellation"
+descr "A rod has carelessly been left here."
+extra {}
+"When this objects is held and used with the 'wave rod' command all
+information given by the players in a given zone is erased. USE ONLY
+WHEN ALL USER INFO HAS BEEN READ AND CORRECTED."
+manipulate {MANIPULATE_TAKE, MANIPULATE_HOLD}
+type ITEM_OTHER
+special SFUN_INFO_ERASE
+end
+
+
+
+%mobiles
+
+   ladybug
+
+names {"lady bug","bug"}
+title "a lady bug"
+descr "A lady bug is crawling around."
+extra {}
+"The lady bug kind of looks like a black lady bug. It's alive. And it's crawling around.
+You notice the word 'Papi' inscribed with tiny letters on the rim of its shield."
+weight 0
+M_ZOMBIE_SMALL(1,SEX_NEUTRAL)
+
+dilbegin clingontest();
+external
+   unitptr buglostpc(pc : unitptr);
+
+var
+   u : unitptr;
+code
+{
+   :loop:
+   wait(SFB_CMD, activator != self);
+   u := activator;
+   secure(u, lostpc);
+   log("Latched onto " + u.name);
+   //exec("emote climbs onto " + u.name, self);
+   u := buglostpc(u);
+   goto loop;
+
+   :lostpc:
+   exec("emote lost its host.", self);
+   log("Bug lost PC outer loop");
+   goto loop;
+}
+dilend
+
+
+
+// 2022 : Called from vmelimits, hard requirement
+//
+//
+dilbegin advance_level();
+external 
+   AdvGuildLevel@guilds(ch : unitptr);
+
+code
+{ 
+   log(self.name + " advanced to level " + itoa(self.vlevel));
+   AdvGuildLevel@guilds(self);
+   return;
+}
+dilend
+end
+
+
+
+                           energyworms
+
+names {"energy worms", "worms"}
+title "the energy worms"
+descr "A bunch of energy worms are here."
+extra {} "Disgusting and intriguing!"
+M_ZOMBIE_SMALL(20,SEX_NEUTRAL)
+
+dilbegin aware energyworms();
+var
+   u : unitptr;
+   sl : stringlist;
+   s : string;
+   nCount : integer;
+code
+{
+   heartbeat := PULSE_SEC*4;
+   log("Energy worms checking location " + self.outside.symname);
+
+   :init:
+   wait(SFB_ALL, TRUE);
+
+   if (self.fighting != null)
+   {
+      if (self.fighting.type != UNIT_ST_PC)
+      {
+         self.hp := self.max_hp;
+         u := self.fighting;
+         act("As $2n attacks $1n $2e is dissolved in a bright light.", A_SOMEONE, self, u, null, TO_ROOM);
+         stop_fighting(self.fighting, self);
+         stop_fighting(self, self.fighting);
+         log("Overpopulation destroyed aggressive NPC " + u.symname + " from the game");
+         destroy(u);
+         goto init;
+      }
+   }
+
+   if (not command(CMD_AUTO_TICK))
+      goto init;
+
+   sl := null;
+   nCount := 0;
+
+   :loop:
+   u := self.outside.inside;
+   while (u)
+   {
+      nCount := nCount + 1;
+      s := u.symname;
+
+      // Don't consume players or player's corpses :o)
+      if ((u.type == UNIT_ST_PC) or (s $= "corpse@death"))
+      {
+         u := u.next;
+         continue;
+      }
+
+      if (s in sl) // more than 1
+      {
+         // if there's anything we cannot eat, skip
+         log("Overpopulation removed " + s + " from the game");
+         act("$1n consumes $2n.", A_SOMEONE, self, u, null, TO_ROOM);
+         destroy(u);
+         goto init;
+      }
+      addstring(sl, s);
+      u := u.next;
+   }
+
+   log("Overpopulation quitting with " + itoa(nCount) + " left in location.");
+   act("$1n dissolve in bright light.", A_SOMEONE, self, null, null, TO_ROOM);
+   destroy(self);
+   quit;
+}
+dilend
+end
+
+                           zombie
+
+names {"zombie"}
+title "the zombie"
+descr "A mindless zombie is roaming around here."
+extra {} "Disgusting!"
+M_ZOMBIE_SMALL(4,SEX_NEUTRAL)
+
+
+dilbegin aware mytimer();
+var
+  rt : integer;
+  i : integer;
+code
+{
+   wait(SFB_CMD, command("twiddle"));
+   heartbeat := PULSE_SEC*60;
+   rt := realtime;
+   i := 0;
+:loop:
+   wait(SFB_TICK, TRUE);
+   i := i + 1;
+   log("wait() for " + itoa(i) + " minutes with a wall time of " + itoa(realtime - rt));
+   goto loop;
+
+}
+dilend
+
+/*
+dilbegin dizzi();
+code
+{
+   sendtoalldil("CHANNEL mud @ @Papi says, 'But I promise this is the last time. I've persisted your channel choices on your characters.'", "channel@function");
+   quit;
+}
+dilend
+
+dilbegin discordtest();
+external
+   add_witness@justice(witness : unitptr, criminal : unitptr, victimname : string, crime_type: integer);
+   integer add_reward@justice(criminal_symname : string, criminal_idx : integer, crime_type: integer);
+
+var 
+   u : unitptr;
+   s : string;
+   i : integer;
+code
+{
+   :loop:
+   wait(SFB_CMD, command("cry"));
+
+   dilcopy("dizzi@basis()", activator);
+
+   goto loop;
+}
+dilend
+*/
+
+
+dilbegin justicetest();
+external
+   add_witness@justice(witness : unitptr, criminal : unitptr, victimname : string, crime_type: integer);
+   integer add_reward@justice(criminal_symname : string, criminal_idx : integer, crime_type: integer);
+
+var 
+   u : unitptr;
+   s : string;
+   i : integer;
+code
+{
+   :loop:
+   wait(SFB_CMD, command("clap"));
+
+   log("add_witness");
+   add_witness@justice(activator, self, self.name, CRIME_STEALING);
+
+   log("add_reward for zombie");
+   add_reward@justice(self.symname, self.idx, CRIME_STEALING);
+
+   log("add_reward for any players in here");
+   u := self.outside.inside;
+   
+   while (u)
+   {
+      if (u.type == UNIT_ST_PC)
+      {
+         log("add_reward for: " + u.symname + " with idx " + itoa(u.idx));
+         add_reward@justice(u.symname, u.idx, CRIME_STEALING);
+      }
+      u := u.next;
+   }
+
+   log("done");
+
+
+   goto loop;
+}
+dilend
+
+
+dilbegin findsymtest();
+var 
+   u : unitptr;
+   s : string;
+   i : integer;
+code
+{
+   heartbeat := PULSE_SEC * 10;
+   :loop:
+   wait(SFB_CMD, command("burp"));
+
+   log("activator = " + activator.symname + " idx = " + itoa(activator.idx));
+   log("self      = " + self.symname + " idx = " + itoa(self.idx));
+
+   if (self.symname == activator.symname)
+      log("Symname is identical");
+
+   if (self.idx == activator.idx)
+      log("Idx is identical");
+
+   u := findrndunit(self, FIND_UNIT_WORLD, UNIT_ST_NPC);
+   s := u.symname;
+   i := u.idx;
+
+   log("found " + s + " " + itoa(i));
+   pause;
+
+   u := findsymbolic(s, i);
+   s := u.symname;
+   i := u.idx;
+
+   log("found " + s + " " + itoa(i));
+   goto loop;
+}
+dilend
+
+
+
+dilbegin zonetest();
+var 
+   z : zoneptr;
+code
+{
+   :loop:
+   wait(SFB_CMD, command("smile"));
+   z := findzone("basis");
+
+   if (z == null)
+      log("no such zone");
+   else
+      log("found zone z = " + z.name);
+   goto loop;
+}
+dilend
+
+
+dilbegin dispatchtest();
+var 
+  s : string;
+code
+{
+   :loop:
+   wait(SFB_CMD, command("jump"));
+
+   s := "CHANNEL discord @ " + "<discord> @Papi says, 'Hiya'";
+   sendtoalldil(s, "channel@function");
+   goto loop;
+}
+dilend
+
+dilbegin shelltest();
+var 
+  i : integer;
+code
+{
+   :loop:
+   wait(SFB_CMD, command("bow"));
+
+   i := shell("test.sh olle golle");
+   log("shell = " + itoa(i));
+   goto loop;
+}
+dilend
+
+dilbegin aware comtest();
+var
+   s : string;
+code
+{
+   heartbeat := PULSE_SEC*4;
+
+   :init:
+   wait(SFB_COM, TRUE);
+
+   if (activator.fighting)
+      s := activator.fighting.nameidx;
+   else
+      s := "(null)";
+
+   log("COM message: " + activator.nameidx + " attacking " + s);
+   goto init;
+   
+   quit;
+}
+dilend
+
+end
+
+     odin
+
+/* God of death */
+names {"odin"}
+title "Odin"
+descr
+"Odin the almighty is sitting here in his throne."
+BASE_NORSE_GOD(199,SEX_MALE,ARM_CLOTHES)
+default POSITION_SITTING
+position POSITION_SITTING
+
+extra {}
+"Beneath wild long grey hair and beard you see black calm eyes looking
+back at you."
+
+dilbegin accuse_detect();
+var
+  u : unitptr;
+  ou : unitptr;
+code
+{
+   heartbeat := PULSE_SEC * 10;
+
+   :loop:
+   wait(SFB_TICK, TRUE);
+   u := findrndunit(self, FIND_UNIT_SURRO, UNIT_ST_PC);
+   if (u and (u != ou))
+   {
+      if ("$witness" in u.extra)
+      {
+         exec("tell "+u.name+" I see you have been the victim of a "+
+              "horrible crime, if you wish to accuse anyone, I can help you.",
+              self);
+         ou := u;
+         secure(ou, loop);
+         goto loop;
+      }
+   }
+   goto loop;
+}
+dilend
+
+dilcopy accuse@justice();
+
+end
+
+
+                                 heidruns
+
+names {"heidruns", "goat"}
+title "Heidruns the goat"
+descr "Heidruns the magical goat is standing here."
+M_GOAT_GODLY(130,SEX_FEMALE)
+extra {}
+"Heidruns is a nice magical goat that anyone would appreciate at home!
+Obviously she is not a normal goat since famous Tuborg beer flows from
+her udder (use 'milk goat' to get a mug of Tuborg)."
+
+dilbegin goat();
+var
+   u : unitptr;
+code
+{
+heartbeat := PULSE_SEC;
+   wait(SFB_CMD, command("milk"));
+
+   if (self #= findunit(activator, argument, FIND_UNIT_SURRO, null))
+   {
+      if (findunit(activator, "mug", FIND_UNIT_INVEN, null))
+      {
+  act("You already have a mug of beer.",
+      A_SOMEONE, activator, self, null, TO_CHAR);
+      }
+      else
+      {
+  act("You grab a mug and milk $2n.",
+      A_SOMEONE, activator, self, null, TO_CHAR);
+  act("$1n milks $2n.",
+      A_SOMEONE, activator, self, null, TO_ROOM);
+  u := load("mug_beer@basis");
+  link(u, activator);
+      }
+   }
+   else
+   {
+      act("You can only milk Heidruns the goat.",
+   A_SOMEONE, activator, self, null, TO_CHAR);
+   }
+   block;
+}
+dilend
+
+
+end
+
+                                 saerimner
+
+names {"saerimner", "pig"}
+title "Saerimner the pig"
+descr "Saerimner the magical pig is standing here."
+
+extra {}
+"Saerimner is a nice little magical pig. He doesn't mind at all when
+you cut porkchops from his fat little body. In fact, he regenerates
+his flesh as fast as you can cut it away! (Use 'cut pig' to get food)."
+M_PIG_GODLY(130,SEX_MALE)
+
+dilbegin pig();
+var
+   u : unitptr;
+code
+{
+heartbeat := PULSE_SEC;
+   wait(SFB_CMD, command("cut"));
+
+   if (self #= findunit(activator, argument, FIND_UNIT_SURRO, null))
+   {
+      if (findunit(activator, "pork chop", FIND_UNIT_INVEN, null))
+      {
+  act("You have already got a pork chop, eat it first.",
+      A_SOMEONE, activator, self, null, TO_CHAR);
+      }
+      else
+      {
+  act("You cut a pork chop from $2n.",
+      A_SOMEONE, activator, self, null, TO_CHAR);
+  act("$2n giggles as $1n cuts a pork chop from his little fat body.",
+      A_SOMEONE, activator, self, null, TO_ROOM);
+  u := load("porkchop@basis");
+  link(u, activator);
+      }
+   }
+   else
+   {
+      act("You can only cut in Saerimner the pig.",
+   A_SOMEONE, activator, self, null, TO_CHAR);
+   }
+   block;
+}
+dilend
+
+end
+
+
+
+                                      recep_daemon
+
+names {"reception daemon", "daemon"}
+title "the daemon"
+descr "The dreaded reception daemon is standing here."
+extra {}
+"You have heard tales of this daemon before. It is a dreaded creature which
+silently during the night erases all your inventory!"
+romflags {CHAR_DETECT_INVISIBLE}
+
+M_DEMON_GREATER_XLARGE(110,SEX_NEUTRAL)
+
+
+end
+
+
+                                   chaos_daemon
+
+/* Daemon to make random events */
+names {"chaos daemon", "daemon"}
+title "the daemon"
+descr "The dreaded Chaos daemon is standing here."
+extra {}
+"You have heard tales of this daemon before. It is a dreaded creature which
+causes chaos in the world. Good and bad things simply happen only because of
+the mere existence of this small creature."
+
+romflags {CHAR_DETECT_INVISIBLE}
+
+M_DEMON_GREATER_GODLY(130,SEX_NEUTRAL)
+
+
+end
+
+                                       hel
+/* Godess of Hell */
+names {"hel"}
+title "Hel"
+descr "Hel the grim reaper is here."
+extra {} "Dressed in black."
+romflags {CHAR_DETECT_INVISIBLE}
+ATTACK_DEFENSE(+500, +500)
+
+BASE_NORSE_GOD(159,SEX_FEMALE,ARM_PLATE)
+dilcopy mercenary_hire@function();
+dilbegin destroy_money();
+var
+        pc : unitptr;
+        item : unitptr;
+        list : extraptr;
+code
+{
+heartbeat := PULSE_SEC*3;
+:start:
+
+wait(SFB_DONE, (command("give") and (target == self) and
+      (activator.type == UNIT_ST_PC) ));
+
+:give:
+priority;
+item := medium;
+pc := activator;
+secure(pc, losthim);
+secure(item,losthim);
+exec("emote counts the money." ,self);
+destroy(item);
+unsecure(pc);
+:losthim:
+goto start;
+}
+dilend
+
+dilbegin appocalypse();
+external
+   magic@basis(u1 : unitptr);
+   doom@basis (u1 : unitptr);
+var
+  u1 : unitptr;
+code
+{
+   :loop:
+   heartbeat := PULSE_SEC;
+   wait(SFB_CMD, command("doom") and (activator.level >= 254));
+   block;
+   exec("nod", self);
+   pause;
+
+   heartbeat := PULSE_SEC * 5;
+   u1 := findrndunit(self, FIND_UNIT_WORLD, UNIT_ST_NPC);
+   if ((u1 == self) or (u1 == null))
+   {
+      exec("shrug", self);
+      pause;
+      goto loop;
+   }
+   if (u1 == null)
+      log("X: u1 is NULL");
+
+   exec("grin", self);
+
+   if (rnd(0,1))
+     magic@basis(u1);
+   else if (rnd(0,1))
+     doom@basis(u1);
+   pause;
+   goto loop;
+}
+dilend
+
+
+
+end
+
+/* Reset is only performed at boot time */
+
+%reset
+
+load odin into heaven_entry max 1
+
+{
+   equip scythe position WEAR_WIELD
+}
+load recep_daemon into hell_entry max 1
+load chaos_daemon into hell_entry max 1
+
+load saerimner into throne_room max 2
+load heidruns into throne_room  max 2
+load saerimner into throne_room2 max 2
+load heidruns into throne_room2  max 2
+
+%end

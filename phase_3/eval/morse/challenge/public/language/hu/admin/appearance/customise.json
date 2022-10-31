@@ -1,0 +1,16 @@
+{
+	"custom-css": "Egyéni CSS/LESS",
+	"custom-css.description": "Adj meg saját CSS/LESS leírókat, melyek minden egyéb stílus után kerülnek alkalmazásra.",
+	"custom-css.enable": "Egyéni CSS/LESS engedélyezése",
+
+	"custom-js": "Egyéni Javascript",
+	"custom-js.description": "Adj meg saját javascript-et. Végrehajtására az oldal teljes betöltése után kerül sor.",
+	"custom-js.enable": "Egyéni Javascript engedélyezése",
+
+	"custom-header": "Egyéni fejléc",
+	"custom-header.description": "Adj meg egyéni HTML-t (pl. &lt;/meta&gt; tag-ek, stb.), amik közvetlenül <code>&lt;head&gt;</code> szekció után kerülnek be a fórum kódjába. Script tag-ek használata engedélyezett, azonban erősen ellenjavallott, mivel az <a href=\"#custom-js\" data-toggle=\"tab\">Egyéni Javascript</a> panel elérhető.",
+	"custom-header.enable": "Egyéni fejléc engedélyezése",
+
+	"custom-css.livereload": "Élő újratöltés engedélyezése",
+	"custom-css.livereload.description": "Engedélyezésével fiókod alá eső minden eszközön az összes munkamenet kényszerűen frissül akárhányszor a mentésre kattintasz"
+}

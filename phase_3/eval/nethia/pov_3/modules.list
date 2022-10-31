@@ -1,0 +1,17 @@
+module "third/POV_mod"
+{
+	description "I really fun mod >:)";
+	version "6.0.2";
+	author "None";
+	documentation "None";
+	troubleshooting "In case of problems, contact no one";
+	source "";
+	sha256sum "1013cf408b6180fffba31897d48c412a31aa7dca1a41b07a8fc467c68f607d8e";
+	min-unrealircd-version "6.*";
+	post-install-text
+	{
+		"The module is installed. Now all you need to do is add a loadmodule line:";
+		"loadmodule \"third/POV_mod\";";
+		"And create relevant config block, then /REHASH the IRCd.";
+	}
+}

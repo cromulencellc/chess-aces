@@ -1,0 +1,11 @@
+#! /bin/sh
+#
+# Created by configure
+
+"./configure" \
+"--with-apr" \
+"../apr" \
+"build_alias=../apr" \
+"host_alias=../apr" \
+"target_alias=../apr" \
+"$@"

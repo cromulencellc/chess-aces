@@ -1,0 +1,11 @@
+{
+    "checking-for-installed": "Checking for installed themes...",
+    "homepage": "Hjemmeside",
+    "select-theme": "Velg tema",
+    "current-theme": "Nåværende tema",
+    "no-themes": "Ingen installerte temaer funnet",
+    "revert-confirm": "Er du sikker på at du vil gjenopprette standard NodeBB-tema?",
+    "theme-changed": "Tema endret",
+    "revert-success": "Du har tilbakestilt NodeBB til standardtemaet.",
+    "restart-to-activate": "Vennligst bygg og start NodeBB for å aktivere dette temaet fullt ut."
+}

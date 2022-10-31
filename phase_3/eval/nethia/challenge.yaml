@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'nethia'
+    compose_service: 'ta3_nethia'
+    role: 'server'
+    runtime:
+      path: /home/root/unrealircd/bin/unrealircd
+      container_path: /home/root/unrealircd/bin/unrealircd
+      type: ELF
+    main_source:
+      path: challenge_src/unrealircd-6.0.2/src/ircd.c
+      container_path: /home/challenge/unrealircd-6.0.2/src/ircd.c
+      type: C
+poller:
+  compose_service: 'ta3_nethia_sp_s1'

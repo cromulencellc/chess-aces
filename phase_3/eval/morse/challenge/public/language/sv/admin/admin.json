@@ -1,0 +1,11 @@
+{
+	"alert.confirm-rebuild-and-restart": "Är du säker på att du vill ombygga och starta om NodeBB?",
+	"alert.confirm-restart": "Är du säker på att du vill starta om NodeBB?",
+
+	"acp-title": "%1 | NodeBB Admin Kontrollpanel",
+	"settings-header-contents": "Innehåll",
+	"changes-saved": "Ändringar Sparade",
+	"changes-saved-message": "Dina ändringar av NodeBB-konfigurationen har sparats.",
+	"changes-not-saved": "Ändringar Sparades Ej",
+	"changes-not-saved-message": "NodeBB kunde inte spara dina ändringar. (%1)"
+}

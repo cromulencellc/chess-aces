@@ -1,0 +1,19 @@
+{
+	"lead": "Konfigurer IP-svartelisten din her.",
+	"description": "Noen ganger er blokkering av brukerkontoer ikke tilstrekkelig avskrekkende. Andre ganger er derfor den beste måten å beskytte et forum på å begrense tilgangen til forumet for en bestemt IP eller en rekke IP-er. I disse scenariene kan du legge til  IP-adresser eller hele CIDR-blokker i denne svartelisten, og de vil bli forhindret fra å logge på eller registrere en ny konto.",
+	"active-rules": "Active Rules",
+	"validate": "Valider svartelisten",
+	"apply": "Bruk svarteliste",
+	"hints": "Syntax Hints",
+	"hint-1": "Define a single IP addresses per line. You can add IP blocks as long as they follow the CIDR format (e.g. <code>192.168.100.0/22</code>).",
+	"hint-2": "You can add in comments by starting lines with the <code>#</code> symbol.",
+
+	"validate.x-valid": "<strong>%1</strong> out of <strong>%2</strong> rule(s) valid.",
+	"validate.x-invalid": "The following <strong>%1</strong> rules are invalid:",
+
+	"alerts.applied-success": "Blacklist Applied",
+
+	"analytics.blacklist-hourly": "<strong>Figure 1</strong> &ndash; Blacklist hits per hour",
+	"analytics.blacklist-daily": "<strong>Figure 2</strong> &ndash; Blacklist hits per day",
+	"ip-banned": "IP er utestengt"
+}

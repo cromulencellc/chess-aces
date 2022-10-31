@@ -1,0 +1,106 @@
+head	1.6;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.6
+date	2021.08.18.17.11.10;	author vagrant;	state Exp;
+branches;
+next	1.5;
+commitid	100611D3F2B22384567;
+
+1.5
+date	2021.08.18.17.10.59;	author vagrant;	state Exp;
+branches;
+next	1.4;
+commitid	100611D3EAE21D74567;
+
+1.4
+date	2021.08.18.17.10.59;	author vagrant;	state Exp;
+branches;
+next	1.3;
+commitid	100611D3EAE21D74567;
+
+1.3
+date	2021.08.11.14.42.17;	author vagrant;	state Exp;
+branches;
+next	1.2;
+commitid	1006113E1C753524567;
+
+1.2
+date	2021.08.11.14.41.55;	author vagrant;	state Exp;
+branches;
+next	1.1;
+commitid	1006113E1B1534D4567;
+
+1.1
+date	2021.08.09.14.08.13;	author vagrant;	state Exp;
+branches;
+next	;
+commitid	100611136C141264567;
+
+
+desc
+@@
+
+
+1.6
+log
+@adding test
+@
+text
+@cqvysiixrfsdtj fnruz@
+
+
+1.5
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+rwuaipoeussqwqyl xsh@
+
+
+1.4
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+tkna x dnhtxhssfiqbl@
+
+
+1.3
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+yep it worked@
+
+
+1.2
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+fzzmikprqqsenrodnkeb@
+
+
+1.1
+log
+@subdirs test
+@
+text
+@d1 1
+a1 1
+d00dd00d
+@
+

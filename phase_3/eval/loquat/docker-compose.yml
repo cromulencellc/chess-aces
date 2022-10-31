@@ -1,0 +1,103 @@
+version: '3'
+services:
+  challenge:
+    build: ./challenge/
+    volumes:
+      - ./challenge:/service
+      - ./base_data:/base_data
+      - ./static:/static
+      - .:/mnt
+    ports:
+      - 3080:3080
+      - 3081:3081
+    environment:
+      HTTP_PORT: 3080
+      TLM_PORT: 3081
+      DATABASE_URL: "postgres://postgres:Cae4noh5eghaT2vie5nu@db/postgres"
+      # STATIC_DIR: '/mnt/static/static'
+      # VIEW_DIR: '/mnt/static/view'
+    working_dir: /service
+    links:
+      - "ta3_loquat_db:db"
+  ta3_loquat_db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_PASSWORD: Cae4noh5eghaT2vie5nu
+    volumes:
+      - './priv/docker-entrypoint-initdb:/docker-entrypoint-initdb.d'
+  loquat_db_tools:
+    image: postgres:14-alpine
+    entrypoint: /bin/ash
+    links:
+      - "ta3_loquat_db:db"
+    environment:
+      PGUSER: postgres
+      PGHOST: db
+      PGPASSWORD: Cae4noh5eghaT2vie5nu
+  # unpatched:
+  #   build: .
+  #   volumes:
+  #     - ./variants/unpatched:/service
+  #     - ./base_data:/base_data
+  #   ports:
+  #     - 3028
+  #   environment:
+  #     PORT: 3028
+  # fully_patched:
+  #   build: .
+  #   volumes:
+  #     - ./variants/fully_patched:/service
+  #     - ./base_data:/base_data
+  #   ports:
+  #     - 3028
+  #   environment:
+  #     port: 3028
+  poller:
+    build: poller
+    environment:
+      HTTP_PORT: 3080
+      TLM_PORT: 3081
+    volumes:
+      - ./poller:/poller
+      - ./base_data:/base_data
+      - .:/mnt
+    working_dir: /poller
+    links:
+      - "ta3_loquat_db:db"
+  pov:
+    build: pov
+    environment:
+      HTTP_PORT: 3080
+      TLM_PORT: 3081
+    volumes:
+      - ./pov:/pov
+    working_dir: /pov
+    command: "ruby pov.rb"
+  pov_user_parameter_injection:
+    build: pov_user_parameter_injection
+    environment:
+      HTTP_PORT: 3080
+    volumes:
+      - ./pov_user_parameter_injection:/pov
+    working_dir: /pov
+    command: "ruby pov.rb"
+  pov_still_subscribed:
+    build: pov_still_subscribed
+    environment:
+      HTTP_PORT: 3080
+      TLM_PORT: 3081
+    volumes:
+      - ./pov_still_subscribed:/pov
+      - .:/mnt
+    working_dir: /pov
+    command: "node build/main.js"
+  pov_shared_search:
+    build: pov_shared_search
+    environment:
+      HTTP_PORT: 3080
+      TLM_PORT: 3081
+    volumes:
+      - ./pov_shared_search:/pov
+      - .:/mnt
+    working_dir: /pov
+    command: "node build/main.js"

@@ -1,0 +1,13 @@
+{
+	"events": "Dogodki",
+	"no-events": "Ni dogodkov",
+	"control-panel": "Nadzorna plošča za dogodke",
+	"delete-events": "Izbriši dogodke",
+	"confirm-delete-all-events": "Ali ste prepričani, da želite izbrisati vse zabeležene dogodke?",
+	"filters": "Filtri",
+	"filters-apply": "Uveljavi filtre",
+	"filter-type": "Tip dogodka",
+	"filter-start": "Začetni datum",
+	"filter-end": "Končni datum",
+	"filter-perPage": "Na stran"
+}

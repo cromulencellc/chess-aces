@@ -1,0 +1,23 @@
+message Telemetry {
+  required string satellite_id = 1;
+  required double tx_time_ms = 2;
+
+  optional PositionVelocity pv = 11;
+  optional Battery bt = 12;
+}
+
+message PositionVelocity {
+  required double x = 1;
+  required double y = 2;
+  required double z = 3;
+
+  required double dx = 4;
+  required double dy = 5;
+  required double dz = 6;
+}
+
+message Battery {
+  required double level = 1;
+  optional uint64 charging_time = 2;
+  optional uint64 discharging_time = 3;
+}

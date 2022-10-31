@@ -1,0 +1,18 @@
+{
+	"none": "Forumā vēl nav tematu ar birkām.",
+	"bg-color": "Fona krāsa",
+	"text-color": "Teksta krāsa",
+	"description": "Select tags by clicking or dragging, use <code>CTRL</code> to select multiple tags.",
+	"create": "Izveidot birku",
+	"modify": "Rediģēt birkas",
+	"rename": "Pārdēvēt birkas",
+	"delete": "Izdzēst atlasītās birkas",
+	"search": "Meklēt birkās...",
+	"settings": "Tags Settings",
+	"name": "Birkas nosaukums",
+
+	"alerts.editing": "Editing tag(s)",
+	"alerts.confirm-delete": "Vai vēlies izdzēst šīs birkas?",
+	"alerts.update-success": "Birka atjaunināta!",
+	"reset-colors": "Reset colors"
+}

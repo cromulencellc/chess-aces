@@ -1,0 +1,10 @@
+prefix=/vagrant/chess/nethia/challenge/unrealircd-6.0.2/extras/jansson
+exec_prefix=${prefix}
+libdir=/home/vagrant/unrealircd/lib
+includedir=${prefix}/include
+
+Name: Jansson
+Description: Library for encoding, decoding and manipulating JSON data
+Version: 2.13.1
+Libs: -L${libdir} -ljansson
+Cflags: -I${includedir}

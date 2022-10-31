@@ -1,0 +1,1547 @@
+/*
+filename    barbarian
+password    release
+changedby   Sender
+EmailAdd
+request     compile
+version     1
+END HEADER*/
+
+
+#define _GUILD_BARBARIAN
+#define BARBARIAN_ITEM "$Barbarian Gauntlet Given"
+#define QUEST_ENTRY    "Barbarian Entry"
+
+/* This zone is the Barbarians Guild, skillful and agile warriors. */
+
+
+#include <macros.h>
+
+/* ================================================================== */
+/*                                ZONE                                */
+/* ================================================================== */
+%zone barbarian
+title "Barbarian Guild@Mainland"
+creators {"sender"}
+
+notes
+"This is a zone designed to implement the Guild for Barbarians.
+Barbarians are skillful warriors, with a range of attacks that leverage
+their ferocity in battle." 
+reset RESET_ANYHOW
+lifespan 125
+
+help
+"<pre><br/>
+The Barbarians Hall is the legendary training ground of some of Valhalla's<br/>
+most notable warriors. Known for their ferocity in battle, the Barbarians<br/>
+fight with bloodlust and rage, embracing the raw emotions brought out in<br/>
+the game of life and death.<br/>
+/* leftovers from the conjuror intro I copied, may or may not keep.
+<br/>
+	<div class='cpw'>Training/Education</div><div class='cw'><br/>
+<br/>
+  Skill Practice	- Main Lecture Hall, east and south from the Main Hall.<br/>
+  Weapon Practice	- Tower of Mundane, all north from the Main Hall.<br/>
+  Ability Practice	- The Library, east and north from the Main Hall.<br/>
+<br/>
+	</div><div class='cpw'>Other services</div><div class='cw'><br/>
+<br/>
+  Title change		- At the Archcancellor, type 'title' to gain a new<br/>
+			  and hopefully better title.<br/>
+  Academy items		- Personal magical trinkets of the Conjurers. Those<br/>
+			  are available at the Archcancellor by bowing or<br/>
+			  worshipping him.<br/>
+  Bar and relaxation 	- A small resting area, along with a bar, can be found<br/>
+			  in the College Gardens (north and east or south<br/>
+			  and east from the Main Hall).<br/>
+*/
+<br/>
+</div></pre>"
+
+/* ================================================================== */
+/*                               DIL                                  */
+/* ================================================================== */
+
+%dil
+
+// hilka_cloth
+dilbegin aware brawl_det();
+external
+   integer qstMarkComplete@quests(pc : unitptr, qname : string);
+var 
+   u : unitptr;
+code
+{
+:init:
+	wait(SFB_COM, self.equip != 0);
+
+   if (activator != self.outside)
+      goto init;
+
+   if (self.outside.fighting == null)
+      goto init;
+
+   if (self.outside.fighting.race != RACE_WOLF)
+      goto init;
+
+   // Make sure the player fights a healthy opponent
+   if (self.outside.fighting.hp < (self.outside.fighting.max_hp*5)/10)
+   {
+      goto init;
+   }
+
+
+:checkfair:
+   u := self.outside.inside;
+
+   while (u)
+   {
+      if (u != self)
+      {
+         if (u.equip)
+            break;
+      }
+
+      u := u.next;
+   }
+
+   if (u)
+   {
+      goto init;
+   }
+
+   u := self.outside.outside.inside;
+
+   while (u)
+   {
+      if (u != self.outside)
+      {
+         if (u.fighting == self.outside.fighting)
+         {
+            goto init;
+         }
+      }
+
+      u := u.next;
+   }
+
+:loop:
+	wait(SFB_COM|SFB_DEAD, TRUE);
+
+   if (self.equip == 0)
+      goto init;
+
+   if (command(CMD_AUTO_COMBAT))
+   {
+      if (activator != self.outside)
+         goto loop;
+
+      goto checkfair;
+   }
+
+   if (command(CMD_AUTO_DEATH))
+   {
+      qstMarkComplete@quests(self.outside, QUEST_ENTRY);
+	  act("Your instincts feel awakened.", A_ALWAYS, self.outside, null, null, TO_CHAR);
+      quit;
+   }
+
+   log("HUH??? Shouldnt be possible");
+
+	goto init;
+}
+dilend
+
+/* Nokill dil for Guild Staff - ejects the sinner out with 0 hp and
+mana + incapacitated */
+
+dilbegin nokill();
+var
+        pc : unitptr;
+        room : unitptr;
+code
+{
+	heartbeat := 3 * PULSE_SEC;
+
+:start:
+
+	wait(SFB_COM,  self.position == POSITION_FIGHTING );
+	if(pc.type == UNIT_ST_NPC) goto start;
+	pc := self.fighting;
+	if(pc.level>200)
+		goto start;
+	if (command("flee"))
+		block;
+
+	self.hp := self.max_hp;
+	act("The sounds of battle attract the attention of the barbarian guards.",
+		A_ALWAYS, pc, self, null, TO_ALL);
+	act("Suddenly several burly guards rush into the room, eyes "+
+		"<div class='c+r'>red</div> with rage. Fists start flying!", A_ALWAYS, pc, self, null, TO_CHAR);
+	act("Several of them charge into the room, their eyes <div class='c+r'>red</div> with rage! "+
+		"$3n is crushed by the ferocity of their attack!",A_SOMEONE, pc, self, null, TO_REST);
+	pc.hp := 0;
+	pc.mana := 0;
+	act("You can feel yourself being dragged away as you slip into the "+
+		"unconsciousness.",A_ALWAYS, pc, self, null, TO_CHAR);
+	position_update(pc);
+	act("Two of the guards grab $1n and drag $1m out of the Guild, dumping "+
+		"$1m in the cold.",A_SOMEONE, pc, self, null, TO_REST);
+	room := findroom("outcropping@gremlin");
+	
+	link(pc,room);
+	act("Two guards appear, dragging an unconscious figure between them and "+
+		"dump $1m unceremoniously into the cold." ,A_SOMEONE,pc,self,null,TO_REST);
+
+:gone:
+
+	unsecure(pc);
+	goto start;
+}
+dilend // END DIL nokill
+
+// This dil is used by bloody_gauntlets to attach the blood_poison dil to a weapon.
+
+dilbegin aware recall blood(pwr : integer);
+external
+	integer skillresist@skills(aa:integer,ad:integer,sa:integer,sd:integer);
+var
+	origpwr : integer;
+	mypulse : integer;
+	hm      : integer;
+	i       : integer;
+	rand    : integer;
+	s: string;
+	msg_t: integer;
+	ski_t: integer;
+	skilla   : integer;
+	skillb   : integer;
+	skillc   : integer;
+	skilld   : integer;
+
+code
+{
+	origpwr := pwr;
+	mypulse := (PULSE_SEC * SECS_PER_MUD_HOUR) / 2;
+	heartbeat := mypulse;
+
+:init:
+   i := interrupt(SFB_TICK, TRUE, ticking);
+
+   subextra(self.extra, "$blood_str");
+   addextra(self.extra, {"$blood_str"}, itoa(pwr));
+
+   goto battle;
+
+:ticking:
+   pwr := pwr - rnd(5,15);
+   subextra(self.extra, "$blood_str");
+   addextra(self.extra, {"$blood_str"}, itoa(pwr));
+
+   if (pwr <= 0)
+      {
+         act("The blood on the " + self.name + " has dried.",
+             A_SOMEONE, self.outside, null, null, TO_CHAR);
+         quit;
+      }
+
+:battle:
+
+	wait (SFB_PRE, (command(CMD_AUTO_DAMAGE) and
+		(activator == self.outside) and
+		(medium == self)) );
+
+	rand := rnd(0,5);
+	if (rand < 3)
+		goto battle;
+		
+    skillc := rnd(40,124);
+	skilld := rnd(40,124);
+	skilla := self.abilities[ABIL_CON];
+	skillb := self.outside.fighting.abilities[ABIL_CON];
+	hm := skillresist@skills(skilla,skillb,skillc,skilld);
+	
+	if (hm >= 0)
+	{
+		if (not(isset(self.outside.fighting.pcflags, PC_PK_RELAXED)) and
+			(target.type == UNIT_ST_PC))
+			goto battle;
+		if (not(dilfind("blood_poison@barbarian", target)))
+			dilcopy("blood_poison@barbarian("+itoa(pwr)+")", target);
+		else if (rnd(0,10) <= 2)
+			dilcopy("blood_poison@barbarian("+itoa(pwr)+")",target);
+		act("You grin as the blood on your " + self.name + " enters $2n's body!",
+			A_ALWAYS, self.outside, self.outside.fighting, null,TO_CHAR);
+		act("You cringe as the blood on $1n's " + self.name + " enters your body!",
+			A_ALWAYS, self.outside, self.outside.fighting, null,TO_VICT);
+		act("$2n cringes as the blood on $1n's " + self.name + " enters their body!",
+			A_ALWAYS, self.outside, self.outside.fighting, null, TO_REST);
+	}
+	goto battle;
+}
+dilend /* DIL END blood */
+
+// Dil borrows heavily from poison spell, to attach to a victim
+
+dilbegin aware recall blood_poison(pwr : integer);
+var
+	i : integer;
+	j : integer;
+	parse : stringlist;
+
+code
+{
+	if (not (self.type & (UNIT_ST_PC|UNIT_ST_NPC)))
+		quit;
+
+	interrupt(SFB_DEAD, activator == self, stop);
+	interrupt(SFB_MSG, TRUE, check);
+
+	heartbeat := PULSE_POINTS / 2;
+	j := 1 + pwr / 5;
+
+	while (i < j)
+	{
+		
+:loop:
+
+		wait(SFB_TICK, TRUE);
+
+		i := i + 1;
+
+		self.hp := self.hp - j;
+		self.mana := self.mana - 2*j;
+		self.endurance := self.endurance - 2*j;
+		if(self.fighting)
+		{
+			self.fighting.endurance := self.fighting.endurance + 2*j;
+			act("The Bloody Gauntlets absorb $1n's blood!",
+				 A_HIDEINV, self, null, null, TO_ROOM);
+		}
+		if (self.hp >= -10)
+			position_update(self);
+
+		if (self.hp < -10)
+		{
+			act("$1n dies from the barbarian blood magic.",
+				A_HIDEINV, self, null, null, TO_ROOM);
+			act("You die from the barbarian blood magic.",
+				A_HIDEINV, self, null, null, TO_CHAR);
+			position_update(self);
+			goto the_end;
+		}
+
+		act("$1n looks visibly pale.", A_HIDEINV, self, null, null, TO_ROOM);
+		act("You feel barbarian blood magic burning in your veins.",
+		A_HIDEINV, self, null, null, TO_CHAR);
+
+		position_update(self);
+	}
+	goto the_end;
+
+:check:
+
+	if (argument=="poisondie")
+		goto stop;
+	parse := getwords(argument);
+	if ((parse.[0] == "spl_rem_poison") or (parse.[0] == "spl_dispel"))
+	{
+		if (atoi(parse.[1]) >= pwr)
+		goto the_end;
+	}
+	goto loop;
+
+:the_end:
+
+   act("The barbarian blood magic in your veins fades.",
+       A_ALWAYS, self, null, null, TO_CHAR);
+	   
+:stop:
+
+	quit;
+}
+dilend // DIL END blood_poison
+
+%rooms
+
+entrance
+names {"entrance","guild entrance","barbarian hall"}
+title "Entrance to the Hall of the Barbarians"
+descr
+"You have arrived at the entrance to the hall of the Barbarians. 
+Under their fearsome leader, the Barbarians have emerged as a powerful 
+force driving the ways of the realm. Their hall, however, harkens back 
+to humble beginnings. While large, it is a simple structure. Here on the
+high pleateau it would certainly be difficult to assail, but clearly its 
+inhabitants favor practicality over beauty. "
+movement SECT_CITY
+
+east to hall_01 descr "Inside the Hall";
+south to outcropping@gremlin descr "On the Rocky Outcropping";
+ALWAYS_LIGHT
+end
+
+hall_01
+names {"inside hall"}
+title "Inside the Barbarians Hall"
+descr
+"Upon entering the hall you are struck by a cacophony containing the 
+sounds of revelry and dabauchery. Large oaken beams form the structure of 
+the ceiling above you, forming a large open space below. In the distance the 
+ring of weapons can be heard as the Barbarians practice their infamous skills. 
+Through the western doors lies the Guild Entarnce, and to the east the hall 
+opens further. You can just make out a large table and a throng of people to 
+the far eastern end of the hall. "
+extra {"floor","wood","beams"}
+"The structure is made of large sturdy beans of rough-hewn oak. 
+The room is open, and the floor worn from use. Beams overhead seem 
+more than strong enough to support the roof and its heavy seasonal snows. "
+
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS, UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+west to entrance descr "Barbarians Entrance<br/>";
+east to hall_02 descr "Inside the Hall<br/>";
+end
+
+hall_02
+names {"barbarian hallway"}
+title "Inside the Hall"
+descr
+"The cacophony of noise seems to grow with every step. Along one wall 
+a long table is filled with food, ale, and other physical pleasures. 
+The floor here is made of simple rough-hewn wood, though it has been 
+worn by thousands of pairs of boots traversing its length. An unpleasant 
+odor fills your nose. Clearly the Barbarians haven't prioritized 
+cleanliness in their practices. To the west lies the hall entryway, 
+and to the east the hall continues towards the head table. "
+extra {"floor","wood","beams"}
+"The structure is made of large sturdy beans of rough-hewn oak. 
+The room is open, and the floor worn from use. Beams overhead seem 
+more than strong enough to support the roof and its heavy seasonal snows. "
+extra {"table","food"}
+"A long table filled with food, drink, and something that many guild 
+members are smoking runs the length of the room. "
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+west to hall_01 descr "Inside the Barbarians Hall<br/>";
+east to hall_03 descr "Inside the Hall<br/>";
+end
+
+hall_03
+names {"barbarian hallway"}
+title "Inside the Hall"
+descr
+"Immediately to the east the large Guildmasters table dominates the hall. 
+It is clear that whoever holds that position commands the attention of not 
+only those in this guild, but also of powerful leaders both far and wide. 
+The reputation of the Barbarians as fierce warriors has granted them 
+significant leverage in negotiations of all forms. Far to the west, the 
+entry doors of the hall can be seen. "
+extra {"floor","wood","beams"}
+"The structure is made of large sturdy beans of rough-hewn oak. 
+The room is open, and the floor worn from use. Beams overhead seem 
+more than strong enough to support the roof and its heavy seasonal snows. "
+extra {"table","food"}
+"Here the guildmaster's table dominates the space. Best approach carefully. "
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+west to hall_02 descr "Guildmasters Table<br/>";
+east to hall_04 descr "Inside the Hall<br/>";
+end
+
+hall_04
+names {"guildmasters table"}
+title "The Guildmaster's Table"
+descr
+"Hilka, Master of Barbarians sits here behind a massive oaken table. 
+A range of armaments adorn the table, as well as gifts of both food 
+and armors from across the lands. Alcoves can be seen to both the 
+north and south. A large ladder leading up to the loft rests in one 
+corner, while another heading down to the armory and training grounds 
+can be made out in the other. There is a small sign on the table. "
+extra {"floor","wood","beams"}
+"The structure is made of large sturdy beans of rough-hewn oak. 
+The room is open, and the floor worn from use. Beams overhead seem 
+more than strong enough to support the roof and its heavy seasonal snows. "
+extra {"table","food"}
+"Here the guildmaster's table dominates the space. Best approach carefully. "
+extra {"small sign","sign"}
+"This is the great hall of the Barbarians Guild. <br/><pre>
+	'join'           - join this guild (if you qualify!).
+	'title'          - changes your title to a new and better one.
+	'worship'        - ... 
+	'say specialize' - To change profession (if you qualify).
+</pre><br/>
+Members, pay respect to your Chief by worshipping her. 
+The power of our guild may be shared with those who show respect."
+
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+west to hall_03 descr "Inside the Hall<br/>";
+up to loft_04 descr "The Barbarians Loft<br/>";
+down to train_04 descr "The Training Hall<br/>";
+north to hall_n descr "Northern Alcove<br/>";
+south to hall_s descr "Southern Alcove<br/>";
+end
+
+hall_s
+names {"south alcove"}
+title "The Southern Alcove"
+descr
+"The southern alcove is filled with smoke, and appears to primarily be a social space.
+There are plentiful seating options and many of the comforts expected to support the Barbarians 
+returning from their many adventures. The Guildmasters table dominates the space 
+to the north. "
+extra {"extra"}
+"This is an extra.<br/>"
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+north to hall_04 descr "Guildmasters Table<br/>";
+end
+
+hall_n
+names {"north alcove"}
+title "The Northern Alcove"
+descr
+"Here in the Northern Alcove, Raz the Trader has made himself available 
+for discovery of the objects of his trade. A stall front provides some 
+necessary space between the often wild or frenzied Barbarians and his 
+precious wares. An assortment of objects from across the land, representing 
+the far-ranging escapades of the Barbarians who return for rest and 
+replenishment, as well as to recoup some finances necessary for living.  "
+extra {"stall"}
+"A simple stall, it provides a place to display wares, and some necessary 
+separation between Raz and the Barbarians.<br/>"
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+south to hall_04 descr "Guildmasters Table<br/>";
+end
+
+train_02
+names {"skills"}
+title "Skill Masters Room"
+descr
+"The defining feature of this room is a large clay circle lined with stones. 
+A mural dominates one wall, that of a large bloodshot eye. This must 
+be where the Barbarians train in their infamous skills. The tools of training 
+line the room, and are stacked in corners."
+extra {"extra"}
+"This is an extra.<br/>"
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+east to train_03 descr "South Descr<br/>";
+end
+
+train_03
+names {"hallway of legends"}
+title "Hallway of Legends"
+descr
+"Murals are painted on either side of the hallway, depicting legends of eras 
+gone by. Upon the north wall, the continued imagery of the masters past of 
+this historic guild of barbarians. On the south wall, those adventurers and 
+legends who have earned their positions in the lore of the guild through prowess 
+in battle."
+extra {"legends"}
+"The mural depicts great battles featuring some of the most feared warriors to 
+have stalked these halls. The great warrior Issa is depicted with his mighty 
+hammer, conquering Deresh Karany.<br/>"
+
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+west to train_02 descr "Skill Masters Room<br/>";
+east to train_04 descr "Hallway of Legends<br/>";
+end
+
+train_04
+names {"hallway of legends"}
+title "Hallway of Legends"
+descr
+"Murals are painted on every available surface, depicting legends of eras 
+gone by. Upon the east wall, ancient imagery of the masters past of 
+this historic guild of barbarians. To the south lies a small alcove, and to 
+the north, the fabled Armory of the Barbarians. "
+extra {"extra"}
+"This is an extra.<br/>"
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+west to train_03 descr "Hallway of Legends<br/>";
+up to hall_04 descr "The Guildmaster's Table<br/>";
+north to train_n descr "The Armory<br/>";
+south to train_s descr "South Alcove<br/>";
+end
+
+train_s
+names {"south alcove"}
+title "The Southern Alcove"
+descr
+"The southern alcove relatively quiet, and is deeper than first glance indicated. 
+In the shadowed recess at the back of the alcove, a few well-used cots lie neatly  
+made. It appears that the barbarians weary of their training and adventures use this 
+space to rest and recouperate.
+to the north. "
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT, UNIT_FL_SACRED}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+north to train_04 descr "Hallway of Legends<br/>";
+end
+
+train_n
+names {"weapons"}
+title "The Armory"
+descr
+"The Armory of the Barbarians is very much as you would expect it to be. Weapons 
+ranging from massive cudgels and hammers, to small and sharp stilleto daggers can 
+be found in every visible space. Faeld the long-serving weaponmaster has more than 
+earned the spot here. Countless barbarians have faced their enemies with 
+knowledge shared in this very room, that which helped them survive."
+extra {"weapons"}
+"Weapons of every type, sharp, blunt, magical, and cursed, are represented here.<br/>"
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+south to train_04 descr "Hallway of Legends<br/>";
+end
+
+loft_02
+names {"abilities"}
+title "Hall of Strength"
+descr
+"The loft ends here, in the Hall of Strength. In the center of the room a large 
+brazier burns with an eerily red flame. Despite the large fire, the room feels 
+no warmer than any of the others in the Barbarian's hall. Suspended above the 
+flames, seemingly hanging in mid-air, the bloodshot eye of the guild seems to 
+look directly at you, as you move about the space. The only exit is returning 
+to the East."
+extra {"brazier"}
+"The barzier glows with a large flame, casting an eery red light flickering across 
+the room.<br/>"
+extra {"bloodshot eye","eye"}
+"The eye seems to follow you as you move about the space. It feels as if the eye 
+can see directly into your soul.<br/>"
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS, UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+east to loft_03 descr "Hall of Strength<br/>";
+end
+
+loft_03
+names {"hall of strength"}
+title "Hall of Strength"
+descr
+"Thick beams make a heavy and sturdy roof overhead, and the floor below 
+is solid to the step. The walls here carry depictions of moments representing 
+highlights of the long history of the Barbarians. Feats of strength, tales 
+of heroism, and battles aplenty are represented. To the west, the glowing brazier 
+of the Barbarians can be seen, a legendary feature of this hall. To the east the 
+start of the hall, and stairs to the main floor below."
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+west to loft_02 descr "Hall of Strength<br/>";
+east to loft_04 descr "Hall of Strength<br/>";
+end
+
+loft_04
+names {"hall of strength"}
+title "Hall of Strength"
+descr
+"Here in the Barbarians loft, the Hall of Strength leads at its far end to 
+the glowing brazier, that even here casts its red glow. Between here and 
+there, the walls are lined with the feats of strength that form the narrative 
+history of the guild. Great warriors past and present are represented. On the 
+back wall, a tribute to the gods represents the acknowledgement of the higher 
+powers that give Barbarians their strength."
+extra {"tribute"}
+"The god Sender is represented amidst his immortal peers. The patron of the 
+Barbarians, Sender is lauded above all other gods by the guild.<br/>"
+flags {UNIT_FL_NO_WEATHER, UNIT_FL_INDOORS,UNIT_FL_NO_TELEPORT}
+movement SECT_INSIDE
+ALWAYS_LIGHT
+west to loft_03 descr "Hall of Strength<br/>";
+down to hall_04 descr "Guildmasters Table<br/>";
+end
+
+%mobiles
+
+gate_guard
+names {"barbarian guard","barbarian","guard"}
+title "the barbarian guard"
+descr
+"A barbarian guard is standing here, protecting the hall entrance."
+extra {}
+"The barbarian guards appear to exist without physical match. Rippling  
+muscles appear to be stacked one atop the other. Their eyes show a hint of 
+red, evidently from the infamous rage that resides just below the surface."
+flags {UNIT_FL_NO_TELEPORT}
+romflags {CHAR_PROTECTED}
+M_HUMAN_WARRIOR_POLE(160,SEX_MALE)
+alignment 0
+money 1 SILVER_PIECE
+
+dilcopy MurderBanish@guilds(GUILD_BARBARIAN);
+dilcopy AlertMembers@guilds(GUILD_BARBARIAN, "");
+dilcopy rescue@function("guard");
+dilcopy teamwork@function("guard");
+// dilcopy guild_guard@guild_paths(GUILD_BARBARIAN, "east");
+end
+
+
+hilka
+names {"hilka","guild master","master","chief","barbarian"}
+title "Hilka"
+descr "Hilka the Bold, Chief of the Barbarians is here."
+extra {}
+"Hilka may be the largest human woman you have ever seen. A deep smouldering 
+look looms from bright red eyes, as if she is unable to let go of the rage her 
+Barbarians are infamous for. A large scar runs through the crown of her head 
+and down between her eyes, terminating in the remains of what was once her nose. "
+flags {UNIT_FL_NO_TELEPORT}
+romflags {CHAR_PROTECTED}
+M_HUMAN_WARRIOR_CLUB(160,SEX_FEMALE)
+alignment 0
+money 1 GOLD_PIECE
+exp -100
+
+dilcopy nokill@barbarian();
+dilcopy MurderBanish@guilds(GUILD_BARBARIAN);
+dilcopy AlertMembers@guilds(GUILD_BARBARIAN, "");
+
+dilcopy SetTitles@guilds(GUILD_BARBARIAN, 
+{"Young Blood", "Young Blood", "Apprentice Berserker", "Apprentice Berserker",
+ "Journeyman Berserker", "Journeywoman Berserker", "Rage Seeker", "Rage Seeker",
+"Blood Seeker", "Blood Seeker", "Whirlwind", "Whirlwind",
+"Enraged One", "Enraged One", "Bloodletter", "Bloodletter", "Barbarian Warrior", "Barbarian Warrior",
+"Charger", "Chargeress", "Way of Blood", "Way of Blood", "Cleaver", "Cleaveress", 
+"The Enraged", "The Enraged", "Mark of Blood", "Mark of Blood", 
+"The Blood Eye", "The Blood Eye", "Render", "Renderess", "Master Berserker", "Master Berserker",
+"Barbarian Mistress", "Barbarian Master", "Master of Rage", "Mistress of Rage",
+"Master of the Enraged", "Mistress of the Enraged"});
+
+dilcopy Specialize@guilds(GUILD_BARBARIAN, "alespec@barbarian",
+    { "say $1N, it is important for you to understand, that specialization is an irreversible process.", 
+      "say Once you commit this process will alter your body permanently.",
+      "say I'll give you a mug of black ale. Once you cosume it the change will occur.",
+      "say Remember, this will only work for thieves.",
+      "::$3n hands you a mug of black ale.::$3n hands a mug of black ale to $1n."});
+
+dilcopy MasterJoin@guilds(GUILD_BARBARIAN, GUILD_BARBARIAN_EXCL, QUEST_ENTRY, 
+ {"say You have been banned from our guild, you can't rejoin.","spit $1N"},
+ {"eye $1N", "say Perhaps you have been hitting your head too much lately, $1N?", "say You're already a member of our guild."},
+ {"glare $1N", "say You have made some unfortunate choices in life $1N, that prevent you from joining our guild."},
+ {"say To join $1N, you must prove yourself worthy by completing the Barbarian quest.","say Go speak with Raz."},
+ {"handshake $1N", "say Welcome to the Barbarian's Guild, $1N."});
+
+
+/* Barbarian Master DIL - gives out the Bloody Gauntlets. */
+
+dilbegin barb_give();
+external
+   integer IsInGuild@guilds(pc : unitptr, sGuild : string);
+   integer IsInGuilds@guilds(pc : unitptr, sGuilds : stringlist);
+
+var
+	pc : unitptr;
+	item : unitptr;
+
+code
+{
+	heartbeat := PULSE_SEC * 5;
+
+:start:
+
+	wait (SFB_DONE, (command("worship")or(command("bow")))and(self==target));
+		pc := activator;
+		secure(pc, lost);
+
+		if (IsInGuild@guilds(pc, GUILD_BARBARIAN))
+		{
+			if (BARBARIAN_ITEM in pc.quests)
+			{
+				exec("say Well, if it isnt "+pc.name+". Back for more handouts I presume?",self);pause;
+				exec("sigh",self);
+				pause;
+				exec("say I think you managed to lose your Bloody Gauntlets and are here "+
+					"begging.",self);
+				act("$3n gives you a stern look that makes you feel very small indeed."
+					,A_ALWAYS,pc,null,self,TO_CHAR);
+				act("$3n gives $1n a stern look that makes $1m step uneasily from foot to "+
+					"foot.",A_SOMEONE,pc,null,self,TO_REST);
+				pause;
+				exec("say Now "+pc.name+", these gauntlets come with a price, "+
+					"as I'm sure you can imagine.",self);
+				pause;
+				exec("say If you wish another pair, you'll have to make payment.",self);
+				pause;
+				exec("emote eyes you carefully...",self);
+				pause;
+				exec("say My supplies are dwindling.",self);
+				pause;
+				exec("say I'll need both the raw materials, and the magic to bind them.",self);
+				pause;
+				exec("say Deep in the continent of Amazonia, lie the Lost Lands.",self);
+				pause;
+				exec("say There you will find a tribal priest who should have the... liquid ingredients.",self);
+				pause;
+				exec("say Bring this to me, and we will sort out the rest.",self);
+				pause;
+				exec("say Farewell, "+pc.name+".",self);
+				unsecure(pc);
+				goto start;
+			}
+			exec("say Greetings "+pc.name+", I had heard you were approaching the Barbarians hall.",self);
+			pause;
+			exec("say I know you are learning the ways of the Barbarian",self);
+			pause;
+			exec("say The life we live is perilous... and not without discomfort.",self);
+			pause;
+			exec("say I wont bandy words - it will take sweat and blood to master our profession.",self);
+			pause;
+			exec("say Even the strongest have faltered on this path. ",self);
+			pause;
+			exec("emote takes a long pause.",self);
+			pause;
+			pause;
+			exec("say "+pc.name+", we wish to keep our own alive, "+
+				"thus we will provide you with a powerful item to aid you.",self);
+			pause;
+			exec("say Some may find our path distasteful, though I suspect you will accept this.",self);
+			item := load("bloody_gauntlet@barbarian");
+			item.height := pc.height;
+			link(item, pc);
+			sendtext("Hilka hands you some Bloody Gauntlets.<br/>",pc);
+			act("$3n hands $1n a pair of Bloody Gauntlets.",A_SOMEONE,pc,null,self,TO_REST);
+			pause;
+			exec("say These gauntlets are not easy to come by, though they hold a power"+
+				" worth their cost.",self);
+			pause;
+			exec("say Simply 'grip' your weapon tightly to summon their powers.",self);
+			pause;
+			exec("say The value they can bring in combat is unrivaled.",self);
+			pause;
+			exec("say Embrace the Barbarian's way, and you will be rewarded.",self);
+			addextra(pc.quests, {BARBARIAN_ITEM}, "");
+			unsecure(pc);
+			goto start;
+		}
+	else
+	{
+        unsecure(pc);
+        pause;
+        exec ("say Well then, lets not overdo this "+
+			"thing, shall we?", self);
+        goto start;
+	}
+
+	unsecure(pc);
+	goto start;
+
+:lost:
+
+	unsecure(pc);
+	exec("shrug", self);
+	goto start;
+}
+dilend
+
+dilbegin barb_quest2();
+external
+   integer IsInGuild@guilds(pc : unitptr, sGuild : string);
+   integer IsInGuilds@guilds(pc : unitptr, sGuilds : stringlist);
+var
+	pc : unitptr;
+	item : unitptr;
+	gift : unitptr;
+
+code
+{
+	heartbeat := PULSE_SEC * 4;
+
+:start:
+
+	wait (SFB_DONE, (command("give")and(self ==target)));
+	pc := activator;
+	secure(pc, lost);
+	gift := medium;
+
+	if (IsInGuild@guilds(pc, GUILD_BARBARIAN) and (BARBARIAN_ITEM in pc.quests))
+	{
+		if((gift.nameidx $= "blood_bowl")and(gift.zoneidx $= "lostlands"))
+		{
+			heartbeat := PULSE_SEC * 7;
+			exec("say Aaah, yes!",self);
+			exec("say I dont relish this ceremony...",self);
+			pause;
+			exec("emote grabs a pair of gauntlets from the table.",self);
+			pause;
+			exec("emote slowly brings the bowl to head level.",self);
+			exec("drink bowl",self);
+			destroy(gift);
+			exec("grimace",self);
+			act("Hilka's eye lids suddenly flare open!",A_SOMEONE, pc, null, null, TO_ALL);
+			act("You recoil at the sight of two <div class='cr'>blood-red</div> orbs where her eyes were.",A_SOMEONE, pc, null, null, TO_ALL);	
+			pause;
+			exec("scream",self);
+			pause;
+			act("Hilka's eyes slowly return to sight, maintaining a subtle red.",A_SOMEONE, pc, null, null, TO_ALL);
+			exec("say "+pc.name+", here is your reward.",self);
+			item := load("bloody_gauntlet@barbarian");
+			item.height := pc.height;
+			link(item, self);
+			exec("give gauntlets "+pc.name, self);
+			pause;
+			exec("emote turns away without another word.",self);
+		}
+		else
+		{
+			exec("say This is not what I asked for..",self);pause;
+			exec("emote tosses "+gift.title+" away onto the table.",self);
+			pause;
+		}
+:lost:
+
+		destroy(gift);
+		unsecure(pc);
+		goto start;
+	}
+	goto start;
+}
+dilend
+end
+
+
+ethror
+names {"ethror","training master","trainer","barbarian"}
+title "Ethror"
+descr "Ethror the Training Master is ready to assist you."
+extra {}
+"Ethror maintains knowledge of personal development for the Barbarians. 
+He has mastered the many abilities available to be developed within the guild 
+and is more than willing to share his knowledge with those interested in 
+exploring the way of the enraged. "
+flags {UNIT_FL_NO_TELEPORT}
+romflags {CHAR_PROTECTED}
+M_HUMAN_WARRIOR_SPECIAL(90, SEX_MALE)
+alignment 0
+money 1 GOLD_PIECE
+exp -100
+
+dilcopy nokill@barbarian();
+dilcopy MurderBanish@guilds(GUILD_BARBARIAN);
+dilcopy AlertMembers@guilds(GUILD_BARBARIAN, "");
+dilcopy TrainMemberChk@guilds(GUILD_BARBARIAN, "");
+
+#define _ABILITY
+#include "guilddef.h"
+#undef _ABILITY
+end
+
+
+faeld
+names {"faeld","weapon master","master","barbarian"}
+title "Faeld"
+descr "Faeld the Barbarian Weapons Master awaits your training here."
+extra {}
+"A large man, bare from the torso-up, he carries himself with an air 
+of confidence. He appears to be very comfortable with the wide-ranging 
+assortment of weapons that sit in racks lining the room. Perhaps he can 
+give you a few lessons. "
+flags {UNIT_FL_NO_TELEPORT}
+romflags {CHAR_PROTECTED}
+
+M_HUMAN_WARRIOR_SWORD(90, SEX_MALE)
+alignment 1000
+money 1 GOLD_PIECE
+exp -100
+
+dilcopy nokill@barbarian();
+dilcopy MurderBanish@guilds(GUILD_BARBARIAN);
+dilcopy AlertMembers@guilds(GUILD_BARBARIAN, "");
+dilcopy TrainMemberChk@guilds(GUILD_BARBARIAN, "");
+
+#define _WEAPON
+#include "guilddef.h"
+#undef _WEAPON
+end
+
+
+monn
+names {"monn","trainer","barbarian"}
+title "Monn"
+descr "Monn the Deft is here, ready to train young Barbarians."
+extra {}
+"Monn is widely respected among the barbarians for his deep knowledge of 
+the history and lore of the Barbarians. It is this unique knowledge that 
+suits him to train new Barbarians on the skills necessary to survive in battle. "
+flags {UNIT_FL_NO_TELEPORT}
+romflags {CHAR_PROTECTED}
+M_HUMAN_WARRIOR_AXE(90, SEX_MALE)
+alignment 0
+money 1 GOLD_PIECE
+exp -100
+
+dilcopy nokill@barbarian();
+dilcopy MurderBanish@guilds(GUILD_BARBARIAN);
+dilcopy AlertMembers@guilds(GUILD_BARBARIAN, "");
+dilcopy TrainMemberChk@guilds(GUILD_BARBARIAN, "");
+
+#define _SKILL
+#include "guilddef.h"
+#undef _SKILL
+end
+
+
+raz
+names {"raz","shopkeeper","trader"}
+title "Raz"
+descr "Raz the trader is here, hawking his wares."
+extra {}
+"A rather small figure, Raz looks to be elven by race, though 
+he appears to be well accepted here among the mostly-human Barbarians. 
+You are perplexed by the assortment of things you've seen Raz pull from 
+his small looking bag."
+M_ELF_WARRIOR_SWORD(45, SEX_MALE)
+flags {UNIT_FL_NO_TELEPORT}
+romflags {CHAR_PROTECTED}
+alignment 0
+money 3 SILVER_PIECE
+exp 0
+
+dilcopy MurderBanish@guilds(GUILD_BARBARIAN);
+dilcopy AlertMembers@guilds(GUILD_BARBARIAN, "");
+
+dilcopy shopkeeper@function(
+{"coffee@barbarian 20 20"
+,"ale@barbarian 20 20","tuborg@udgaard 20 50"},
+ { "$1n says, 'Sadly, I am out of those, $3n.'",
+   "$1n says, 'Sell me what, $3n?'",
+   "$1n smiles and says, 'Not here, $3n, not even from you.'",
+   "$1n exclaims, 'No credit here, $3n!'",
+   "$1n exclaims, 'I should have $2N in my bag!'",
+   "$1n says, 'I assume we dont need to sign this deal in blood, $3n.'",
+   "$1n sighs and says, 'Alas, $3n, I can't afford that.'",
+   "$1n asks, 'It will have to be later.'" },
+{},"",100,50,10*PLATINUM_MULT,"",""
+);
+dilcopy nokill@barbarian();
+
+
+// Assign Brawl quest to players wanting to join the Barbarian's guild
+// 
+dilbegin assignBrawl();
+external
+   integer IsInGuild@guilds(pc : unitptr, sGuild : string);
+   unitptr qstWaitHero@quests(qname : string, pc : unitptr, sl : stringlist, acptfunc : string);
+   extraptr qstAssign@quests(qname : string, pc : unitptr, sl : stringlist, qdescr : string);
+   unitptr qstWaitDone@quests(qname : string, pc : unitptr,
+                             sl : stringlist, xp : integer, gold : integer, itemsl : stringlist);
+var
+   pc     : unitptr;
+   u      : unitptr;
+   exdp   : extraptr;
+
+code
+{
+   :init:
+   heartbeat := PULSE_SEC*5;
+
+   :start:
+   wait(SFB_CMD, (activator.type == UNIT_ST_PC));
+
+   if (IsInGuild@guilds(activator, QUEST_ENTRY))
+      goto start;
+
+   pc := qstWaitDone@quests(QUEST_ENTRY, activator, 
+            {"cheer $1N", 
+            "say Excellent, $1N! You have the instincts of a Barbarian in your blood."}, 800, 2 * COPPER_MULT, {""});
+
+	pc := qstWaitHero@quests(QUEST_ENTRY, activator, 
+		{"look $1N",
+		"say To join the Barbarian's guild you have to prove your raw instincts.",
+      "say We require that you kill an arctic wolf with your bare hands wearing nothing but a loin cloth.",
+      "say Are you up for the challenge, $1n?"}, "");
+
+   if (pc == null)
+      goto start;
+
+   secure(pc, start);
+
+   // Quest accepted
+   exdp := qstAssign@quests(QUEST_ENTRY, pc, 
+      {"say Excellent!", "clap $1N"},
+      "Raz in the Barbarian guild has requested that you kill an arctic wolf with your bare hands wearing only a loin cloth.");
+
+   u := load("barb_cloth@barbarian");
+   link(u, pc);
+   act("$3n gives you $2n.", A_ALWAYS, pc, u, self, TO_CHAR);
+
+   goto start;
+}
+dilend
+end
+
+%objects
+
+/* ------------------- Guild Item: Bloody Gauntlets -------------------- */
+/* This item provides some small bonuses and also causes a special
+damage that is similar to a poison, though it sends endurance to the wearer. */
+
+bloody_gauntlet
+names {"bloody gauntlets","gauntlets"}
+title "Bloody Gauntlets"
+descr "A pair of gauntlets lie in a small pool of blood."
+extra {}
+"A heavy pair of gauntlets, it isnt immediately clear where the blood 
+on them is coming from. An inscription can be seen along the cuff, which 
+appears to glow a deep red. It's not clear what kind of alloy these are 
+made from, though you suspect they could be magical in nature. 
+You recognise the number '10' among the inscripted runes. "
+extra {"inscription","inscriptions","runes"}
+"The inscriptions seem to form an enchantment for the wearer and grant 
+them the ability to draw energy from their opponent in combat.<br/>
+Simply grip your weapon to activate the gauntlets. <br/>"
+extra {"$identify"}
+"The Bloody Gauntlets improve your strength, and as well as your
+health. When your weapon is gripped, it summons the power of the Barbarians to 
+draw energy from your opponent, tainting their blood.<br/>"
+extra {"$improved identify"}
+"It adds 2 to your Str and 3 to your Hit.<br/>"
+manipulate {MANIPULATE_TAKE,MANIPULATE_WEAR_HANDS}
+MATERIAL_METAL("This item is made of a strange alloy.")
+STR_TRANSFER(BONUS_GOOD)  // Xyzzy: +2
+HIT_TRANSFER(BONUS_GOOD)  // Xyzzy: +2
+BRA_TRANSFER(BONUS_AVERAGE_MINUS)  // Xyzzy: -1
+dilcopy guild_restrict@function ({GUILD_BARBARIAN},0,0,"");
+
+dilbegin fnpri(30) recall charge_gauntlet();
+var
+	pwr : integer;
+code
+{
+
+:start:
+
+	heartbeat:=PULSE_SEC*SECS_PER_REAL_DAY/24;
+	wait (SFB_TICK,command(CMD_AUTO_TICK) and (self.equip == WEAR_HANDS));
+	act ("The inscription on your $2n flashes <div class='cr'>blood red</div>!",A_SOMEONE,self.outside,self,null,TO_CHAR);
+	act ("The inscription on $1n's $2n flashes <div class='cr'>blood red</div>!",A_SOMEONE,self.outside,self,null,TO_REST);
+	if("$power" in self.extra)
+		pwr := atoi(self.extra.["$power"].descr);
+	else
+	{
+		addextra(self.extra, {"$power"}, "10");
+		pwr := 10;
+	}
+	if(pwr < 10)
+		pwr := pwr + 1;
+	self.extra.["$power"].descr := itoa(pwr);
+	self.extra.[0].descr :=
+		"A heavy pair of gauntlets, it isnt immediately clear where the blood 
+		on them is coming from. An inscription can be seen along the cuff, which 
+		appears to glow a deep red. It's not clear what kind of alloy these are 
+		made from, though you suspect they could be magical in nature. 
+		You recognise the number '"+itoa(pwr)+"' among the inscripted runes. ";
+	goto start;
+}
+dilend
+
+dilbegin gauntlet_blood();
+var
+        i : integer;
+        enemy :unitptr;
+        n:integer;
+        charge:integer;
+        pwr:integer;
+        random:integer;
+        helper:unitptr;
+        pc : unitptr;
+		weap : unitptr;
+		dam : integer;
+		arg : string;
+code
+{
+:init:
+
+	if("$power" in self.extra)
+		pwr := atoi(self.extra.["$power"].descr);
+	else
+	{
+		addextra(self.extra, {"$power"}, "10");
+		pwr := 10;
+	}
+	heartbeat := PULSE_SEC*3;
+
+:start:
+	wait (SFB_CMD,(command ("grip"))and(self.equip==WEAR_HANDS)and(self.outside.type == UNIT_ST_PC));
+	block;
+	arg := getword(argument);	
+	if (arg == "")
+	{
+		act("You must grip your weapon to active the power!",A_ALWAYS, self.outside, null, null, TO_CHAR);
+		goto start;
+	}
+	enemy:=self.outside.fighting;
+	pc:=self.outside;
+	secure (enemy,start);
+	pwr := atoi(self.extra.["$power"].descr);
+	if (pwr<=0)
+		goto fail;
+	weap := findunit(self.outside, arg, FIND_UNIT_EQUIP, null);
+	if ((weap == null) or not visible(self.outside, weap) or
+       (not(weap.manipulate & (MANIPULATE_WIELD | MANIPULATE_HOLD))))
+		{
+			act("You aren't fighting with that!",
+				A_ALWAYS, self.outside, null, null, TO_CHAR);
+			goto start;
+		}
+	
+	if (enemy==null)
+		goto no_person;
+	
+	if (dilfind("blood@barbarian", weap))
+		{
+			act("The blood has already been activated!",A_ALWAYS, self.outside, null, null, TO_CHAR);
+			goto start;
+		}
+	pwr:=pwr-1;
+	self.extra.["$power"].descr := itoa(pwr);
+	self.extra.[0].descr :=
+		"A heavy pair of gauntlets, it isnt immediately clear where the blood 
+		on them is coming from. An inscription can be seen along the cuff, which 
+		appears to glow a deep red. It's not clear what kind of alloy these are 
+		made from, though you suspect they could be magical in nature. 
+		You recognise the number '"+itoa(pwr)+"' among the inscripted runes. ";
+	act ("You grip your $2n and concentrate on the blood of battle..."
+		, A_ALWAYS,self.outside,self,null,TO_CHAR);
+	act ("Blood gushes out from your gauntlets and bathes your " + weap.name + "!"
+		, A_ALWAYS,self.outside,self,null,TO_CHAR);
+	act ("$1n grips their $2n and concentrates..."
+		, A_HIDEINV,self.outside,self,null,TO_REST);
+	act ("Blood gushes out from $1n's gauntlets and bathes their " + weap.name + "!"
+		, A_HIDEINV,self.outside,self,null,TO_REST);
+	if (pc.mana<5)
+	{
+		act ("You have not enough power to activate the $2n!"
+			,A_ALWAYS,self.outside,self,null,TO_CHAR);
+		unsecure(enemy);
+		goto start;
+	}
+	if (pc.endurance<5)
+	{
+		act ("You are out of breath, you cannot activate $2n's power!"
+			, A_ALWAYS,self.outside,self,null,TO_CHAR);
+		unsecure(enemy);
+		goto start;
+	}
+
+
+	pc.mana := pc.mana - 5;
+	i := rnd (1,50);
+	random := rnd(1,100);
+	if (i <= 10)
+		dam := 10;
+	else if (i <= 20)
+		dam := 20;
+	else if (i <= 30)
+		dam := 30;
+	else if (i <= 40)
+		dam := 40;
+	else
+		dam := 50;
+	
+:blood:
+
+	dilcopy("blood@barbarian(" + itoa(dam) + ")", weap);
+	pc.endurance := pc.endurance + dam;
+   	act ("You feel a rush of energy!"
+		, A_ALWAYS,self.outside,self,null,TO_CHAR);
+	act ("$1n suddenly looks energized!"
+		, A_HIDEINV,self.outside,self,null,TO_REST);
+	goto start;
+
+:fail:
+
+	act("Your $2n are drained of power!"
+		, A_ALWAYS,self.outside,self,null,TO_CHAR);
+	act("$1n's $2n flicker briefly but nothing happens."
+		, A_ALWAYS,self.outside,self,null,TO_REST);
+	goto start;
+
+:no_person:
+
+	act("The inscription on your $2n pulses, but it seems to miss combat."
+		, A_ALWAYS,self.outside,self,null,TO_CHAR);
+	act("$1n concentrates and their $2n begin to pulse, but nothing happens."
+		, A_ALWAYS,self.outside,self,null,TO_REST);
+	goto start;
+}
+dilend // END DIL gauntlet_blood
+end
+
+barb_sword
+names {"long sword","sword"}
+title "a barbarian long sword"
+descr
+"A simple yet finely crafted long sword lies here."
+extra {}
+"A barbarian sword, it is finely made, and unadorned. It looks very 
+well-balanced and sharp."
+manipulate {MANIPULATE_TAKE,MANIPULATE_WIELD}
+WEAPON_DEF(WPN_LONG_SWORD, BONUS_GOOD_PLUS, BONUS_GOOD_PLUS)  // Xyzzy: 5,5
+WEAPON_TRANSFER(WPN_LONG_SWORD, BONUS_EXCELLENT_PLUS)  // Xyzzy: +5
+weight 6
+cost 3 SILVER_PIECE
+end
+
+barb_axe
+names {"battle axe","axe"}
+title "a barbarian battle axe"
+descr
+"A simple yet finely crafted battle axe lies here."
+extra {}
+"A barbarian axe, it is finely made, and unadorned. It looks very 
+well-balanced and sharp."
+manipulate {MANIPULATE_TAKE,MANIPULATE_WIELD}
+WEAPON_DEF(WPN_BATTLE_AXE, BONUS_GOOD_PLUS, BONUS_GOOD_PLUS)  // Xyzzy: 5,5
+WEAPON_TRANSFER(WPN_BATTLE_AXE, BONUS_EXCELLENT_PLUS)  // Xyzzy: +5
+weight 8
+cost 3 SILVER_PIECE
+end
+
+barb_mattock
+names {"war mattock","mattock"}
+title "a barbarian war mattock"
+descr
+"A simple yet finely crafted war mattock lies here."
+extra {}
+"A barbarian war mattock, it is finely made, and unadorned. It looks very 
+well-balanced and heavy."
+manipulate {MANIPULATE_TAKE,MANIPULATE_WIELD}
+WEAPON_DEF(WPN_WAR_MATTOCK, BONUS_GOOD_PLUS, BONUS_GOOD_PLUS)  // Xyzzy: 5,5
+WEAPON_TRANSFER(WPN_WAR_MATTOCK, BONUS_EXCELLENT_PLUS)  // Xyzzy: +5
+weight 10
+cost 3 SILVER_PIECE
+end
+
+hilka_mattock
+names {"ancient war mattock","ancient mattock","war mattock","mattock"}
+title "ancient war mattock"
+descr
+"This well-worn war mattock bears the markings of luxury, beneath
+significant wear. Portions of the hammer head show a deeply aged patina,
+as if this weapon had been passed down through generations. Others
+meanwhile, such as the striking surfaces, are brightly polished from
+regular use. Golden etchings can still be made out on places across
+the head."
+extra {}
+"The Barbarian Master's war mattock. Golden etchings can be made out
+beneath generations of wear. It appears to be quite heavy, though it
+holds easily in the hand due to its fine balance."
+manipulate {MANIPULATE_TAKE,MANIPULATE_WIELD}
+WEAPON_DEF(WPN_WAR_MATTOCK, BONUS_EXCELLENT_PLUS, BONUS_GOOD_PLUS)  // Xyzzy: 8,5
+WEAPON_TRANSFER(WPN_WAR_MATTOCK, BONUS_EXCELLENT_PLUS)  // Xyzzy: +5
+STR_TRANSFER(BONUS_GOOD)  // Xyzzy: +2
+weight 9
+cost 5 SILVER_PIECE
+end
+
+barb_whip
+names {"whip"}
+title "a barbarian whip"
+descr
+"A simple yet finely made whip lies here."
+extra {}
+"A barbarian whip, it is finely made, and unadorned. It looks very 
+well-balanced and quick."
+manipulate {MANIPULATE_TAKE,MANIPULATE_WIELD}
+WEAPON_DEF(WPN_WHIP, BONUS_GOOD_PLUS, BONUS_GOOD_PLUS)  // Xyzzy: 5,5
+WEAPON_TRANSFER(WPN_WHIP, BONUS_EXCELLENT_PLUS)  // Xyzzy: +5
+weight 2
+cost 3 SILVER_PIECE
+end
+
+barb_halberd
+names {"halberd"}
+title "a barbarian halberd"
+descr
+"A simple yet finely crafted halberd lies here."
+extra {}
+"A barbarian halberd, it is finely made, and unadorned. It looks very 
+well-balanced and sharp."
+manipulate {MANIPULATE_TAKE,MANIPULATE_WIELD}
+WEAPON_DEF(WPN_HALBERD, BONUS_GOOD_PLUS, BONUS_GOOD_PLUS)  // Xyzzy: 5,5
+WEAPON_TRANSFER(WPN_HALBERD, BONUS_EXCELLENT_PLUS)  // Xyzzy: +5
+weight 6
+cost 3 SILVER_PIECE
+end
+
+coffee
+names {"mug of coffee","mug","coffee"}
+title "a mug of coffee"
+descr "A small, black mug is here."
+extra {}
+"A small black ceramic mug."
+LIQ_DEF("black", 1, 1, 1, 6, 1, 0,0)
+manipulate {MANIPULATE_TAKE,MANIPULATE_HOLD}
+cost 3 IRON_PIECE
+end
+
+ale
+names {"mug of ale","mug","ale"}
+title "a mug of ale"
+descr "A wooden mug stands here."
+extra {}
+"A large, wooden mug."
+LIQ_DEF("brown", 0,1,1,5,2,5,0)
+manipulate {MANIPULATE_TAKE,MANIPULATE_HOLD}
+cost 3 IRON_PIECE
+end
+
+alespec
+names {"mug of black ale","mug", "black ale", "ale"}
+title "a mug of ale"
+descr "A wooden mug stands here."
+extra {}
+"A large, wooden mug."
+LIQ_DEF("black", 0,1,1,5,2,5,0)
+manipulate {MANIPULATE_TAKE,MANIPULATE_HOLD}
+cost 3 IRON_PIECE
+dilcopy Transform@guilds(PROFESSION_FIGHTER, PROFESSION_BARBARIAN, 
+   {"::The black ale flows down your throat.::",
+    "::You get a warm feeling.::",
+    "::You muscles tense up::",
+    "::You're now a Barbarian::"});
+end
+
+barb_bracer
+names {"barbarians bracers", "bracers"}
+title "a barbarian's bracers"
+descr "A pair of hard leather bracers lie here."
+manipulate {MANIPULATE_TAKE, MANIPULATE_WEAR_ARMS}
+ARMOUR_HRD_LEATHER(BONUS_GOOD, BONUS_GOOD)  // Xyzzy: 2,2
+weight 6
+extra {}
+"This fine pair of hard leather bracers has a bloodshot eye inscribed each wrist."
+end
+
+barb_cloth
+names {"loin cloth", "cloth"}
+title "a barbarian's loin cloth"
+descr "A soft leather loin cloth lies here."
+manipulate {MANIPULATE_TAKE, MANIPULATE_WEAR_LEGS}
+ARMOUR_LEATHER(BONUS_GOOD, BONUS_GOOD)  // Xyzzy: 2,2
+weight 3
+extra {}
+"This soft leather loin cloth has a bloodshot eye inscribed upon it."
+dilcopy brawl_det@barbarian();
+end
+
+barb_jerkin
+names {"leather jerkin", "jerkin"}
+title "a barbarian's jerkin"
+descr "A fine leather jerkin lies here."
+manipulate {MANIPULATE_TAKE, MANIPULATE_WEAR_BODY}
+ARMOUR_HRD_LEATHER(BONUS_GOOD, BONUS_GOOD)  // Xyzzy: 2,2
+weight 10
+extra {}
+"This fine leather jerkin has a bloodshot eye inscribed upon the breast."
+end
+
+hilka_bracer
+names {"hilkas bracers", "bracers"}
+title "fine leather bracers"
+descr "A fine pair of hard leather bracers lie here."
+manipulate {MANIPULATE_TAKE, MANIPULATE_WEAR_ARMS}
+ARMOUR_HRD_LEATHER(BONUS_GOOD_PLUS, BONUS_GOOD_PLUS)  // Xyzzy: 5,5
+weight 6
+extra {}
+"These bracers show hard wear, and fine craftsmanship. The mistress of the
+Barbarians has clearly earned these well crafted bracers. Tellingly, they bear
+they symbol of a bloodshot eye inscribed on each wrist."
+end
+
+hilka_cloth
+names {"loin cloth", "cloth"}
+title "a master's loin cloth"
+descr "A fine leather loin cloth lies here."
+manipulate {MANIPULATE_TAKE, MANIPULATE_WEAR_LEGS}
+ARMOUR_LEATHER(BONUS_GOOD_PLUS, BONUS_GOOD_PLUS)  // Xyzzy: 5,5
+weight 3
+extra {}
+"This fine leather loin cloth is carefully crafted to meet the highest
+standards. Tellingly, it has a bloodshot eye inscribed upon it."
+end
+
+hilka_jerkin
+names {"leather jerkin", "jerkin"}
+title "Hilka's jerkin"
+descr "A fine leather jerkin lies here."
+manipulate {MANIPULATE_TAKE, MANIPULATE_WEAR_BODY}
+ARMOUR_HRD_LEATHER(BONUS_GOOD_PLUS, BONUS_GOOD_PLUS)  // Xyzzy: 5,5
+weight 10
+extra {}
+"This jerkin represents the best of carefully designed hard leather protection,
+combined with delicate soft leathers for comfort. It certainly appears to cost 
+significantly more than what you see on other Barbarians around. This fine 
+leather jerkin has a bloodshot eye inscribed upon the breast."
+end
+
+%reset
+load hilka into hall_04 max 1
+{
+	equip hilka_mattock	position WEAR_WIELD
+	equip hilka_jerkin 	position WEAR_BODY
+	equip hilka_cloth	position WEAR_LEGS
+	equip hilka_bracer  position WEAR_ARMS
+}
+
+load ethror into loft_02 max 1
+{
+	equip barb_whip	position WEAR_WIELD
+	equip barb_jerkin 	position WEAR_BODY
+	equip barb_cloth	position WEAR_LEGS
+	equip barb_bracer  position WEAR_ARMS
+}
+
+load faeld into train_n max 1
+{
+	equip barb_sword	position WEAR_WIELD
+	equip barb_jerkin 	position WEAR_BODY
+	equip barb_cloth	position WEAR_LEGS
+	equip barb_bracer  position WEAR_ARMS
+}
+
+load monn into train_02 max 1
+{
+	equip barb_axe		position WEAR_WIELD
+	equip barb_jerkin 	position WEAR_BODY
+	equip barb_cloth	position WEAR_LEGS
+	equip barb_bracer  position WEAR_ARMS
+}
+
+load raz into hall_n max 1
+
+load gate_guard into entrance max 2
+{
+	equip barb_halberd	position WEAR_WIELD
+	equip barb_jerkin 	position WEAR_BODY
+	equip barb_cloth	position WEAR_LEGS
+	equip barb_bracer  position WEAR_ARMS
+}
+load gate_guard into entrance max 2
+{
+	equip barb_halberd	position WEAR_WIELD
+	equip barb_jerkin 	position WEAR_BODY
+	equip barb_cloth	position WEAR_LEGS
+	equip barb_bracer  position WEAR_ARMS
+}
+%end

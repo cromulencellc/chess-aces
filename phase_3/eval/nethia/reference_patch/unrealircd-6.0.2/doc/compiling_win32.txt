@@ -1,0 +1,2 @@
+For information on how to compile UnrealIRCd (modules) on Windows, see:
+https://www.unrealircd.org/docs/Compiling_UnrealIRCd_on_Windows

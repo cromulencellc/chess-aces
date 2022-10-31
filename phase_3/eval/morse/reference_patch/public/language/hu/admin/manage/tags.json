@@ -1,0 +1,18 @@
+{
+	"none": "Fórumod még nem rendelkezik egy címkékkel ellátott témakörrel sem.",
+	"bg-color": "Háttérszín",
+	"text-color": "Szövegszín",
+	"description": "Válassz ki címkéket kattintással vagy húzással, használd a <code>CTRL-t</code> több cí>mke kiválasztásához.",
+	"create": "Címke létrehozása",
+	"modify": "Címkék módosítása",
+	"rename": "Címkék átnevezése",
+	"delete": "Kijelölt címkék törlése",
+	"search": "Címkék keresése...",
+	"settings": "Címkék beállításai",
+	"name": "Címke neve",
+
+	"alerts.editing": "Címkék szerkesztése",
+	"alerts.confirm-delete": "Biztosan törölni akarod a kijelölt címkéket?",
+	"alerts.update-success": "Címke frissítve!",
+	"reset-colors": "Színek visszaállítása"
+}

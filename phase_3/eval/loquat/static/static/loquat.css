@@ -1,0 +1,17 @@
+@font-face {
+  font-family: Lato;
+  src: url('/static/Lato-Regular.ttf');
+}
+
+@font-face {
+  font-family: Lato;
+  font-style: italic;
+  src: url('/static/Lato-Italic.ttf');
+}
+
+html {
+  color: #440;
+  background-color: #fed;
+
+  font-family: Lato;
+}

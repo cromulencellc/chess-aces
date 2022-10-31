@@ -1,0 +1,379 @@
+/*
+filename    guild_paths
+password    mfxmas
+changedby   Mesmer
+EmailAdd
+request     compile
+version     22
+END HEADER */
+
+#include <macros.h>
+%zone guild_paths
+reset RESET_NOT
+
+weather 1040
+
+creators {"eirinn"}
+
+notes
+"This has most of the dil relating to guild paths. The rest is in the rebirth
+zone or in basis. It's July 18th 1998. About time too."
+
+help
+"Mayor Quimby says 'Get outta heaaah'.<br/>
+created by eirinn
+"
+
+%dil
+
+
+// =================================================================
+
+/* $ path is OBSOLETE. Use functions in guilds.zon to figure out if 
+   a player is in a guild for example 
+*/
+
+dilbegin guild_guard(the_guild : string, the_dir : string);
+external
+   integer IsInGuild@guilds(pc : unitptr, sGuild : string);
+
+code
+{
+:start:
+   wait(SFB_CMD, command(the_dir) and (activator.level < 230));
+
+   if (not IsInGuild@guilds(activator, the_guild))
+   {
+      block;
+      act("You are prevented from going any further " + the_dir + " by " +
+          "$3n! (Members Only).",
+          A_ALWAYS, activator, null, self, TO_CHAR);
+   }
+   goto start;
+}
+dilend /* guild_guard */
+
+
+
+/* DIL for rogue teacher to prevent training. */
+dilbegin rogue_restrict(guilds : stringlist);
+external
+   integer IsInGuilds@guilds(pc : unitptr, sGuilds : stringlist);
+code
+{
+   :start:
+   wait(SFB_CMD,(command("practice") and (activator.type == UNIT_ST_PC)));
+
+   if (not IsInGuilds@guilds(activator, guilds))
+   {
+      block;
+      exec("say You are not in the correct guild to train here.", self);
+   }
+
+   goto start;
+ }
+ dilend
+
+
+
+/* THIS FOLLOWING DIL IS A COMMAND */
+dilbegin admin_gp(arg : string);
+/* This dil takes input made by the admin for setting up a player on a guild path */
+code
+{
+   log("OBSOLETE admin_gp called");
+   quit;
+}
+dilend /* admin_gp */
+
+
+/* The following is a command */
+dilbegin join_dil(arg : string); /* Block the join command */
+code
+{
+   log("[" + self.symname + "] - OBSOLETE join_dil in guild_paths called: ["+arg+"]");
+   quit;
+}
+dilend /* join_dil */
+
+
+/* The following is a social command, guess it should be in another zone */
+dilbegin insult_dil(arg : string);
+var
+   pc   : unitptr;
+
+code
+{
+   if (arg == "")
+   {
+      act("You insult the world in general! Life's a bitch!",
+          A_ALWAYS, self, null, null, TO_CHAR);
+      act("$1n insults the world in general! Life's a bitch!",
+          A_SOMEONE, self, null, null, TO_REST);
+      quit;
+   }
+
+   pc := findunit(self, arg, FIND_UNIT_SURRO, null);
+
+   if (pc == null)
+   {
+      act("Well, you could insult him if he were here, but he isn't.",
+          A_ALWAYS, self, null, null, TO_CHAR);
+      quit;
+   }
+
+   if ((pc.type == UNIT_ST_PC) or (pc.type == UNIT_ST_NPC))
+   {
+      act("You insult $3n - what a loser!",
+          A_ALWAYS, self, null, pc, TO_CHAR);
+      act("$1n insults you - you're a loser!",
+          A_SOMEONE, self, null, pc, TO_VICT);
+      act("$1n insults $3n - $1e thinks $3n's a loser!",
+          A_SOMEONE, self, null, pc, TO_NOTVICT);
+      quit;
+   }
+
+   if (pc.type == UNIT_ST_OBJ)
+   {
+      act("You insult " + pc.title + " - how dare it exist!",
+          A_ALWAYS, self, null, null, TO_CHAR);
+      act("$1n insults " + pc.title + " - how dare it exist!",
+          A_SOMEONE, self, null, null, TO_REST);
+      quit;
+   }
+
+   quit;
+}
+dilend /* insult_dil */
+
+
+/* The following dil is a command: guilds */
+dilbegin guilds_dil(arg : string);
+external
+   do_guilds@guilds(arg : string);
+code
+{
+   do_guilds@guilds(arg);
+   quit;
+}
+dilend /* guilds_dil */
+
+
+
+
+dilbegin hand_hold(); /* Take people to their guilds and Udgaard */
+external
+   integer IsInGuild@guilds(pc : unitptr, sGuild : string);
+
+var
+   the_room   : string;
+   dest       : string;
+   pc         : unitptr;
+   dest_list  : stringlist;
+   g_list     : stringlist;
+   room_list  : stringlist;
+   expd       : extraptr;
+   i          : integer;
+code
+{
+   heartbeat := PULSE_SEC * 3;
+
+   dest_list := {"fighter", "thief", "healer", "conjurer", "ranger",
+                 "paladin", "sorcerer", "assassin", "necromancer", "druid",
+                 "knight", "barbarian", "udgaard"};
+
+   g_list := {GUILD_UDG_FIGHTER, GUILD_UDG_THIEF, GUILD_UDG_CLERIC, GUILD_UDG_MAGE, GUILD_NYM_RANGER,
+              GUILD_PALADIN, GUILD_SORCERER, GUILD_ASSASSIN, GUILD_NECROMANCER, GUILD_NYM_DRUID,
+              GUILD_KNIGHT, GUILD_BARBARIAN};
+
+
+:start:
+   wait(SFB_CMD, command("return") and (activator == self.outside) and (self.equip != 0));
+   block;
+
+   pc := self.outside;
+   secure(pc, lost_pc);
+
+   if (pc.position == POSITION_FIGHTING)
+   {
+      act("You can't do that while you're fighting.", A_ALWAYS, pc, null, null, TO_CHAR);
+      goto start;
+   }
+
+   dest := argument;
+
+   if (dest == "")
+   {
+      i := pc.guild in g_list - 1;
+
+      if (i >= 0)
+         dest := dest_list.[i];  // Well if we reordered them to match zone order, this wouldn't be necessary
+   }
+
+   if (dest == "")
+   {
+      act("What about you try returning somewhere?", A_ALWAYS, pc, null, null, TO_CHAR);
+      goto start;
+   }
+
+   i := (dest in dest_list) - 1;
+
+   if (i < 0)
+   {
+		act("Please look at $2n to see possible destinations.",
+			A_ALWAYS, pc, self, null, TO_CHAR);
+		goto start;
+   }
+
+   if (i >= 12) // Udgaard
+      goto okay;
+
+   if (not IsInGuild@guilds(pc, g_list.[i]))
+	{
+		act("You're not a member of that guild. You cannot go there.",
+			A_ALWAYS, pc, null, null, TO_CHAR);
+		goto lost_pc;
+	}
+
+:okay:
+   if (pc.outside.type != UNIT_ST_ROOM)
+   {
+      act("You must be in the open for the medallion's powers to work. If " +
+          "you are at your destination already it will not work either.",
+          A_ALWAYS, pc, null, null, TO_CHAR);
+      goto lost_pc;
+   }
+
+   if (pc.level > 15)
+   {
+      act("This only works for players less than or equal to level 15.",
+         A_ALWAYS,pc,null,null,TO_CHAR);
+      act ("Your medallion explodes in a flash of light!",
+         A_ALWAYS,pc,null,null,TO_CHAR);
+      destroy (self);
+   }
+   if (not (pc.outside.zoneidx in {"fightersguild", "thievesguild", "clericguild", "mageguild",
+               "ranger", "paladin_guild", "sorcerer", "assassin", "necro_guild", "druid",
+               "knight", "barbarian", "udgaard", "midgaard"}))
+   {
+      act("You must be in a guild or in Udgaard or Midgaard for the medallion to work.",
+          A_ALWAYS, pc, null, null, TO_CHAR);
+      goto lost_pc;
+   }
+
+:cont:
+   room_list := {
+      "outlook@fightersguild", "study@thievesguild", "sanctuary@clericguild", "chan_office@mageguild",
+      "tent_1@ranger", "meditat@paladin_guild", "grotto@sorcerer", "master_room@assassin", "up_damp_crypt@necro_guild",
+      "henge@druid", "room_5@knight", "hall_01@barbarian", "temple@udgaard"};
+   the_room := room_list.[i];
+
+:trans_me:
+
+   act("The magic starts to build...",
+       A_ALWAYS, pc, null, null, TO_CHAR);
+   pause;
+
+   act("You feel yourself pulled to another place.",
+       A_ALWAYS, pc, null, null, TO_CHAR);
+   act("$1n shimmers then vanishes.",
+       A_HIDEINV, pc, null, null, TO_REST);
+   link(pc, findroom(the_room));
+   act("$1n appears in a shimmering haze.",
+       A_HIDEINV, pc, null, null, TO_REST);
+   exec("look", pc);
+
+:lost_pc:
+   unsecure(pc);
+   goto start;
+}
+dilend /* hand_hold */
+
+
+
+dilbegin guild_titles( the_guild : string, title_list : stringlist );
+external
+   SetTitles@guilds(the_guild : string, title_list : stringlist);
+code
+{
+   SetTitles@guilds(the_guild, title_list);
+   quit;
+}
+dilend
+
+
+/*
+Something I added for familiars but can be used in anything wanting to check
+a guild level if you already have something sorry but I couldn't find it.
+*/
+dilbegin integer level_guild_chk(pc: unitptr,s:string);
+external
+   integer GetGuildLevel@guilds(pc : unitptr, sGuild : string);
+var
+   i : integer;
+code
+{
+   i := GetGuildLevel@guilds(pc, s);
+
+   return (i);
+
+/*
+   log("level_guild_chk needs to be rewritten and moved to guilds");
+if (pc==null)
+	return (-2);
+
+expd := " $ p a t h " in pc.quests;
+
+   if (expd == null)
+	 	return (-2);
+if ((expd.names.[1] == null) or (expd.names.[2] == null) or
+       (expd.names.[3] == null) or (expd.names.[4] == null) or
+       (expd.names.[5] == null) or (expd.names.[6] == null) or
+       (expd.names.[7] == null))
+	 	return (-2);
+
+if ((expd.names.[1]!=s) and
+(expd.names.[2]!=s) and
+(expd.names.[3]!=s))
+return (-1);
+
+if (expd.names.[1]==s)
+	return (atoi(expd.names.[4]));
+else if (expd.names.[2]==s)
+	return (atoi(expd.names.[5]));
+else if (expd.names.[3]==s)
+	return (atoi(expd.names.[6]));
+
+return (-2);*/
+}
+dilend
+
+
+%objects
+
+guild_medallion
+names {"Odin's Medallion", "guild medallion", "medallion"}
+title "Odin's Medallion of Guild Transport"
+descr "Someone has carelessly dropped a powerful medallion here."
+
+extra {}
+"It is quite large, weighing heavily in the hand, but more from its
+power than because of its weight. There is a small copy of the statue
+of Odin in the Temple of Udgaard set in its centre.<br/>
+To use the medallion, you must be in Udgaard. Once there, simply wear 
+the medallion and then 'return &lt;guild&gt;', where &lt;guild&gt; is fighter,
+thief, cleric, mage, ranger, paladin, sorcerer, assassin, knight, 
+barbarian, or necromancer.<br/>
+If you are in your guild and wish to return to Udgaard, 'return Udgaard'
+will take you to Udgaard."
+
+dilcopy hand_hold@guild_paths();
+
+weight 1
+bright 5
+
+manipulate {MANIPULATE_TAKE, MANIPULATE_WEAR_NECK}
+
+end /* guild_medallion */
+
+%end

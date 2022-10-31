@@ -1,0 +1,7 @@
+ipv4_bind_addresses="172.17.0.2"
+chroot_dir = "/etc/maradns"
+no_fingerprint = 0
+debug_msg_level = 3
+csv2 = {}
+csv2["darpachess.com."] = "darpachess.com"
+csv2["darpachess.org."] = "darpachess.org"

@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'justison'
+    compose_service: 'ta3_justison'
+    role: 'server'
+    runtime:
+      path: challenge_bin/nginx-e2d07e4ec636/objs/nginx
+      container_path: /home/challenge/nginx-e2d07e4ec636/objs/nginx
+      type: ELF
+    main_source:
+      path: challenge_src/nginx-e2d07e4ec636/src/core/nginx.c
+      container_path: /home/challenge/nginx-e2d07e4ec636/src/core/nginx.c
+      type: C
+poller:
+  compose_service: 'ta3_justison_sp_s1'

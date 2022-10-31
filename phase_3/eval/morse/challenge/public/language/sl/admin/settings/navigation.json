@@ -1,0 +1,25 @@
+{
+	"icon": "Ikona:",
+	"change-icon": "change",
+	"route": "Pot:",
+	"tooltip": "Tooltip:",
+	"text": "Besedilo:",
+	"text-class": "Text Class: <small>optional</small>",
+	"class": "Class: <small>optional</small>",
+	"id": "ID: <small>izbirno</small>",
+
+	"properties": "Lastnosti:",
+	"groups": "Skupine",
+	"open-new-window": "Odpri v novem oknu",
+	"dropdown": "Dropdown",
+	"dropdown-placeholder": "Place your dropdown menu items below, ie: <br/>&lt;li&gt;&lt;a href&#x3D;&quot;https://myforum.com&quot;&gt;Link 1&lt;/a&gt;&lt;/li&gt;",
+
+	"btn.delete": "Izbriši",
+	"btn.disable": "Onemogoči",
+	"btn.enable": "Omogoči",
+
+	"available-menu-items": "Razpoložljivi elementi menija",
+	"custom-route": "Pot po meri",
+	"core": "jedro",
+	"plugin": "vtičnik"
+}

@@ -1,0 +1,146 @@
+version: "3.7"
+networks:
+  cs_network:
+    external: true
+    # internal: true
+    # driver: bridge
+    # ipam: {}
+services:
+  ta3_morse:
+    build: ./challenge/
+    hostname: challenge_container
+    # volumes:
+    # - ./challenge:/usr/src/app
+    # - ./empty_folder:/usr/src/app/build/public
+    #image: nodebb/docker
+    container_name: challenge
+    restart: always
+    ports:
+      - 4567:4567
+    expose:
+      - 4567
+    networks:
+      cs_network: &id001
+        aliases:
+          - challenge_container
+    environment: &id002
+      - HOST=challenge_container
+      - PORT=4567
+    depends_on:
+      - mongo
+  ta3_morse_ref_patch:
+    build: ./reference_patch/
+    hostname: challenge_container
+    container_name: ref_patch
+    restart: always
+    ports:
+      - 4567:4567
+    expose:
+      - 4567
+    networks:
+      cs_network: *id001
+        # aliases:
+        #   - challenge_container
+    environment: *id002
+      # - HOST=challenge_container
+      # - PORT=4567
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:5.0.5
+    container_name: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=adminpass
+      - MONGO_INITDB_USERNAME=nodebb
+      - MONGO_INITDB_PASSWORD=nodebbpass
+      - MONGO_INITDB_DATABASE=nodebb
+    volumes:
+      - ./challenge/mongo_setup/mongod.conf:/etc/mongod.conf
+      - ./challenge/mongo_setup/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh
+      - ./challenge/base_data/db:/data/db
+    # ports:
+    #   - 27017:27017
+    # expose:
+    #   - 27017
+    networks:
+      cs_network:
+        aliases:
+          - mongo
+          - mongo_conatiner
+    command: mongod --wiredTigerCacheSizeGB 0.25
+  ta3_morse_poller:
+    image: ta3_morse_poller
+    build:
+      context: ./poller/
+      dockerfile: Dockerfile
+      network: host
+    networks:
+      cs_network: &id003
+        aliases:
+          - pov_container
+    init: true
+    environment: &id004
+      - HOST=challenge_container
+      - PORT=4567
+  ta3_morse_pov_1:
+    image: ta3_morse_pov_1
+    build:
+      context: ./pov_1/
+      dockerfile: Dockerfile
+      network: host
+    networks:
+      cs_network: &id005
+        aliases:
+          - pov_container
+    init: true
+    environment: &id006
+      - HOST=challenge_container
+      - PORT=4567
+  ta3_morse_pov_2:
+    image: ta3_morse_pov_2
+    build:
+      context: ./pov_2/
+      dockerfile: Dockerfile
+      network: host
+    networks:
+      cs_network: &id007
+        aliases:
+          - pov_container
+    init: true
+    environment: &id008
+      - HOST=challenge_container
+      - PORT=4567
+  ta3_morse_pov_3:
+    image: ta3_morse_pov_3
+    build:
+      context: ./pov_3/
+      dockerfile: Dockerfile
+      network: host
+    networks:
+      cs_network: &id009
+        aliases:
+          - pov_container
+    init: true
+    environment: &id010
+      - HOST=challenge_container
+      - PORT=4567
+    ports:
+      - 8888:8888
+    expose:
+      - 8888
+  ta3_morse_pov_4:
+    image: ta3_morse_pov_4
+    build:
+      context: ./pov_4/
+      dockerfile: Dockerfile
+      network: host
+    networks:
+      cs_network: &id011
+        aliases:
+          - pov_container
+    init: true
+    environment: &id012
+      - HOST=challenge_container
+      - PORT=4567

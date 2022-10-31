@@ -1,0 +1,7 @@
+Document: cvs-doc-intro
+Title: Introduction to using CVS
+Author: Steven Pemberton <Steven.Pemberton@cwi.nl>
+Section: Programming
+
+Format: Text
+Files: /usr/share/cvs/contrib/intro.doc*

@@ -1,0 +1,24 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2021.08.18.18.12.27;	author vagrant;	state Exp;
+branches;
+next	;
+commitid	100611D4D8825E94567;
+
+
+desc
+@@
+
+
+1.1
+log
+@adding test
+@
+text
+@wbvlwgfbrobukicodrd @

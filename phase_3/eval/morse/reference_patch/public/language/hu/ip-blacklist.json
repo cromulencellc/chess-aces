@@ -1,0 +1,19 @@
+{
+	"lead": "Az IP cím által tiltottak listájának szerkesztése.",
+	"description": "Esetenként a felhasználói fiók tiltása nem elég visszatartó erejű . Időnként megvonni a fórumhoz való hozzáférést egy IP címtől vagy egy körzetbe tartozó IP címtől sokkal hatásosabb. Ezekben az esetekben a problémás IP címeket vagy egész CIDR tömböket adhatsz hozzá a tiltólistához és tőlük meg lesz vonva az új fiók készítése vagy a bejelentkezés.",
+	"active-rules": "Aktív szabályok",
+	"validate": "Tiltólista átvizsgálása",
+	"apply": "Tiltólista engedélyezése",
+	"hints": "Szintaxis tippek",
+	"hint-1": "Soronként egy IP címet tüntess fel. Megadhatsz IP cím blokkokat is amíg azok követik a CIDR formátumot (e.g. <code>192.168.100.0/22</code>).",
+	"hint-2": "Adhatsz hozzá megjegyzést, hogyha a <code>#</code> szimbólumot a szöveg elé rakod.",
+
+	"validate.x-valid": "<strong>%1</strong> kívül <strong>%2</strong> szabály(ok) érvényesek.",
+	"validate.x-invalid": "A következő szabályok érvénytelenek: <strong>%1</strong> ",
+
+	"alerts.applied-success": "Tiltólista alkalmazva",
+
+	"analytics.blacklist-hourly": "<strong>1. ábra</strong> &ndash; Óránként a feketelista találatai ",
+	"analytics.blacklist-daily": "<strong>2. ábra</strong> &ndash; Napi feketelista találatok ",
+	"ip-banned": "IP cím letiltva"
+}
