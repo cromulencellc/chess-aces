@@ -1,0 +1,30 @@
+{
+	"available": "Elérhető modulok",
+	"explanation": "Válassz egy modult a legördülő menüből, majd húzd rá az egyik sablon modul területére a bal oldalon.",
+	"none-installed": "Nincs elérhető modul! Aktiváld a widget essentials beépülőt a <a href=\"%1\">beépülők</a> oldalon.",
+	"clone-from": "Modul klónozása innen",
+	"containers.available": "Elérhető tárolók",
+	"containers.explanation": "Húzd rá az alábbiakat bármely aktív modulra",
+	"containers.none": "Nincs",
+	"container.well": "Well",
+	"container.jumbotron": "Jumbotron",
+	"container.panel": "Panel",
+	"container.panel-header": "Panel fejléc",
+	"container.panel-body": "Panel test",
+	"container.alert": "Riasztás",
+
+	"alert.confirm-delete": "Biztosan szeretnéd törölni ezt a modult?",
+	"alert.updated": "Modulok frissítve",
+	"alert.update-success": "Modulok sikeresen frissítve",
+	"alert.clone-success": "Modulok sikersen klónozva",
+
+	"error.select-clone": "Kérlek válassz oldalt a klónozáshoz",
+
+	"title": "Cím",
+	"title.placeholder": "Cím (csak némely konténeren jelenik meg)",
+	"container": "Konténer",
+	"container.placeholder": "Húzz ide egy konténert vagy adj meg HTML-t.",
+	"show-to-groups": "Megjelenítés csoportoknak",
+	"hide-from-groups": "Elrejtés csoportoknak",
+	"hide-on-mobile": "Elrejtés mobilon"
+}

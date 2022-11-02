@@ -1,0 +1,10 @@
+Document: cvs-doc-faq
+Title: CVS - Frequently Asked Questions
+Author: David Grubbs, Dr. Pascal Molli, and others
+Abstract: Packaged FAQ-O-MATIC dump containing a number of answers
+ to frequently asked questions about CVS. The document may be out of
+ date; http://ximbiot.com/cvs/wiki/CVS%20FAQ contains an updated version.
+Section: Programming
+
+Format: Text
+Files: /usr/share/doc/cvs/FAQ*

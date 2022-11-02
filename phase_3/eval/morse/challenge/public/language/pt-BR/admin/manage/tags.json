@@ -1,0 +1,18 @@
+{
+	"none": "O seu fórum ainda não tem tópicos com tags.",
+	"bg-color": "Cor de Fundo",
+	"text-color": "Cor do Text",
+	"description": "Selecione as tags clicando ou arrastando, use <code>CTRL</code> para selecionar várias tags.",
+	"create": "Criar Tag",
+	"modify": "Modificar Tags",
+	"rename": "Renomear Tags",
+	"delete": "Excluir Tags Selecionadas",
+	"search": "Pesquisar por tags...",
+	"settings": "Configurações de Tags",
+	"name": "Nome da Tag",
+
+	"alerts.editing": "Editando tag(s)",
+	"alerts.confirm-delete": "Você deseja excluir as tags selecionadas?",
+	"alerts.update-success": "Tag Atualizada!",
+	"reset-colors": "Redefinir cores"
+}

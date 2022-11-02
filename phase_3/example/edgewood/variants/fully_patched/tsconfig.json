@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "build",
+    "allowJs": true,
+    "noImplicitAny": true,
+    "target": "ES2019",
+    "moduleResolution": "node"
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

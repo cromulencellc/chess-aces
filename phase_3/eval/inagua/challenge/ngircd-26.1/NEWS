@@ -1,0 +1,1000 @@
+
+                     ngIRCd - Next Generation IRC Server
+                           http://ngircd.barton.de/
+
+               (c)2001-2021 Alexander Barton and Contributors.
+               ngIRCd is free software and published under the
+                   terms of the GNU General Public License.
+
+                                  -- NEWS --
+
+ngIRCd 26.1 (2021-01-02)
+
+  - This release is a bugfix release only, without new features.
+
+ngIRCd 26 (2020-06-20)
+
+  ngIRCd 26~rc2 (2020-06-11)
+  - Add AppStream metadata file (contrib/de.barton.ngircd.metainfo.xml).
+  - Various bug fixes, see the ChangeLog. No new or changed functionality.
+
+  ngIRCd 26~rc1 (2020-05-10)
+  - Allow up to 512 characters per line in MOTD and help text files (but keep
+    in mind that lines can't get that long, because they have to be prefixed
+    before being sent to the client). But this allows for more fancy MOTDs :-)
+    Closes #271.
+  - Show the actually allowed channel types in the ISUPPORT(005) numeric which
+    are configured by the "AllowedChannelTypes" configuration variable.
+    Closes #273.
+  - Handle commands in the read buffer before reading more data and don't wait
+    for the network in this case: If there are more bytes in the read buffer
+    already than a single valid IRC command can get long (513 bytes), wait for
+    this/those command(s) to be handled first and don't try to read even more
+    data from the network (which most probably would overflow the read buffer
+    of this connection soon).
+  - Log G-/K-Line changes only when not initiated by a server: this prevents
+    the log from becoming spammed during "net bursts".
+  - Update test suite to include SSL tests, including checking for reloading
+    certificates during runtime.
+  - Add support for GnuTLS certificate reload, which is quite handy when using
+    Let's Encrypt, for example. Until now this was only supported when linked
+    with OpenSSL. Thanks a lot, Hilko Bengen <bengen@hilluzination.de>!
+  - Allow setting arbitrary channel modes in the configuration file by handling
+    them like in MODE commands, and allow multiple "Modes =" lines per [Channel]
+    section. Thanks to Michi <michi+ngircd@dataswamp.org>!
+    Closes #55.
+  - Add "FNC" (forced nick changes) to ISUPPORT(005) numeric. Most probably
+    this doesn't make any difference to any client, but it seems correct.
+    See <http://www.irc.org/tech_docs/005.html> for details.
+  - Enhance handling of command line errors, and return with exit code 0 ("no
+    error") when "--help" or "--version" is used (which resulted in exit code 1,
+    "error" before). Exit with code 2 ("command line error") for all other
+    invalid command line options, and show the error message itself on stderr
+    (instead of stdout and exit code 1, "generic error", as before).
+    This new behaviour is more in line with the GNU "coding standards",
+    see <https://www.gnu.org/prep/standards/html_node/_002d_002dhelp.html>.
+  - Add ./contrib/nglog.sh: This script parses the log output of ngircd(8),
+    and colorizes the messages according to their log level. Example usage:
+    ngircd -f $PWD/doc/sample-ngircd.conf -np | ./contrib/nglog.sh
+  - Enlarge buffers of info texts to 128 bytes. This includes:
+    - "Real name" of a client (4th filed of the USER command).
+    - Server info text ("Info" configuration option).
+    - Admin info texts and email address ("AdminInfo1", "AdminInfo2" and
+      "AdminEmail" configuration options).
+    - Network name ("Network" configuration option).
+    The limit was 64 bytes before ...
+    Closes #258.
+  - Streamline handling of invalid and unset server name: Don't exit during
+    runtime (REHASH command, HUP signal), because the server name can't be
+    changed in this case anyway and the new invalid name will be ignored.
+  - Slightly reorder startup steps, and enhance logging:
+    - Show name of configuration file at the beginning of start up.
+    - Add a message when ngIRCd is ready, including its host name.
+    - Show name of configuration file on REHASH (SIGHUP), too.
+    - Change level of "done message" to NOTICE, like "starting" & "ready".
+    - Initialize IO functions before channels, connections, clients, ...
+  - configure.ng: OpenSSL can depends on lz or latomic so use pkg-config to
+    find those dependencies and fallback to existing mechanism.
+    Closes #256.
+
+ngIRCd 25 (2019-01-23)
+
+  - Implement new configuration option "MaxPenaltyTime", which configures the
+    maximum penalty time increase in seconds, per penalty event. Set to -1 for
+    no limit (the default), 0 to disable penalties altogether. ngIRCd doesn't
+    use penalty increases higher than 2 seconds during normal operation, so
+    values higher than 1 rarely make sense.
+    Disabling (or reducing) penalties can greatly speed up "make check" runs
+    for example, see below, but are mostly a debugging feature and normally
+    not meant to be used on production systems!
+    Some example timings running "make check" from my macOS workstation:
+     - MaxPenaltyTime not set: 4:41,79s
+     - "MaxPenaltyTime = 1":   3:14,71s
+     - "MaxPenaltyTime = 0":     25,46s
+    Closes #249 and #251.
+  - Update Xcode project for latest Xcode version (10.0)
+  - Allow a 5th parameter in WEBIRC. Thanks to "ItsOnlyBinary".
+    Closes #247.
+
+  ngIRCd 25~rc1 (2018-08-11)
+  - Only send TOPIC updates to a channel when the topic actually changed:
+    This prevents the channel from becoming flooded by unnecessary TOPIC update
+    messages, that can happen when IRC services try to enforce a certain topic
+    but which is already set (at least on the local server), for example.
+    Therefore still forward it to all servers, but don't inform local clients
+    (still update setter and timestamp information, though!).
+  - Update Xcode project for latest Xcode version (9.2). This includes adding
+    missing and deleting obsolete file references.
+  - Handle user mode "C" ("Only users that share a channel are allowed to send
+    messages") like user mode "b" ("block private messages and notices"): allow
+    messages from servers, services, and IRC Operators, too. Change proposed by
+    "wowaname" back in 2015 in #ngircd, thanks!
+  - Allow IRC Ops and remote servers to KILL service clients: such clients
+    behave like regular users, therefore IRC operators and servers should be
+    able to KILL them: for example to resolve nick collisions.
+    Closes #242.
+
+ngIRCd 24 (2017-01-20)
+
+  ngIRCd 24~rc1 (2017-01-07)
+  - Log privilege violations and failed OPER request with log level "error"
+    and send it to the "&SERVER" channel, too.
+  - Immediately shut down connection when receiving an "ERROR" command,
+    don't wait for the peer to close the connection. This allows the daemon
+    to forward the received "ERROR" message in the network, instead of the
+    very generic "client closed connection" message.
+  - Explicitly forbid remote servers to modify "x-lines" (G-LINES) when the
+    "AllowRemoteOper" configuration option isn't set, even when the command
+    seems to originate from the remote server itself: this prevents GLINE's
+    to become set during server handshake in this case (what wouldn't be
+    possible during regular runtime when a remote IRC Op sends the command)
+    and what can't be undone by IRC Ops later on (because of the missing
+    "AllowRemoteOper" option) ...
+  - Update Xcode project for latest Xcode version (8.0), and fix "duplicate
+    symbols" error messages when building (linking) the binary.
+  - Add "Documentation" variables to systemd configuration files.
+  - Make sure that SYSCONFDIR is always set, which can be handy when
+    using source code linters when ./configure hasn't been run already.
+  - Add the new "PAMServiceName" configuration option to specify the name
+    used as PAM service name. This setting allows to run multiple ngIRCd
+    instances with different PAM configurations for each instance.
+    Thanks to Christian Aistleitner <christian@quelltextlich.at> for the
+    patch, closes #226.
+  - Add an ".editorconfig" file to the project.
+  - Limit the number of message target, and suppress duplicates: This
+    prevents an user from flooding the server using commands like this:
+    "PRIVMSG nick1,nick1,nick1,...".
+    Duplicate targets are suppressed silently (channels and clients).
+    In addition, the maximum number of targets per PRIVMSG, NOTICE, ...
+    command are limited to MAX_HNDL_TARGETS (25). If there are more, the
+    daemon sends the new 407 (ERR_TOOMANYTARGETS_MSG) numeric, containing
+    the first target that hasn't been handled any more. Closes #187.
+  - Make contrib/platformtest.sh script more portable, and only show
+    "runs=Y" when the test suite really has been passed successfully.
+
+ngIRCd 23 (2015-11-16)
+
+  ngIRCd 23~rc1 (2015-09-06)
+  - Use "NOTICE *" before registration instead of "NOTICE AUTH". "AUTH" is
+    a valid nickname so sending notices to it is probably not a good idea.
+    Use "*" as the target instead as done with numerics when the nick is not
+    available. This mimics the behavior in Charybdis, IRCD-Hybrid, InspIRCd
+    2.2, Plexus 4, etc. Closes #217.
+    The "NoticeAuth" configuration variable (ngircd.conf) has been renamed
+    to "NoticeBeforeRegistration" accordingly, but the old name is still
+    supported for compatibility reasons.
+  - Implement new channel mode "N" (regular users can't change their nick
+    name while on this channel). Closes #214.
+  - Keep track of who placed bans, invites, and excepts.
+    Idea and implementation by LucentW, Thanks! Closes #203.
+  - Implement numeric RPL_LISTSTART(321). lightIRC and other clients
+    expecting RPL_LISTSTART should now behave correctly.
+    Idea and implementation by LucentW, Thanks! Closes #207.
+  - Streamline the effect of "MorePrivacy" option: Update documentation
+    in ngircd.conf(5); don't hide channels for IRC Ops on LIST and don't
+    hide IP addresses/hostnames on WHOIS when "MorePrivacy" is in effect.
+    This closes #198.
+  - IRC operators now can kick anyone when "OperCanMode" is set.
+    Idea and implementation by LucentW, Thanks! Closes #202.
+  - Implement user mode "I": Hide channels on WHOIS: this mode prevents
+    ngIRCd from showing channels on WHOIS (IRC Operators can always see
+    the channel list).
+    Idea and implementation by LucentW, Thanks! Closes #197.
+  - INVITE command: Implement ERR_USERNOTONSERV(504) numeric and make sure
+    that the target user is on the same server when inviting other users
+    to local ("&") channels.
+    Idea by Cahata, thanks! Closes #183.
+  - MODE command: Always report channel creation time. Up to now when
+    receiving a MODE command, ngIRCd only reported the channel creation
+    time to clients that were members of the channel. This patch reports
+    the channel creation time to all clients, regardless if they are joined
+    to that channel or not. At least ircd-seven behaves like this.
+    This closes #188. Reported by Cahata, thanks!
+
+ngIRCd 22.1 (2015-04-06)
+
+  - Update "CipherList" to not enable SSLv3 by default. Idea, initial patch,
+    and testing by Christoph Biedl <ngircd.anoy@manchmal.in-ulm.de>.
+  - Change ngIRCd test suite not to use DNS lookups: Different operating
+    systems do behave quite differently when doing DNS lookups, for example
+    "127.0.0.1" sometimes resolves to "localhost" and sometimes to
+    "localhost.localdomain" (for example OpenBSD). And other OS resolve
+    "localhost" to the real host name (for example Cygwin). So not using
+    DNS at all makes the test site much more portable.
+
+ngIRCd 22 (2014-10-11)
+
+  - Match all list patterns case-insensitive: this affects the invite-,
+    ban-, and except lists, as well as G-Lines an K-Lines.
+    Problem pointed out by "wowaname" on #ngircd, thanks!
+
+  ngIRCd 22~rc1 (2014-09-29)
+  - Sync "except lists" between servers: Up to now, ban, invite, and G-Line
+    lists have been synced between servers while linking -- but obviously
+    nobody noticed that except list have been missing ever since. Until now.
+    Thanks to "j4jackj", who reported this issue in #ngircd.
+  - Allow longer user names (up to 63 characters) for authentication.
+  - Increase MAX_SERVERS from 16 to 64: There are installations out there
+    that would like to configure more than 16 links per server, so increase
+    this limit. Best would be to get rid of MAX_SERVERS altogether and make
+    if fully dynamic, but start with this quick and dirty hack ...
+  - Test suite/platformtest.sh: Detect when tests have been skipped.
+  - Allow "DefaultUserModes" to set all possible modes, including modes only
+    settable by IRC Operators.
+  - Implement user mode "F": "relaxed flood protection". Clients with mode
+    "F" set are allowed to rapidly send data to the daemon. This mode is only
+    settable by IRC Operators and can cause problems in the network -- so be
+    careful and only set it on "trusted" clients!
+    User mode "F" is used by Bahamut for this purpose, for example.
+  - Use server password when PAM is compiled in but disabled.
+  - Streamline punctuation of log messages.
+  - Return ISUPPORT(005) numerics on "VERSION". This is how ircd-seven,
+    Charybdis, Hybrid, and InspIRCd behave, for example.
+  - configure: Only link "contrib/Debian" if it exists, which isn't the case
+    on "VPATH builds", for example.
+  - Show the account name in WHOIS. This uses the same numeric as Charybdis
+    and ircu families: WHOISLOGGEDIN(330).
+  - Pattern matching: Remove "range matching" in our pattern matching code
+    using the "[...]" syntax, because [ and ] are valid characters in nick
+    names and one has to quote them currently using the "\" character, which
+    is quite unexpected for users.
+  - platformtest.sh: New option "-x", don't regenerate build system and
+    allow using separate source and build trees.
+  - Test suite: explicitly enable glibc memory checking.
+  - Make "MODE -k" handling more robust and compatible, send "fake '*' key"
+    in all replies.
+  - portabtest: Actually test the functions snprintf(), strlcpy(), strlcat(),
+    and vsnprintf() for correctness, not only existence (which was quite
+    useless, because if they weren't available, the program could not have
+    been linked at all ...).
+  - Implement new configuration option "Network": it is used to set the
+    (completely optional) "network name", to which this instance of the
+    daemon belongs. When set, this name is used in the ISUPPORT(005) numeric
+    which is sent to all clients connecting to the server after logging in.
+  - Update doc/Platforms.txt.
+  - Various code cleanups, remove unused code, streamline error handling.
+    Remove all imp.h and exp.h header files, support non-standard vsnprintf()
+    return codes, and fix some K&R C portability issues. Streamline
+    DEBUG_ARRAY, DEBUG_BUFFER, DEBUG_IO, DEBUG_ZIP definitions.
+  - Increase penalty time to 10 seconds when handling OPER commands with an
+    invalid password.
+
+ngIRCd 21.1 (2014-03-25)
+
+  - Don't ignore but use the server password when PAM is compiled in but
+    disabled. Thanks to Roy Sindre Norangshol <roy.sindre@norangshol.no>!
+  - doc/Platforms.txt: Update from master branch.
+  - doc/Services.txt: Update information for Anope 2.x.
+  - configure: add support for the LDFLAGS_END and LIBS_END variables to add
+    linker flags and libraries at the end of the configure run (CFLAGS_END has
+    been implemented already).
+  - Update Copyright notices for 2014 :-)
+
+ngIRCd 21 (2013-10-30)
+
+  - Call arc4random_stir() in forked subprocesses, when available. This
+    is required by FreeBSD <10 and current NetBSD at least to correctly
+    initialize the "arc4" random number generator on these platforms.
+
+  ngIRCd 21~rc2 (2013-10-20)
+  - Report the correct configuration file name on configuration errors,
+    support longer configuration lines, and warn when lines are truncated.
+
+  ngIRCd 21~rc1 (2013-10-05)
+  - Actually KILL clients on GLINE/KLINE. (Closes bug #156)
+  - Add support to show all user links using the "STATS L" (uppercase)
+    command (restricted to IRC Operators).
+  - Implement configurable SSL cipher list selection for GnuTLS and OpenSSL
+    using the new configuration option "CipherList". In addition, this
+    changes the defaults to more secure values: "HIGH:!aNULL:@STRENGTH" for
+    OpenSSL, and "SECURE128" for GnuTLS.
+  - Show connection flag "s" (SSL) in RPL_TRACE{LINK|SERVER} messages: now
+    you can check if a server-to-server link is SSL-encrypted or not using
+    the IRC "TRACE" command.
+  - Implement the new configuration option "DefaultUserModes" which lists
+    user modes that become automatically set on new local clients right
+    after login. Please note that only modes can be set that the client
+    could set on itself, so you can't set "a" (away) or "o" (IRC Op),
+    for example! User modes "i" (invisible) or "x" (cloaked) etc. are
+    "interesting", though. (Closes bug #160)
+  - Add support for the new METADATA "account" property, which allows
+    services to automatically identify users after netsplits and across
+    service restarts.
+  - Implement a new configuration option "AllowedChannelTypes" that lists
+    all allowed channel types (channel prefixes) for newly created channels
+    on the local server. By default, all supported channel types are allowed.
+    If set to the empty string, local clients can't create new channels at
+    all, which equals the old "PredefChannelsOnly = yes" setting.
+    This change deprecates the "PredefChannelsOnly" variable, too, but it is
+    still supported and translated to the appropriate "AllowedChannelTypes"
+    setting. When the old "PredefChannelsOnly" variable is processed, a
+    warning message is logged. (Closes bug #152)
+  - Add support for "client certificate fingerprinting". When a client
+    passes an SSL certificate to the server, the "fingerprint" will be
+    forwarded in the network which enables IRC services to identify the
+    user using this certificate and not using passwords.
+  - Implement a new configuration option "IncludeDir" in the "[Options]"
+    section that can be used to specify a directory which can contain
+    further configuration files and configuration file snippets matching
+    the pattern "*.conf". These files are read in after the main server
+    configuration file ("ngircd.conf" by default) has been read in and
+    parsed.  The default is "$SYSCONFDIR/ngircd.conf.d", so that it is
+    possible to adjust the configuration only by placing additional files
+    into this directory. (Closes bug #157)
+  - Add Travis-CI configuration file (".travis.yml") to project.
+  - ngIRCd now accepts user names including "@" characters, saves the
+    unmodified name for authentication but stores only the part in front
+    of the "@" character as "IRC user name". And the latter is how
+    ircd2.11, Bahamut, and irc-seven behave as well. (Closes bug #155)
+  - Lots of IRC "information functions" like ADMIN, INFO, ... now accept
+    server masks and names of connected users (in addition to server names)
+    for specifying the target server of the command. (Closes bug #153)
+  - Implement a new configuration option "IdleTimeout" in the "[Limits]"
+    section of the configuration file which can be used to set a timeout
+    in seconds after which the whole daemon will shutdown when no more
+    connections are left active after handling at least one client.
+    The default is 0, "never".
+    This can be useful for testing or when ngIRCd is started using "socket
+    activation" with systemd(8), for example.
+  - Implement support for systemd(8) "socket activation".
+  - Enable WHOIS to display information about IRC Services using the new
+    numeric 310(RPL_WHOISSERVICE) This numeric is used for this purpose by
+    InspIRCd, for example -- but as usual, other numerics are in use, too,
+    like 613 in UltimateIRCd ...
+    Please note that neither the Operator (+o) not the "bot status" (+B)
+    of an IRC service is displayed in the output.
+  - Update systemd(8) example configuration files in ./contrib/ directory:
+    the "ngircd.service" file now uses the "forking" service type which
+    enhances the log messages shown by "systemctl status ngircd.service",
+    and the new "ngircd.socket" file configures a systemd socket that
+    configures a socket for ngIRCd and launches the daemon on demand.
+  - Enhance help system and the HELP command: now a "help text file" can be
+    set using the new configuration option "HelpFile" ("global" section),
+    which is read in and parsed on server startup and configuration reload,
+    and then is used to output individual help texts to specific topics.
+    Please see the file ./doc/Commands.txt for details.
+
+ngIRCd 20.3 (2013-08-23)
+
+  - This release is a bugfix release only, without new features.
+  - Security: Fix a denial of service bug (server crash) which could happen
+    when the configuration option "NoticeAuth" is enabled (which is NOT the
+    default) and ngIRCd failed to send the "notice auth" messages to new
+    clients connecting to the server (CVE-2013-5580).
+
+ngIRCd 20.2 (2013-02-15)
+
+  - This release is a bugfix release only, without new features.
+  - Security: Fix a denial of service bug in the function handling KICK
+    commands that could be used by arbitrary users to crash the daemon
+    (CVE-2013-1747).
+
+ngIRCd 20.1 (2013-01-02)
+
+  - This release is a bugfix release only, without new features.
+
+ngIRCd 20 (2012-12-17)
+
+  - Allow user names ("INDENT") up to 20 characters when ngIRCd has not
+    been configured for "strict RFC mode". This is useful if you are using
+    external (PAM) authentication mechanisms that require longer user names.
+    Patch suggested by Brett Smith <brett@w3.org>, see
+    <http://arthur.barton.de/pipermail/ngircd-ml/2012-October/000579.html>.
+
+  ngIRCd 20~rc2 (2012-12-02)
+  - Rework cloaked hostname handling and implement the "METADATA cloakhost"
+    subcommand: Now ngIRCd uses two fields internally, one to store the
+    "real" hostname and one to save the "cloaked" hostname. This allows
+    "foreign servers" (aka "IRC services") to alter the real and cloaked
+    hostnames of clients without problems, even when the user itself issues
+    additional "MODE +x" and "MODE -x" commands.
+
+  ngIRCd 20~rc1 (2012-11-11)
+  - Update doc/Services.txt: describe the upcoming version of Anope 1.9.8,
+    then including a protocol module for ngIRCd. And remove our own patches
+    in ./contrib/Anope because they aren't supported any more ...
+  - Implement new "METADATA" command which can be used by remote servers
+    and IRC services to update client metadata like the client info text
+    ("real name"), user name, and hostname, and use this command to
+    configure an cloaked hostname (user mode "+x") on remote servers:
+    This prevents "double cloaking" of hostnames and even cloaked
+    hostnames are in sync on all servers supporting "METADATA" now.
+  - Implement new IRC "SVSNICK" command to allow remote servers (and IRC
+    services) to change nicknames of already registered users. The SVSNICK
+    command itself doesn't change the nickname, but it becomes forwarded
+    to the server to which the user is connected to. And then this server
+    initiates the real nickname changing using regular NICK commands.
+    This allows to run mixed networks with old servers not supporting the
+    SVSNICK command, because SVSNICK commands for nicknames on such servers
+    are silently ignored and don't cause a desynchronization of the network.
+  - New configuration option "MaxListSize" to configure the maximum number
+    of channels returned by a LIST command. The default is 100, as before.
+  - Implement user mode "b", "block messages": when a user has set mode "b",
+    all private messages and notices to this user are blocked if they don't
+    originate from a registered user, an IRC Op, server or service. The
+    originator gets an error numeric sent back in this case,
+    ERR_NONONREG_MSG (486), which is used by UnrealIRCd, too. (Closes #144)
+  - Implement channel mode "V" (invite disallow): If the new channel mode
+    "V" is set, the INVITE command becomes invalid and all clients get the
+    new ERR_NOINVITE_MSG (518) reply. (Closes #143)
+  - Implement channel mode "Q" and user mode "q": Both modes protect users
+    from channel kicks: only IRC operators and servers can kick users having
+    mode "q" or in channels with mode "Q". (Closes #141)
+  - Allow users to "cloak" their hostname only when the configuration
+    variable "CloakHostModeX" (introduced in 19.2) is set. Otherwise, only
+    IRC operators, other servers, and services are allowed to set the user
+    mode "+x": this prevents regular users from changing their hostmask to
+    the name of the IRC server itself, which confused quite a few people ;-)
+    (Closes #133)
+  - New configuration option "OperChanPAutoOp": If disabled, IRC operators
+    don't become channel operators in persistent channels when joining.
+    Enabled by default, which has been the behavior of ngIRCd up to this
+    patch. (Closes #135)
+  - Allow IRC operators to see secret (+s) channels in LIST command as long
+    as the "MorePrivacy" configuration option isn't enabled in the
+    configuration file. (Closes #136)
+  - Implement new (optional) IRC+ "CHARCONV" command to set a client
+    character set that the server translates all messages to/from UTF-8.
+    This feature requires the "libiconv" library and must be enabled using
+    the new "--with-iconv" option of the ./configure script. See
+    doc/Protocol.txt for details. (Closes #109)
+  - Implement user mode "B" ("Bot flag"): it is settable and unsettable by
+    every (non-restricted) client. This is how Unreal and InspIRCd do
+    behave, and so do we :-)
+  - Implement channel mode "M": Only the server, identified users and IRC
+    operators are able to talk in such a channel.
+  - Block nicknames that are reserved for services and are defined using the
+    configuration variable "ServiceMask" in "Server" blocks; And this
+    variable now can handle more than one mask separated by commas.
+  - Implemented XOP channel user modes: "Half Op" ("+h", prefix "%") can set
+    the channel modes +imntvIbek and kick all +v and normal users; "Admin"
+    ("+a", prefix "&") can set channel modes +imntvIbekoRsz and kick all +o,
+    +h, +v and normal users; and "Owner" ("+q", prefix "~") can set channel
+    modes +imntvIbekoRsz and kick all +a, +o, +h, +v and normal users.
+  - Implement hashed cloaked hostnames for both the "CloakHost" and
+    "CloakHostModeX" configuration options: now the admin can use the new
+    '%x' placeholder to insert a hashed version of the clients hostname,
+    and the new configuration option "CloakHostSalt" defines the salt for
+    the hash function. When "CloakHostSalt" is not set (the default), a
+    random salt will be generated after each server restart.
+
+ngIRCd 19.2 (2012-06-19)
+
+  ngIRCd 19.2~rc1 (2012-06-13)
+  - New configuration option "CloakHostModeX" to configure the hostname
+    that gets used for IRC clients which have user mode "+x" enabled.
+    Up to now, the name of the IRC server itself has been used for this,
+    which still is the default when "CloakHostModeX" isn't set.
+  - Add instructions for setting up Atheme IRC services.
+  - Implement support for IRC capability handling, the new "CAP" command,
+    and capability "multi-prefix" which allows both the NAME and WHO command
+    handlers to return more than one "class prefix" to the client.
+
+ngIRCd 19.1 (2012-03-19)
+
+  - Really include _all_ patches to build the Anope module into the
+    distribution archive ... ooops!
+
+ngIRCd 19 (2012-02-29)
+
+  ngIRCd 19~rc1 (2012-02-12)
+  - Update preliminary ngIRCd protocol module for Anope 1.9.6, which now
+    is the only supported version.
+  - New numeric RPL_WHOISHOST_MSG(378), which returns the DNS host name
+    (if available) and the IP address of a client in the WHOIS reply.
+    Only the user itself and local IRC operators get this numeric.
+  - Implement channel exception list (mode 'e'). This allows a channel
+    operator to define exception masks that allow users to join the
+    channel even when a "ban" would match and prevent them from joining:
+    the exception list (e) overrides the ban list (b).
+  - Implement user mode 'C': If the target user of a PRIVMSG or NOTICE
+    command has the user mode 'C' set, it is required that both sender
+    and receiver are on the same channel. This prevents private flooding
+    by completely unknown clients.
+  - New RPL_WHOISREGNICK_MSG(307) numeric in WHOIS command replies: it
+    indicates if a nickname is registered (if user mode 'R' set).
+  - Limit channel invite, ban, and exception lists to 50 entries and fix
+    duplicate check and error messages when adding already listed entries
+    or deleting no (longer) existing ones.
+  - Limit the number of list items in the reply of LIST (100), WHO (25),
+    WHOIS (10), and WHOWAS (25) commands.
+  - Limit the MODE command to handle a maximum number of 5 channel modes
+    that require an argument (+Ibkl) per call and report this number
+    in the ISUPPORT(005) numeric: "MODES=5".
+  - LINKS command: support <mask> parameter to limit the reply.
+  - Add 1 second penalty for every further target on PRIVMSG/NOTICE
+    commands: this reduces the possibility of flooding channels with
+    commands like "PRIVMSG/NOTICE #a,#n,#c,... :message" a little bit.
+    Problem noticed by Cahata, thanks!
+  - New configuration option "PAMIsOptional": when set, clients not
+    sending a password are still allowed to connect: they won't become
+    "identified" and keep the "~" character prepended to their supplied
+    user name. See "man 5 ngircd.conf" for details.
+  - Fixed handling of WHO commands. This fixes two bugs: "WHO <nick>"
+    returned nothing at all if the user was "+i" (reported by Cahata,
+    thanks) and "WHO <nick|nickmask>" returned channel names instead
+    of "*" when the user was member of a (visible) channel.
+  - LUSERS reply: only count channels that are visible to the requesting
+    client, so the existence of secret channels is no longer revealed by
+    using LUSERS. Reported by Cahata, thanks!
+  - Unknown user and channel modes no longer stop the mode parser, but
+    are simply ignored. Therefore modes after the unknown one are now
+    handled. This is how ircd2.10/ircd2.11/ircd-seven behave, at least.
+    Reported by Cahata, thanks!
+  - Implement IRC commands "GLINE" and "KLINE" to ban users. G-Lines are
+    synchronized between server on peering, K-Lines are local only.
+    If you use "*!<user>@<host>" or "*!*@<host>" masks, these connections
+    are blocked even before the user is fully logged in (before PASS,
+    NICK, and USER commands have been processed) and before the child
+    processes for authentication are forked, so resource usage is smaller.
+  - Added doc/Modes.txt: document modes supported by ngIRCd.
+  - Implement user mode "R": indicates that the nickname of this user
+    is "registered". This mode isn't handled by ngIRCd itself, but must
+    be set and unset by IRC services like Anope.
+  - Implement channel mode "R": only registered users (having the user
+    mode "R" set) are allowed to join this channel.
+  - Test suite: bind to loopback (127.0.0.1) interface only.
+  - Handle unknown user and channel modes: these modes are saved and
+    forwarded to other servers, but ignored otherwise.
+  - Handle channel user modes 'a', 'h', and 'q' from remote servers.
+    These channel user modes aren't used for anything at the moment,
+    but ngIRCd knows that these three modes are "channel user modes"
+    and not "channel modes", that is that these modes take an "nickname"
+    argument. Like unknown user and channel modes, these modes are saved
+    and forwarded to other servers, but ignored otherwise.
+
+ngIRCd 18 (2011-07-10)
+
+  - Add preliminary ngIRCd protocol module for Anope 1.9 to contrib/Anope/.
+
+  ngIRCd 18~rc2 (2011-06-29)
+  - GnuTLS: use 1024 bits as minimum size of the DH prime. This enables
+    ngIRCd to accept incoming connections from other servers and clients
+    that "only" use at least 1024 bits again, like ngIRCd 17 did (and no
+    longer requires 2048 bits for incoming connections).
+
+  ngIRCd 18~rc1 (2011-06-27)
+  - New configuration option "MorePrivacy" to "censor" some user information.
+    When enabled, signon time and idle time is left out. Part and quit
+    messages are made to look the same. WHOWAS requests are silently dropped.
+    All of this is useful if one wish to conceal users that access the ngircd
+    servers from TOR or I2P.
+  - New configuration option "ScrubCTCP" to scrub incoming CTCP commands. If
+    activated, the server silently drops incoming CTCP requests from both
+    other servers and from users. The server that scrubs CTCP will not forward
+    the CTCP requests to other servers in the network either, which can spell
+    trouble if not every oper knows about the CTCP-scrubbing. Scrubbing CTCP
+    commands also means that it is not possible to send files between users.
+    There is one exception to the CTCP scrubbing performed: ACTION ("/me
+    commands") requests are not scrubbed.
+  - Restructure ngIRCd configuration file: introduce new [Limits], [Options],
+    and [SSL] sections. The intention of this restructuring is to make the
+    [Global] section much cleaner, so that it only contains variables that
+    most installations must adjust to the local requirements. All the optional
+    variables are moved to [Limits], for configurable limits and timers of
+    ngIRCd, and [Options], for optional features. All SSL-related variables
+    are moved to [SSL] and the "SSL"-prefix is stripped. The old variables in
+    the [Global] section are deprecated now, but are still recognized.
+    => Don't forget to check your configuration, use "ngircd --configtest"!
+  - New documentation "how to contribute": doc/Contributing.txt.
+  - Avoid needlessly scary 'buffer overflow' messages: When the write buffer
+    space grows too large, ngIRCd has to disconnect the client to avoid
+    wasting too much memory, which is logged with a scary 'write buffer
+    overflow' message. Change this to a more descriptive wording.
+  - New configuration option "RequireAuthPing": PING-PONG on login. When
+    enabled, this configuration option lets ngIRCd send a PING with an numeric
+    "token" to clients logging in; and it will not become registered in the
+    network until the client responds with the correct PONG.
+  - New configuration option "NoticeAuth": send NOTICE AUTH on connect. When
+    active, ngircd will send "NOTICE AUTH" messages on client connect time
+    like e.g. snircd (QuakeNet) does.
+  - Add support for up to 3 targets in WHOIS queries, also allow up to one
+    wildcard query from local hosts. Follows ircd 2.10 implementation rather
+    than RFC 2812. At most 10 entries are returned per wildcard expansion.
+  - ngircd.conf(5) manual page: describe types of configuration variables
+    (booleans, text strings, integer numbers) and add type information to each
+    variable description.
+  - Terminate incoming connections on HTTP commands "GET" and "POST".
+  - New configuration option "CloakHost": when set, this host name is used for
+    every client instead of the real DNS host name (or IP address).
+  - New configuration option "CloakUserToNick": when enabled, ngIRCd sets
+    every clients' user name to their nickname and hides the user name
+    supplied by the IRC client.
+  - Make write buffers bigger, but flush early. Before this change, a client
+    got disconnected if the buffer flushing at 4k failed, now regular clients
+    can store up to 32k and servers up 64k even if flushing is not possible at
+    the moment. This enhances reliability on slow links.
+  - Allow "Port = 0" in [Server] blocks. Port number 0 marks remote servers
+    that try to connect to this daemon, but where this daemon never tries to
+    establish a connection on its own: only incoming connections are allowed.
+  - Enable WHOIS command to return information about services.
+  - Implement channel mode 'O': "IRC operators only". This channel mode is
+    used on DALnet (bahamut), for example.
+  - Remove support for ZeroConf/Bonjour/Rendezvous service registration
+    including the "[No]ZeroConf" configuration option.
+  - Deprecate NoXX-Options in ngircd.conf and move new variants into our new
+    [Options] section: 'NoDNS=no' => 'DNS=yes', 'NoIdent=no' => 'Ident=yes',
+    'NoPAM=no' => 'PAM=yes', and 'NoZeroConf=no' => 'ZeroConf=yes' (and
+    vice-versa). The defaults are adjusted accordingly and the old variables
+    in [Global] are still accepted, so there is no functional change.
+
+ngIRCd 17.1 (2010-12-19)
+
+  - Don't log critical (or worse) messages to stderr
+  - Remove "error file" when compiled with debug code enabled
+  - New numeric 329: get channel creation time on "MODE #chan" commands
+
+ngIRCd 17 (2010-11-07)
+
+  - doc: change path names in sample-ngircd.conf depending on sysconfdir
+
+  ngIRCd 17~rc2 (2010-10-25)
+  - Generate ngIRCd version number from GIT tag.
+  - Make source code compatible with ansi2knr again. This allows to compile
+    ngIRCd using a pre-ANSI K&R C compiler again.
+
+  ngIRCd 17~rc1 (2010-10-11)
+  - New configuration option "NoZeroConf" to disable service registration at
+    runtime even if ngIRCd is compiled with support for ZeroConf (e.g. using
+    Howl, Avahi or on Mac OS X).
+  - New configuration option "SyslogFacility" to define the syslog "facility"
+    (the "target"), to which ngIRCd should send its log messages.
+    Possible values are system dependent, but most probably "auth", "daemon",
+    "user" and "local1" through "local7" are possible values; see syslog(3).
+    Default is "local5" for historical reasons.
+  - Dump the "internal server state" (configured servers, established
+    connections and known clients) to the console or syslog when receiving
+    the SIGUSR2 signal and debug mode is enabled.
+  - Enable the daemon to disable and enable "debug mode" on runtime using
+    signal SIGUSR1, when debug code is compiled in, not only on startup
+    using the command line parameters.
+  - Implement user mode "x": host name cloaking (closes: #102).
+  - Change MOTD file handling: ngIRCd now caches the contents of the MOTD
+    file, so the daemon now requires a HUP signal or REHASH command to
+    re-read the MOTD file when its content changed.
+  - Allow IRC ops to change channel modes even without OperServerMode set.
+  - Allow IRC operators to use MODE command on any channel (closes: #100).
+  - New configuration option "NoPAM" to disable PAM.
+  - Implement asynchronous user authentication using PAM, please see the
+    file doc/PAM.txt for details.
+  - Add some documentation for using BOPM with ngIRCd, see doc/Bopm.txt.
+  - Implement user mode "c": receive connect/disconnect NOTICEs. Note that
+    this new mode requires the user to be an IRC operator.
+  - Show SSL status in WHOIS output, numeric 275.
+
+ngIRCd 16 (2010-05-02)
+
+  ngIRCd 16~rc2 (2010-04-25)
+  - Enhance connection statistics counters: display total number of served
+    connections on daemon shutdown and when a new client connects using
+    the new numeric RPL_STATSCONN (250).
+
+  ngIRCd 16~rc1 (2010-03-25)
+  - Implement WEBIRC command used by some Web-IRC frontends. The password
+    required to secure this command must be configured using the new
+    "WebircPassword" variable in the ngircd.conf file.
+  - Remove limit on max number of configured irc operators.
+  - A new channel mode "secure connections only" (+z) has been implemented:
+    Only clients using a SSL encrypted connection to the server are allowed
+    to join such a channel.
+    But please note three things: a) already joined clients are not checked
+    when setting this mode, b) IRC operators are always allowed to join
+    every channel, and c) remote clients using a server not supporting this
+    mode are not checked either and therefore always allowed to join.
+
+ngIRCd 15 (2009-11-07)
+
+  ngIRCd 15~rc1 (2009-10-15)
+  - Do not add default listening port (6667) if SSL ports were specified, so
+    ngIRCd can be configured to only accept SSL-encrypted connections now.
+  - Enable IRC operators to use the IRC command SQUIT (instead of the already
+    implemented but non-standard DISCONNECT command).
+  - New configuration option "AllowRemoteOper" (disabled by default) that
+    enables remote IRC operators to use the IRC commands SQUIT and CONNECT
+    on the local server.
+  - Enforce upper limit on maximum number of handled commands. This implements
+    a throttling scheme: an IRC client can send up to 3 commands or 256 bytes
+    per second before a one second pause is enforced.
+
+ngIRCd 14.1 (2009-05-05)
+
+  - Security: fix remotely triggerable crash in SSL/TLS code.
+  - Debian: build ngircd-full-dbg package.
+  - Allow ping timeout quit messages to show the timeout value.
+
+ngIRCd 14 (2009-04-20)
+
+  ngIRCd 14~rc1 (2009-03-29)
+  - Allow creation of persistent modeless channels.
+  - The INFO command reports the compile time now (if available).
+  - Support individual channel keys for pre-defined channels: introduce
+    new configuration variable "KeyFile" in [Channel] sections in ngircd.conf,
+    here a file can be configured for each pre-defined channel which contains
+    individual channel keys for different users.
+  - Remove limit on maximum number of predefined channels in ngircd.conf.
+
+ngIRCd 13 (2008-12-25)
+
+  ngIRCd 13~rc1 (2008-11-21):
+  - New version number scheme :-)
+  - Initial support for IRC services, using a RFC1459 style interface,
+    tested with IRCServices (http://www.ircservices.za.net/) version 5.1.13.
+    For this to work, ngIRCd now supports server-server links conforming
+    to RFC 1459. New ngircd.conf(5) option: ServiceMask.
+  - Support for SSL-encrypted server-server and client-server links using
+    OpenSSL (configure: --with-openssl) or GNUTLS (configure: --with-gnutls).
+    New ngircd.conf(5) options: SSLPorts, SSLKeyFile, SSLKeyFilePassword,
+    SSLCertFile, SSLDHFile, and SSLConnect.
+  - Server local channels have been implemented, prefix "&", that are only
+    visible to users of the same server and are not visible in the network.
+    In addition ngIRCd creates a "special" channel &SERVER on startup and logs
+    all the messages to it that a user with mode +s receives.
+  - New make target "osxpkg" to build a Mac OS X installer package.
+  - New configuration option "NoIdent" to disable IDENT lookups even if the
+    daemon is compiled with IDENT support.
+
+ngIRCd 0.12.1 (2008-07-09)
+
+  - Add option aliases -V (for --version) and -h (for --help).
+  - Make Listen parameter a comma-separated list of addresses. This also
+    obsoletes ListenIPv4 and ListenIPv6 options. If Listen is unset, it
+    is treated as Listen="::,0.0.0.0".
+    Note: ListenIPv4 and ListenIPv6 options are still recognized,
+    but ngircd will print a warning if they are used in the config file.
+
+ngIRCd 0.12.0 (2008-05-13)
+
+  ngIRCd 0.12.0-pre2 (2008-04-29)
+  - IPv6: Add config options to disable ipv4/ipv6 support.
+
+  ngIRCd 0.12.0-pre1 (2008-04-20)
+  - Add IPv6 support.
+  - Install a LaunchDaemon script to start/stop ngIRCd on Mac OS X.
+  - Implemented IRC commands INFO, SUMMON (dummy), and USERS (dummy) and
+    enhanced test suite to check these commands. (Dana Dahlstrom)
+  - IRC_WHO now supports search patterns and will test this against user
+    nickname/server name/host name, etc. as required by RFC 2812, Section 3.6.1.
+    (reported by Dana Dahlstrom)
+  - Implement RFC 2812 handling of "0" argument to 'JOIN': must be treated
+    as if the user had sent PART commands for all channels the user is a
+    member of. (Dana Dahlstrom)
+  - Allow NOTICEs to be sent to a channel. (Fabian Schlager)
+
+ngIRCd 0.11.0 (2008-01-15)
+
+  - Add support for /STAT u (server uptime) command.
+  - New [Server] configuration Option "Bind" allows to specify
+    the source IP address to use when connecting to remote server.
+  - New configuration option "MaxNickLength" to specify the allowed maximum
+    length of user nicknames. Note: must be unique in an IRC network!
+  - Numeric 317: implemented "signon time" (displayed in WHOIS result).
+  - Added new server configuration option "Passive" for "Server" blocks to
+    disable automatic outgoing connections (similar to -p option to ngircd,
+    but only for the specified server). (Tassilo Schweyer)
+  - Added support for the WALLOPS command. Usage is restricted to IRC
+    operators.
+
+ngIRCd 0.10.2 (2007-06-08)
+
+  - Predefined channel configuration now allows specification of channel key
+    (mode k) and maximum user count (mode l): variables "Key" and "MaxUsers".
+  - When using the epoll() IO interface, compile in the select() interface as
+    well and fall back to it when epoll() isn't available on runtime.
+  - Added support for IO APIs "poll()" and "/dev/poll".
+
+ngIRCd 0.10.1 (2006-12-17)
+
+  - Allow PASS syntax defined in RFC 1459 for server links, too.
+  - New configuration option "PredefChannelsOnly": if set, clients can only
+    join predefined channels.
+
+ngIRCd 0.10.0 (2006-10-01)
+
+  ngIRCd 0.10.0-pre1 (2006-08-02)
+  - Enhanced DIE to accept a single parameter ("comment text") which is sent
+    to all locally connected clients before the server goes down.
+  - JOIN now supports more than one channel key at a time.
+  - Implemented numeric "333": Time and user name who set a channel topic.
+  - Channel topics are no longer limited to 127 characters: now the only limit
+    is the maximum length of an IRC command, i. e. 512 bytes (in practice, this
+    limits the topic to about 490 characters due to protocol overhead).
+  - Reverse DNS lookup code now checks the result by doing an additional
+    lookup to prevent spoofing.
+  - Added new IO layer which (optionally) supports epoll() and kqueue() in
+    addition to the select() interface.
+
+ngIRCd 0.9.0 (2005-07-24)
+
+  - Never run with root privileges but always switch the user ID.
+  - Make "netsplit" messages RFC compliant.
+  - Implemented the IRC function "WHOWAS".
+  - New configuration option "OperServerMode" to enable a workaround needed
+    when running an network with ircd2 servers and "OperCanUseMode" enabled
+    to prevent the ircd2 daemon to drop mode changes of IRC operators.
+    Patch by Florian Westphal, <westphal@foo.fh-furtwangen.de>.
+  - Implemented support for "secret channels" (channel mode "s").
+  - New configuration option "Mask" for [Operator] sections to limit OPER
+    commands to users with a specific IRC mask. Patch from Florian Westphal.
+  - New configuration variable "PidFile", section "[Global]": if defined,
+    the server writes its process ID (PID) to this file. Default: off.
+    Idea of Florian Westphal, <westphal@foo.fh-furtwangen.de>.
+  - Added support for the Howl (http://www.porchdogsoft.com/products/howl/)
+    Rendezvous API, in addition to the API of Apple (Mac OS X). The available
+    API will be autodetected when you call "./configure --with-rendezvous".
+
+ngIRCd 0.8.0 (2004-06-26)
+
+  - Two new configuration options: "ChrootDir" and "MotdPhrase", thanks to
+    Benjamin Pineau <ben@zouh.org>. Now you can force the daemon to change
+    its root and working directory to something "safe". MotdPhrase is used
+    to define an "MOTD string" instead of a whole file, useful if the
+    "real" MOTD file would be outside the "jail".
+  - INVITE- and BAN-lists become synchronized between IRC+ servers when
+    establishing new connections, if the peer supports this as well.
+  - The type of service (TOS) of all sockets is set to "interactive" now.
+  - Added short command line option "-t" as alternative to "--configtest".
+  - Added optional support for "IDENT" lookups on incoming connections. You
+    have to enable this function with the ./configure switch "--with-ident".
+    The default is not to do IDENT lookups.
+
+ngIRCd 0.7.5 (2003-07-11)
+
+  - New configuration variable "MaxConnectionsIP" to limit the number of
+    simultaneous connections from a single IP that the server will accept.
+    This configuration options lowers the risk of denial of service attacks
+    (DoS), the default is 5 connections per client IP.
+  - Added new configuration variable "Listen" to bind all listening
+    sockets of the server to a single IP address.
+
+ngIRCd 0.7.1 (2003-07-18)
+
+  - Added support for GNU/Hurd.
+
+ngIRCd 0.7.0 (2003-05-01)
+
+  - New command CONNECT to enable and add server links. The syntax is not
+    RFC-compatible: use "CONNECT <name> <port>" to enable and connect an
+    configured server and "CONNECT <name> <port> <host> <mypwd> <peerpwd>"
+    to add a new server (ngIRCd tries to connect new servers only once!).
+  - Added DISCONNECT command ("DISCONNECT <name>") to disable servers.
+  - New command TRACE (you can trace only servers at the moment).
+  - New command HELP that lists all understood commands.
+  - ngIRCd can register itself with Rendezvous: to enable support pass the
+    new switch "--with-rendezvous" to configure.
+  - Added support for TCP Wrappers library: pass "--with-tcp-wrappers" to
+    configure to enable it.
+  - Changed some configure options to use "--with"/"--without" as prefix
+    instead of "--enable"/"--disable": "--without-syslog", "--without-zlib",
+    "--with-tcp-wrappers", and "--with-rendezvous".
+  - Enhanced manual pages ngircd(8) and ngircd.conf(5).
+  - Documentation is now installed in $(datadir)/doc/ngircd.
+
+
+Older news (sorry, only available in German language):
+
+ngIRCd 0.6.0, 24.12.2002
+
+  - beim Schliessen einer Verbindung zeigt der Server nun vor dem ERROR
+    noch eine Statistik ueber die empfangene und gesendete Datenmenge an.
+  - Connection-Strukturen werden nun "pool-weise" verwaltet; der Pool wird
+    bei Bedarf bis zu einem konfigurierten Limit vergroessert.
+  - Mit der neuen Konfigurationsvariable "MaxConnections" (Sekion "Global")
+    kann die maximale Anzahl gleichzeitiger Verbindungen begrenzt werden.
+    Der Default ist -1, "unlimitiert".
+  - der Server erkennt nun, ob bereits eine eingehende Verbindung von einem
+    Peer-Server besteht und versucht dann nicht mehr, selber eine eigene
+    ausgehende Verbindung zu diesem auufzubauen. Dadurch kann nun auf beiden
+    Servern in der Konfiguration ein Port fuer den Connect konfiguriert
+    werden (beide Server versuchen sich dann gegenseitig zu connectieren).
+  - Server identifizieren sich nun mit asynchronen Passwoertern, d.h. das
+    Passwort, welches A an B schickt, kann ein anderes sein als das, welches
+    B als Antwort an A sendet. In der Konfig.-Datei, Abschnitt "Server",
+    wurde "Password" dazu durch "MyPassword" und "PeerPassword" ersetzt.
+  - Der Server kann nun zur Laufzeit die Konfiguration neu einlesen: dies
+    macht er nach dem Befehl REHASH oder wenn ein HUP-Signal empfangen wird.
+  - Server-Server-Links koennen nun komprimiert werden, dazu wird die zlib
+    (www.zlib.org) benoetigt. Unterstuetzt die Gegenseite die Komprimierung
+    nicht, wird automatisch unkomprimiert kommuniziert. Das Verfahren ist
+    kompatibel mit dem Original-ircd 2.10.3, d.h. beide Server koennen
+    miteinander ueber komprimiert Links kommunizieren.
+  - neue Konfigurations-Variable "MaxJoins": Hiermit kann die maximale Zahl
+    der Channels, in denen ein User Mitglied sein kann, begrent werden.
+  - neue Channel-Modes l (User-Limit) und k (Channel-Key) implementiert.
+
+ngIRCd 0.5.0, 20.09.2002
+
+  - AIX (3.2.5), HP-UX (10.20), IRIX (6.5), NetBSD (1.5.3/m68k) und Solaris
+    (2.5.1, 2.6) gehoeren nun auch zu den unterstuetzten Platformen.
+  - Unter A/UX (und evtl. weiteren Systemen) kompiliert der ngIRCd nun mit
+    dem "nativen" (ggf. pre-ANSI) Compiler.
+  - "persistente Channels" (Mode 'P') implementiert: diese koennen in der
+    Konfigurationsdatei definiert werden (Sektion "Channel", vgl. Beispiel-
+    Konfiguration "sample-ngircd.conf") und bleiben auch dann bestehen,
+    wenn kein User mehr im Channel ist.
+  - neue IRC-Befehle: KICK, INVITE, ADMIN, CHANINFO; LIST wurde erweitert.
+    Mit dem neuen Befehl CHANINFO synchronisieren Server, die das IRC+-
+    Protokoll unterstuetzen, Channel-Modes und Topics. Fuer den ADMIN-Befehl
+    gibt es neue Konfigurationsoptionen (Sektion "Global"): "AdminInfo1",
+    "AdminInfo2" und "AdminEMail".
+  - Invite- und Ban-Lists implementiert.
+  - neue Konfigurationsoption "OperCanUseMode" (Sektion "Global"):
+    ist sie aktiv, koennen IRC-Operatoren immer Channel-Modes setzen.
+  - "Test-Suite" begonnen: mit "make check" wird sie durchlaufen.
+
+ngIRCd 0.4.2, 29.04.2002
+
+  - IRC-Funktion LIST implementiert; bisher werden allerdings noch keine
+    Regular Expressions (bis auf "*") unterstuetzt.
+
+ngIRCd 0.4.0, 01.04.2002
+
+  - WHO implementiert (bisher ohne komplette Unterstuetzung von Masks).
+  - stderr wird nun in eine Datei umgelenkt (/ngircd-<PID>.err).
+    Laeuft der Server nicht im Debug-Modus, so wird diese bei Programm-
+    ende geloescht. Sollte der Server abstuerzen, finden sich hier evtl.
+    zusaetzliche Informationen.
+  - Server-Gruppen implementiert: es wird immer nur zu einem Server in
+    einer Gruppe eine Verbindung aufgebaut, klappt es beim ersten Server
+    nicht, so wird der naechste probiert.
+  - Clients und Channels werden nicht mehr ueber ihren Namen, sondern
+    einen Hash-Wert gesucht: sollte deutlich schneller sein.
+  - neuer Kommandozeilen-Parameter "--configtest": die Konfiguration wird
+    gelesen und die dann verwendeten Werte angezeigt.
+  - Client-Mode "s" (Server Notices) implementiert.
+  - mit dem neuen Kommandozeilen-Parameter "--config"/"-f" kann eine
+    alternative Konfigurationsdatei angegeben werden.
+  - nach dem Start kann der ngIRCd, wenn er mit root-Rechten laeuft,
+    zu einer anderen User-ID und Group-ID wechseln.
+
+ngIRCd 0.3.0, 02.03.2002
+
+  - bekommt der Server ein HUP-Signal, so startet er neu -- genau so, wie
+    er auf den IRC-Befehl RESTART reagiert.
+  - neuer Kommandozeilen-Schalter "--passive" (-p): wird er angegeben, so
+    verbindet sich der ngIRCd nicht mehr automatisch zu anderen Servern.
+    Zum Debuggen manchmal ganz praktisch :-)
+  - neue Befehle VERSION und KILL implementiert. NAMES korrigiert.
+  - Anpassungen an A/UX: gehoert nun auch zu den unterstuetzten Platformen.
+  - AWAY (und der User-Mode 'a') ist nun implementiert.
+  - der ngIRCd unterstuetzt nun Channel-Topics (TOPIC-Befehl).
+  - Channel- und Nicknames werden nun ordentlich validiert.
+
+ngIRCd 0.2.0, 15.02.2002
+
+  - Begonnen Channel-Modes und User-Channel-Modes zu implementieren: der
+    Server versteht an User-Modes o und v, beachtet letzteres allerdings
+    noch nirgends. Bekannte (aber nicht beachtete!) Channel-Modes sind
+    bisher a, m, n, p, q, s und t. Diese Modes werden von Usern ange-
+    nommen, von anderen Servern werden auch unbekannte Modes uebernommen.
+  - Nach dem Connect eines Users werden LUSERS-Informationen angezeigt.
+
+ngIRCd 0.1.0, 29.01.2002
+
+  - Channels implementiert, bisher jedoch noch ohne Channel-Modes, d.h.
+    es gibt keine Channel-Ops, kein Topic, kein "topic lock" etc. pp.
+    Chatten in Channels ist aber natuerlich moeglich ;-)
+    Dadurch zum Teil groessere Aenderungen an bisherigen Funktionen.
+  - neue Befehle fuer Channles: JOIN, PART und NJOIN.
+  - FAQ.txt in doc/ begonnen.
+
+ngIRCd 0.0.3, 16.01.2002
+
+  - Server-Links vollstaendig implementiert: der ngIRCd kann nun auch
+    "Sub-Server" haben, also sowohl als Leaf-Node als auch Hub in einem
+    IRC-Netzwerk arbeiten.
+  - WHOIS wird nun immer an den "Original-Server" weitergeleitet.
+  - Parser handhabt Leerzeichen zw. Parametern nun etwas "lockerer".
+  - Kommandozeilen-Parser: Debug- und No-Daemon-Modus, Hilfe.
+  - ngIRCd wandelt sich nun in einen Daemon (Hintergrundprozess) um.
+  - neue Befehle: LUSERS, LINKS.
+
+ngIRCd 0.0.2, 06.01.2002
+
+  - neuer Aufbau der Konfigurationsdatei,
+  - mehrere IRC-Operatoren koennen konfiguriert werden,
+  - Server-Links teilweise implementiert. Bisher kann der ngIRCd jedoch
+    nur "leafed server" sein, d.h. keine "Client-Server" haben.
+
+ngIRCd 0.0.1, 31.12.2001
+
+  - erste oeffentliche Version von ngIRCd als "public preview" :-)

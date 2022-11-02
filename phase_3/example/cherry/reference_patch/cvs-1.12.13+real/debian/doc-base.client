@@ -1,0 +1,18 @@
+Document: cvs-doc-client
+Title: CVS client/server protocol description
+Abstract: This document describes the client/server protocol used by CVS.
+Section: Programming
+
+Format: HTML
+Index: /usr/share/doc/cvs/cvsclient.html
+Files: /usr/share/doc/cvs/cvsclient.html*
+
+Format: Text
+Files: /usr/share/doc/cvs/cvsclient.txt*
+
+Format: PDF
+Files: /usr/share/doc/cvs/cvsclient.pdf*
+
+Format: Info
+Index: /usr/share/info/cvsclient.info.gz
+Files: /usr/share/info/cvsclient.info*

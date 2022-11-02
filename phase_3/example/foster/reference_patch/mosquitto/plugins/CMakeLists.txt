@@ -1,0 +1,7 @@
+add_subdirectory(dynamic-security)
+if(NOT WIN32)
+	add_subdirectory(message-timestamp)
+	add_subdirectory(auth-by-ip)
+	add_subdirectory(control-check)
+endif(NOT WIN32)
+add_subdirectory(payload-modification)

@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+
+gem "pry"
+gem 'http'
+gem 'net-http-digest_auth'
+gem 'nokogiri'

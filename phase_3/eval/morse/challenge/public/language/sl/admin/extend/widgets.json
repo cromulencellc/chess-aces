@@ -1,0 +1,30 @@
+{
+	"available": "Razpoložljivi pripomočki",
+	"explanation": "V spustnem meniju izberite pripomoček in ga povlecite in spustite v območje gradnikov predloge na levi.",
+	"none-installed": "Pripomočki niso najdeni! Aktivirajte vtičnik za osnove pripomočkov na nadzorni plošči<a href=\"%1\">vtičnikov</a>.",
+	"clone-from": "Klonirajte pripomočke iz",
+	"containers.available": "Razpoložljivi vsebniki",
+	"containers.explanation": "Povlecite in spustite na kateri koli aktivni gradnik",
+	"containers.none": "Brez",
+	"container.well": "Well",
+	"container.jumbotron": "Jumbotron",
+	"container.panel": "plošča",
+	"container.panel-header": "Glava plošče",
+	"container.panel-body": "Panel Body",
+	"container.alert": "Opozorilo",
+
+	"alert.confirm-delete": "Ste prepričani, da želite izbrisati ta pripomoček?",
+	"alert.updated": "Pripomočki so posodobljeni",
+	"alert.update-success": "Pripomočki so uspešno shranjeni",
+	"alert.clone-success": "Pripomočki so uspešno klonirani",
+
+	"error.select-clone": "Izberite stran, s katere želite klonirati",
+
+	"title": "Naslov",
+	"title.placeholder": "Naslov (vidno le v nekaterih vsebnikih)",
+	"container": "Vsebnik",
+	"container.placeholder": "Drag and drop a container or enter HTML here.",
+	"show-to-groups": "Prikaži skupinam",
+	"hide-from-groups": "Skrij skupinam",
+	"hide-on-mobile": "Hide on mobile"
+}

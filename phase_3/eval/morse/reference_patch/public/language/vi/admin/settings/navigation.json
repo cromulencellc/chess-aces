@@ -1,0 +1,25 @@
+{
+	"icon": "Biểu tượng:",
+	"change-icon": "thay đổi",
+	"route": "Liên kết:",
+	"tooltip": "Chú giải công cụ:",
+	"text": "Chữ:",
+	"text-class": "Lớp Chữ: <small>không bắt buộc</small>",
+	"class": "Lớp: <small>không bắt buộc</small>",
+	"id": "ID: <small>không bắt buộc</small>",
+
+	"properties": "Thuộc tính:",
+	"groups": "Nhóm:",
+	"open-new-window": "Mở trong một cửa sổ mới",
+	"dropdown": "Thả xuống",
+	"dropdown-placeholder": "Đặt các mục menu thả xuống của bạn bên dưới, tức là: <br/>&lt;li&gt;&lt;a href&#x3D;&quot;https://myforum.com&quot;&gt;Link 1&lt;/a&gt;&lt;/li&gt;",
+
+	"btn.delete": "Xóa",
+	"btn.disable": "Tắt",
+	"btn.enable": "Bật",
+
+	"available-menu-items": "Các Mục Menu Sẵn Có",
+	"custom-route": "Tùy Chỉnh Liên Kết",
+	"core": "lõi",
+	"plugin": "plugin"
+}

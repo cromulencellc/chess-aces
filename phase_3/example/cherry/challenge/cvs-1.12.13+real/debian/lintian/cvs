@@ -1,0 +1,2 @@
+# see #469523 for justification; even moreso with Policy §12.3
+cvs: arch-dep-package-has-big-usr-share *

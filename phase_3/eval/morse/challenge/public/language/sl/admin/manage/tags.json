@@ -1,0 +1,18 @@
+{
+	"none": "Na vašem forumu še ni nobene teme z oznakami.",
+	"bg-color": "Barva ozadja",
+	"text-color": "Barva besedila",
+	"description": "Select tags by clicking or dragging, use <code>CTRL</code> to select multiple tags.",
+	"create": "Ustvari oznako",
+	"modify": "Spremeni oznake",
+	"rename": "Preimenuj oznake",
+	"delete": "Izbriši izbrane oznake",
+	"search": "Iskanje oznak...",
+	"settings": "Nastavitve oznak",
+	"name": "Ime oznake",
+
+	"alerts.editing": "Urejanje oznak(e)",
+	"alerts.confirm-delete": "Ali želite izbrisati izbrane oznake?",
+	"alerts.update-success": "Oznaka je posodobljena!",
+	"reset-colors": "Ponastavi barve"
+}

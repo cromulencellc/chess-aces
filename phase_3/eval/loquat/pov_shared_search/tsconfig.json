@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outDir": "build",
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "src/*"
+      ]
+    },
+    "esModuleInterop": true,
+    "target": "es2021",
+    "moduleResolution": "node",
+    "module": "commonjs"
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

@@ -1,0 +1,21 @@
+Document: cvs-doc
+Title: Cederqvist - The CVS manual
+Author: FSF, Derek R. Price, Ximbiot, Signum Support AB, and others
+Abstract: This manual describes how to use and administer CVS.
+ It is both a manual and a tutorial, as well as a reference guide,
+ also known as The Cederqvist, and *the* book to read before using CVS.
+Section: Programming
+
+Format: HTML
+Index: /usr/share/doc/cvs/cvs.html
+Files: /usr/share/doc/cvs/cvs.html*
+
+Format: Text
+Files: /usr/share/doc/cvs/cvs.txt*
+
+Format: PDF
+Files: /usr/share/doc/cvs/cvs.pdf*
+
+Format: Info
+Index: /usr/share/info/cvs.info.gz
+Files: /usr/share/info/cvs.info*

@@ -1,0 +1,14 @@
+{
+	"figure-x": "Slika %1",
+	"error-events-per-day": "<code>%1</code> dogodkov na dan",
+	"error.404": "4040 ni najdeno",
+	"error.503": "503 storitev ni na voljo",
+	"manage-error-log": "Upravljaj dnevnik napak",
+	"export-error-log": "Izvozi dnevnik napak (CSV)",
+	"clear-error-log": "Počisti dnevnik napak",
+	"route": "Pot",
+	"count": "Število",
+	"no-routes-not-found": "Hura! Ni napak 404! ",
+	"clear404-confirm": "Ste prepričani, da želite izbrisati dnevnik napak 404?",
+	"clear404-success": "Napake \"404 ni najdeno\" so počiščene"
+}

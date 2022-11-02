@@ -1,0 +1,15 @@
+{
+	"rewards": "Recompensas",
+	"condition-if-users": "Se",
+	"condition-is": "É:",
+	"condition-then": "Então:",
+	"max-claims": "Número de vezes que a recompensa pode ser atribuída",
+	"zero-infinite": "Digite 0 para infinito",
+	"delete": "Apagar",
+	"enable": "Ativar",
+	"disable": "Desativar",
+
+	"alert.delete-success": "Recompensa apagada com sucesso",
+	"alert.no-inputs-found": "Recompensa ilegal - não foram encontradas entradas!",
+	"alert.save-success": "Recompensas guardadas com sucesso"
+}

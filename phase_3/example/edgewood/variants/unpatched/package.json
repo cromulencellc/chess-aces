@@ -1,0 +1,24 @@
+{
+  "name": "weather_nerd",
+  "version": "1.0.0",
+  "description": "a weather-based home automation system",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "swood",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "md5": "^2.3.0",
+    "mongodb": "^4.2.1",
+    "mongoose": "^6.0.15",
+    "typescript": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.1",
+    "@types/express-session": "^1.17.2",
+    "@types/node": "^16.11.7"
+  }
+}

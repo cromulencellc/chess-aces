@@ -1,0 +1,38 @@
+<div class="mw-parser-output"><h1>Law System</h1>
+<p>An entire law system is built into Valhalla. All players and all monsters
+belonging to any major cities, castles and villages are protected by the
+law. You are not allowed to kill or steal from people which are protected,
+unless they are caught in the act of stealing or killing PROTECTED characters.
+</p><p>If you witness a crime you can accuse the person which committed the crime
+at the city guard Captain. The Captain is usually located at the city guard
+headquarters. If a protected NPC witness a crime it will walk to the captain
+and accuse the offender.
+</p><p>If you have committed a certain number of crimes the guards may attempt to
+arrest you. Once they handcuff you it is possible to attempt an escape by
+typing 'break' to attempt breaking the handcuffs.
+</p><p>If you have committed several crimes after having been declared 'wanted'
+you will be 'wanted dead or alive'. This means that you are no longer
+protected by the law system. At this point there will be a reward on your
+head, offering both money and experience for your death. All guards attack
+on sight. Players are allowed to kill you.
+</p><p>Once in jail you have to wait for some pretty strong friends to free
+you or for a long time to pass.
+</p><p>Your misdeeds are forgotten if you get killed or when you have served
+your jail sentence. But beware *any* crime reported after being cleared
+will make you a criminal instantly.
+</p><p><br />
+See Also:
+</p>
+<pre> &gt; <a cmd='#'>Help Police Guild</a>
+ &gt; <a cmd='#'>Help Protected</a>
+ &gt; <a cmd='#'>Help Accuse</a>
+ &gt; <a cmd='#'>Help PK</a>
+ &gt; <a cmd='#'>Help Contract</a>
+ &gt; <a cmd='#'>Help Offer</a>
+ &gt; <a cmd='#'>Help Break</a>
+</pre>
+
+
+
+
+</div>

@@ -1,0 +1,25 @@
+{
+	"icon": "Icon:",
+	"change-icon": "ändern",
+	"route": "Pfad:",
+	"tooltip": "Tooltip:",
+	"text": "Text:",
+	"text-class": "Text Klasse: <small>optional</small>",
+	"class": "Klasse <small>optional</small>",
+	"id": "ID: <small>optional</small>",
+
+	"properties": "Eigenschaften:",
+	"groups": "Gruppen:",
+	"open-new-window": "In neuem Fenster öffnen",
+	"dropdown": "Dropdown",
+	"dropdown-placeholder": "Place your dropdown menu items below, ie: <br/>&lt;li&gt;&lt;a href&#x3D;&quot;https://myforum.com&quot;&gt;Link 1&lt;/a&gt;&lt;/li&gt;",
+
+	"btn.delete": "Löschen",
+	"btn.disable": "Deaktivieren",
+	"btn.enable": "Aktivieren",
+
+	"available-menu-items": "Verfügbare Menüpunkte",
+	"custom-route": "Benutzerdefinierter Pfad",
+	"core": "Kern",
+	"plugin": "Plugin"
+}

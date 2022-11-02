@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'foster'
+    compose_service: 'ta3_foster'
+    role: 'server'
+    runtime:
+      path: challenge_bin/mosquitto/build/src/mosquitto
+      container_path: /service/mosquitto.bin
+      type: ELF
+    main_source:
+      path: challenge_src/mosquitto/src/mosquitto.c
+      container_path: /home/challenge/mosquitto/src/mosquitto.c
+      type: C
+poller:
+  compose_service: 'ta3_foster_sp_s1'

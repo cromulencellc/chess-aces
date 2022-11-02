@@ -1,0 +1,138 @@
+head	1.8;
+access;
+symbols
+	xyltywihokihgpvsxwts:1.5;
+locks; strict;
+comment	@# @;
+
+
+1.8
+date	2021.08.19.13.01.37;	author vagrant;	state Exp;
+branches;
+next	1.7;
+commitid	100611E562D09F54567;
+
+1.7
+date	2021.08.18.17.40.06;	author vagrant;	state Exp;
+branches;
+next	1.6;
+commitid	100611D45F224124567;
+
+1.6
+date	2021.08.18.17.10.59;	author vagrant;	state Exp;
+branches;
+next	1.5;
+commitid	100611D3EAE21D74567;
+
+1.5
+date	2021.08.11.14.37.39;	author vagrant;	state Exp;
+branches;
+next	1.4;
+commitid	1006113E0B152C64567;
+
+1.4
+date	2021.08.10.16.35.31;	author vagrant;	state Exp;
+branches;
+next	1.3;
+commitid	1006112AAD1483A4567;
+
+1.3
+date	2021.08.10.16.33.28;	author vagrant;	state Exp;
+branches;
+next	1.2;
+commitid	1006112AA5648154567;
+
+1.2
+date	2021.08.10.16.33.13;	author vagrant;	state Exp;
+branches;
+next	1.1;
+commitid	1006112AA4748064567;
+
+1.1
+date	2021.08.09.11.30.16;	author vagrant;	state Exp;
+branches;
+next	;
+commitid	100611111B63E684567;
+
+
+desc
+@@
+
+
+1.8
+log
+@adding test
+@
+text
+@nsxmsvvrqq cbesstrr @
+
+
+1.7
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+xdwvovnulprsh eagkjl@
+
+
+1.6
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+m orcs xgrp rbuudxsp@
+
+
+1.5
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+ptbppqlnztvzfcqcuyxr@
+
+
+1.4
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+ibichagtdxwxfxxtnaiv@
+
+
+1.3
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+jqfmrnrrhyoexrmcbtv @
+
+
+1.2
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+gxuqwousmmro gvhlg l@
+
+
+1.1
+log
+@Log for lowdir
+@
+text
+@d1 1
+a1 1
+Lower dir stuff@
+

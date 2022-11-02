@@ -1,0 +1,25 @@
+{
+	"you-are-on": "Ste na <strong>%1:%2</strong>",
+	"ip": "IP <strong>%1</strong>",
+	"nodes-responded": "%1 vozlišč se je odzvalo v %2ms!",
+	"host": "gostitelj",
+	"primary": "primary / run jobs",
+	"pid": "pid",
+	"nodejs": "nodejs",
+	"online": "na spletu",
+	"git": "git",
+	"process-memory": "process memory",
+	"system-memory": "system memory",
+	"used-memory-process": "Used memory by process",
+	"used-memory-os": "Used system memory",
+	"total-memory-os": "Total system memory",
+	"load": "obremenitev sistema",
+	"cpu-usage": "uporaba procesorja",
+	"uptime": "čas delovanja",
+
+	"registered": "Registrirani",
+	"sockets": "Vtičnice",
+	"guests": "Gostje",
+
+	"info": "Info"
+}

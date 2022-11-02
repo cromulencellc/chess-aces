@@ -1,0 +1,15 @@
+{
+	"rewards": "Premi",
+	"condition-if-users": "Se l'utente",
+	"condition-is": "È:",
+	"condition-then": "Allora:",
+	"max-claims": "Numero di volte che il premio è reclamabile",
+	"zero-infinite": "Inserisci 0 per infinito",
+	"delete": "Elimina",
+	"enable": "Abilita",
+	"disable": "Disabilita",
+
+	"alert.delete-success": "Premi eliminati con successo",
+	"alert.no-inputs-found": "Premio illegale - immissioni non trovate!",
+	"alert.save-success": "Premi salvati con successo"
+}

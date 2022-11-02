@@ -1,0 +1,167 @@
+#!@PYTHON_BIN@
+
+ # Copyright (C) 2000, 2001, 2013 Gregory Trubetskoy
+ # Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007 Apache Software Foundation
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License"); you
+ # may not use this file except in compliance with the License.  You
+ # may obtain a copy of the License at
+ #
+ #      http://www.apache.org/licenses/LICENSE-2.0
+ #
+ # Unless required by applicable law or agreed to in writing, software
+ # distributed under the License is distributed on an "AS IS" BASIS,
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ # implied.  See the License for the specific language governing
+ # permissions and limitations under the License.
+ #
+ # Originally developed by Gregory Trubetskoy.
+
+
+ # WARNING:
+ # WARNING: Make sure you're editing mod_python.in, not mod_python!
+ # WARNING:
+
+
+import sys
+import os
+import platform
+import StringIO
+import mod_python
+from mod_python import httpdconf
+
+
+def cmd_start():
+    parser = OptionParser(usage="%prog start <httpd.conf>\n"
+                          "  Start Apache using config file <httpd.conf>")
+    (options, args) = parser.parse_args(sys.argv[2:])
+    if len(args) != 1:
+        parser.error("Must specify <httpd.conf>")
+    os.execl(mod_python.version.HTTPD, mod_python.version.HTTPD, '-f', args[0], '-k', 'start')
+
+def cmd_stop():
+    parser = OptionParser(usage="%prog start <httpd.conf>\n"
+                          "  Stop Apache using config file <httpd.conf>")
+    (options, args) = parser.parse_args(sys.argv[2:])
+    if len(args) != 1:
+        parser.error("Must specify <httpd.conf>")
+    os.execl(mod_python.version.HTTPD, mod_python.version.HTTPD, '-f', args[0], '-k', 'graceful-stop')
+
+def cmd_restart():
+    parser = OptionParser(usage="%prog start <httpd.conf>\n"
+                          "  Restart Apache using config file <httpd.conf>")
+    (options, args) = parser.parse_args(sys.argv[2:])
+    if len(args) != 1:
+        parser.error("Must specify <httpd.conf>")
+    os.execl(mod_python.version.HTTPD, mod_python.version.HTTPD, '-f', args[0], '-k', 'graceful')
+
+def cmd_genconfig():
+
+    parser = OptionParser(usage="%prog genconfig <src> > <dst>\n"
+                          "  Run the config generation script <src>")
+
+    (options, args) = parser.parse_args(sys.argv[2:])
+    if len(args) != 1:
+        parser.error("Must specify <src>")
+
+    execfile(args[0])
+
+def cmd_create():
+
+    parser = OptionParser(usage="%prog create <directory>\n"
+                          "  Create a mod_python skeleton in <directory>")
+    parser.add_option("--listen", action="store", type="string", dest="listen", default="8888")
+    parser.add_option("--pythonpath", action="store", type="string", dest="pythonpath", default="")
+    parser.add_option("--pythonhandler", action="store", type="string", dest="pythonhandler", default=None)
+    parser.add_option("--pythonoption", action="append", type="string", dest="pythonoptions", default=[])
+
+    (options, args) = parser.parse_args(sys.argv[2:])
+
+    if len(args) != 1:
+        parser.error("Must specify <directory>")
+
+    if not options.pythonhandler:
+        parser.error("Must specify a --pythonhandler")
+
+    dest = args[0]
+
+    pythonpath = options.pythonpath.split(":")
+    if options.pythonhandler == 'mod_python.wsgi':
+        mp_comments = ['PythonOption mod_python.wsgi.base_url = ""']
+    conf_path = mod_python.httpdconf.write_basic_config(dest, listen=options.listen, pythonhandler=options.pythonhandler,
+                                                        pythonpath=pythonpath, pythonoptions=options.pythonoptions,
+                                                        mp_comments=mp_comments)
+    if conf_path:
+        print("\nCreated! Please look over %s." % repr(conf_path))
+        print("Remember to generate the Apache httpd config by running")
+        print("%s genconfig %s > %s" % (sys.argv[0], conf_path,
+                                        os.path.join(os.path.split(conf_path)[0], 'httpd.conf')))
+        print("From here on you can tweak %s and re-generate Apache config at any time." % repr(conf_path))
+
+def cmd_version():
+
+    parser = OptionParser(usage="%prog version\n"
+                          "  Print version")
+
+    version =  "\n"
+    version += "mod_python:  %s\n" % mod_python.mp_version
+    version += "             %s\n\n" % repr(os.path.join(mod_python.version.LIBEXECDIR, "mod_python.so"))
+    version += "python:      %s\n" % ''.join(sys.version.splitlines())
+    version += "             %s\n\n" % repr(mod_python.version.PYTHON_BIN)
+    version += "httpd:       %s\n" % mod_python.version.HTTPD_VERSION
+    version += "             %s\n\n" % repr(mod_python.version.HTTPD)
+    version += "apr:         %s\n" % mod_python.version.APR_VERSION
+    version += "platform:    %s\n" % platform.platform()
+
+    print(version)
+
+import optparse
+
+class OptionParser (optparse.OptionParser):
+
+    def check_required (self, opt):
+        option = self.get_option(opt)
+
+        # Assumes the option's 'default' is set to None!
+        if getattr(self.values, option.dest) is None:
+            self.error("%s option not supplied" % option)
+
+
+def main():
+
+    module = sys.modules[__name__]
+    commands = [c[4:] for c in dir(module) if c.startswith("cmd_")]
+
+    parser = OptionParser(usage = "%%prog <command> [command options]\n"
+                         "  Where <command> is one of: %s\n"
+                         "  For help on a specific command, use: %%prog <command> --help\n"
+                         % " ".join(commands))
+
+    # anything after a command is not our argument
+    try:
+        cmd_idx = [sys.argv.index(arg) for arg in sys.argv if arg in commands][0]
+    except IndexError:
+        cmd_idx = 1
+
+    (options, args) = parser.parse_args(sys.argv[1:cmd_idx+1])
+
+    if not args:
+        parser.error("Please specify a command")
+
+    command = args[0]
+
+    if command not in commands:
+        parser.error("Invalid command: %s" % command)
+
+    cmd_func = module.__dict__["cmd_"+command]
+    cmd_func()
+
+if __name__ == "__main__":
+    main()
+
+# makes emacs go into python mode
+### Local Variables:
+### mode:python
+### End:
+
+

@@ -1,0 +1,21 @@
+doctype html
+html
+  head
+    block title
+      title loquat
+    link(rel='stylesheet' href='/static/loquat.css')/
+    
+    block head
+
+  body
+    if flash
+      dl
+        each messages, level in flash
+          dt(class=level)= level
+          each message in messages
+            dd(class=level)= message
+
+
+    block content
+
+    script(type='text/javascript' src='/static/loquat.js')

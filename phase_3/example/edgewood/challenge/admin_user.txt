@@ -1,0 +1,6 @@
+
+userid: adminuser
+password: 1am@s3curevalue
+
+password hash for the database = md5('1am@s3curevalue') = 7625db4eda4d0839ce987e92177f97e1
+

@@ -1,0 +1,12 @@
+{
+	"pagination": "Nastavitve številčenja",
+	"enable": "Namesto neskončnega drsenja uporabite številčenje tem in objav.",
+	"posts": "Številčenje objav",
+	"topics": "Številčenje tem",
+	"posts-per-page": "Objav na stran",
+	"max-posts-per-page": "Največ objav na stran",
+	"categories": "Številčenje kategorij",
+	"topics-per-page": "Tem na stran",
+	"max-topics-per-page": "Največ tem na stran",
+	"categories-per-page": "Kategorij na stran"
+}

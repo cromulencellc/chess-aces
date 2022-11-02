@@ -1,0 +1,181 @@
+#!/usr/bin/make -f
+
+DEB_BUILD_ARCH?=$(shell dpkg-architecture -qDEB_BUILD_ARCH)
+DEB_HOST_ARCH?=$(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_BUILD_GNU_TYPE?=$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_GNU_TYPE?=$(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+
+# is ${CC} defined anywhere (other than implicit rules?)
+ifneq (,$(findstring $(origin CC),default undefined))
+# no - then default to gcc (or cross-gcc)
+ifneq (${DEB_BUILD_ARCH},${DEB_HOST_ARCH})
+CC=			${DEB_HOST_GNU_TYPE}-gcc
+else
+CC=			gcc
+endif
+endif
+
+CONFIGURE_ENV:=		CC='${CC}'
+EXTRA_CFLAGS=		-Wall -fno-strict-aliasing -Wformat
+# addresses part of #698908
+EXTRA_CFLAGS+=		-fwrapv
+# for now. uses are mostly checked.
+EXTRA_CFLAGS+=		-Wno-unused-result
+EXTRA_CPPFLAGS=		-D_GNU_SOURCE -DUSE_LIBBSD
+
+ifneq (,$(wildcard /usr/share/dpkg/buildflags.mk))
+# dpkg-dev (>= 1.16.1~)
+DEB_CFLAGS_MAINT_APPEND=${EXTRA_CFLAGS}
+DEB_CPPFLAGS_MAINT_APPEND=${EXTRA_CPPFLAGS}
+DEB_BUILD_MAINT_OPTIONS=hardening=+all
+DPKG_EXPORT_BUILDFLAGS=	Yes
+include /usr/share/dpkg/buildflags.mk
+else
+# old-fashioned way to determine build flags
+CFLAGS=			-O$(if $(findstring noopt,${DEB_BUILD_OPTIONS}),0,2) -g
+CFLAGS+=		${EXTRA_CFLAGS}
+CPPFLAGS+=		${EXTRA_CPPFLAGS}
+CONFIGURE_ENV+=		CFLAGS='${CFLAGS}'
+CONFIGURE_ENV+=		CPPFLAGS='${CPPFLAGS}'
+CONFIGURE_ENV+=		LDFLAGS='${LDFLAGS}'
+endif
+
+LIBS+=			-lbsd
+
+CONFIGURE_ENV+=		LIBS='${LIBS}'
+CONFIGURE_ENV+=		CSH=/bin/csh
+
+CONFIGURE_ARGS:=	--build=${DEB_BUILD_GNU_TYPE} \
+			--host=${DEB_HOST_GNU_TYPE} \
+			--prefix=/usr \
+			--infodir=/usr/share/info \
+			--mandir=/usr/share/man \
+			--sysconfdir=/etc \
+			--disable-dependency-tracking \
+			--disable-maintainer-mode \
+			--disable-pam \
+			--disable-nls \
+			--enable-client \
+			--enable-password-authenticated-client \
+			--enable-server \
+			--enable-proxy \
+			--enable-case-sensitivity \
+			--enable-encryption \
+			--disable-lock-compatibility \
+			--enable-rootcommit \
+			--disable-old-info-format-support \
+			--enable-config-override=no \
+			--without-krb4 \
+			--with-gssapi \
+			--with-external-zlib \
+			--with-rsh=ssh \
+			--with-editor=/usr/bin/editor \
+			--with-tmpdir=/var/tmp \
+			--with-umask=002 \
+			--with-cvs-admin-group=_cvsadmin
+
+MAKE_ARGS:=		MAKEINFO=makeinfo
+MAKE_ARGS+=		MAKEINFOFLAGS=--no-split
+
+CLEANFILES:=		autom4te.cache build-aux/config.guess \
+			build-aux/config.sub cvs.spec debian/.*_stamp \
+			debian/CVSTEMP debian/builddir debian/stagedir \
+			doc/cvs-paper.pdf doc/cvs.1 doc/cvs.info* \
+			doc/cvs.pdf doc/cvsclient.info* doc/cvsclient.pdf \
+			doc/getdate-cvs.texi emx/Makefile os2/Makefile \
+			vms/config.h windows-NT/config.h
+
+debian/.configure_stamp:
+	dh_testdir
+	-rm -rf ${CLEANFILES}
+	cp /usr/share/misc/config.guess /usr/share/misc/config.sub build-aux/
+	dh_autoreconf
+	mkdir debian/builddir debian/stagedir
+	cd debian/builddir && \
+	    env ${CONFIGURE_ENV} sh ../../configure ${CONFIGURE_ARGS}
+	# generate PDF 1.4 by default
+	ln -s ../../../build-aux/texinfo.tex debian/builddir/doc/texinfo-r.tex
+	printf '%s\n' \
+	    '\pdfminorversion4\relax\pdfobjcompresslevel0\relax%' \
+	    '\input texinfo-r.tex' \
+	    >debian/builddir/doc/texinfo.tex
+	@:>$@
+
+build-indep:
+build build-arch: debian/.build_stamp
+
+debian/.build_stamp: debian/.configure_stamp
+	dh_testdir
+	cd debian/builddir && ${MAKE} ${MAKE_ARGS}
+ifeq (,$(filter nodoc,$(DEB_BUILD_OPTIONS)))
+	cd debian/builddir && ${MAKE} -C doc ${MAKE_ARGS} doc html info pdf txt
+endif
+ifneq (,$(filter sanity,$(DEB_BUILD_OPTIONS)))
+	# run the testsuite after build (DEB_BUILD_OPTIONS=sanity)
+	# warning: this takes a *lot* of time!
+	# idea: run this under Valgrind to take even more time ;)
+	cd debian/builddir && ${MAKE} ${MAKE_ARGS} check
+endif
+	@:>$@
+
+clean:
+	dh_testdir
+	dh_autoreconf_clean
+	-rm -rf ${CLEANFILES}
+	dh_clean
+
+binary-indep:
+
+binary-arch: debian/.build_stamp
+	dh_testdir
+	dh_testroot
+	if test -x "$$(which dh_prep)"; then dh_prep; else dh_clean -k; fi
+	-rm -rf debian/stagedir
+	mkdir -p debian/stagedir/clogs
+	cd debian/builddir && \
+	    ${MAKE} ${MAKE_ARGS} DESTDIR=${CURDIR}/debian/stagedir install
+	cat ChangeLog ChangeLog.zoo >debian/stagedir/clogs/ChangeLog
+	cat doc/ChangeLog doc/ChangeLog.fsf >debian/stagedir/clogs/ChangeLog.doc
+	#cat lib/ChangeLog lib/ChangeLog.fsf >debian/stagedir/clogs/ChangeLog.lib
+	#cat src/ChangeLog src/ChangeLog-97 src/ChangeLog-96 src/ChangeLog-9395 \
+	#    src/ChangeLog-9194 >debian/stagedir/clogs/ChangeLog.src
+	cp src/ChangeLog debian/stagedir/clogs/ChangeLog.src
+	cp contrib/ChangeLog debian/stagedir/clogs/ChangeLog.contrib
+	cp diff/ChangeLog debian/stagedir/clogs/ChangeLog.diff
+	#cp m4/ChangeLog debian/stagedir/clogs/ChangeLog.m4
+	#cp man/ChangeLog debian/stagedir/clogs/ChangeLog.man
+	#cp tools/ChangeLog debian/stagedir/clogs/ChangeLog.tools
+	# fat and nonsensical to ship this
+	rm -f debian/stagedir/usr/share/cvs/contrib/rcs-5.7-commitid.patch
+	# uses csh
+	rm -f debian/stagedir/usr/share/cvs/contrib/sccs2rcs
+	# unsafe
+	rm -f debian/stagedir/usr/share/cvs/contrib/commit_prep
+	rm -f debian/stagedir/usr/share/cvs/contrib/cvs_acls
+	rm -f debian/stagedir/usr/share/cvs/contrib/log
+	rm -f debian/stagedir/usr/share/cvs/contrib/log_accum
+	rm -f debian/stagedir/usr/share/cvs/contrib/mfpipe
+	rm -f debian/stagedir/usr/share/cvs/contrib/rcslock
+	# we ship cvs-switchroot(1) instead
+	rm -f debian/stagedir/usr/share/cvs/contrib/newcvsroot
+	dh_installchangelogs debian/stagedir/clogs/ChangeLog
+ifneq (,$(filter nodoc,$(DEB_BUILD_OPTIONS)))
+	# this will cause lintian warnings as it installs the doc-base files
+endif
+	dh_installdocs
+	dh_install
+	dh_installinfo
+	dh_installman
+	dh_link
+	dh_strip
+	dh_compress -X.pdf
+	cd debian/cvs/usr/share/cvs/contrib && chmod +x descend.sh rcs2sccs.sh
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb -- -Zgzip -z9
+
+binary: binary-indep binary-arch
+.PHONY: binary binary-arch binary-indep build build-arch build-indep clean

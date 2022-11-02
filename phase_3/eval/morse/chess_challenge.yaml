@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'morse'
+    compose_service: 'ta3_morse'
+    role: 'server'
+    runtime:
+      type: JavaScript
+      path: 'challenge_bin/build/index.js'
+      container_path: '/mnt/challenge/build/index.js'
+    main_source:
+      type: 'JavaScript'
+      container_path: '/mnt/challenge/bin/index.js'
+      path: 'challenge_src/bin/index.js
+poller:
+  compose_service: ta3_morse_sp_s1

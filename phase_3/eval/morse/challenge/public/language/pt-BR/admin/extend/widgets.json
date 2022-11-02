@@ -1,0 +1,30 @@
+{
+	"available": "Widgets Disponíveis",
+	"explanation": "Escolha um widget do menu de dropdown e então arraste e solte numa área de widget do template à esquerda.",
+	"none-installed": "Nenhum widget encontrado! Ative o plug-in de widgets básicos no  <a href=\"%1\"> painel de controle de plugins</a>.",
+	"clone-from": "Copiar widgets de",
+	"containers.available": "Contêineres Disponíveis",
+	"containers.explanation": "Arrastar e soltar em cima de qualquer widget ativo",
+	"containers.none": "Nenhum",
+	"container.well": "Bem",
+	"container.jumbotron": "Jumbotron",
+	"container.panel": "Painel",
+	"container.panel-header": "Cabeçalho do Painel",
+	"container.panel-body": "Corpo do Painel",
+	"container.alert": "Alerta",
+
+	"alert.confirm-delete": "Tem certeza de que deseja excluir este widget?",
+	"alert.updated": "Widgets Atualizados",
+	"alert.update-success": "Widgets atualizados com sucesso",
+	"alert.clone-success": "Widgets copiados com sucesso!",
+
+	"error.select-clone": "Por favor, selecione a página a ser copiada",
+
+	"title": "Título",
+	"title.placeholder": "Título (mostrado apenas em alguns contêineres)",
+	"container": "Contêiner",
+	"container.placeholder": "Arraste e solte um contêiner ou insira HTML aqui.",
+	"show-to-groups": "Mostrar para grupos",
+	"hide-from-groups": "Esconder dos grupos",
+	"hide-on-mobile": "Esconder no móvel"
+}

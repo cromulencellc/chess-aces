@@ -1,0 +1,3 @@
+version=3
+opts="dversionmangle=s/^[0-9]+://;s/\+real$//,pgpsigurlmangle=s/$/.sig/" \
+https://ftp.gnu.org/non-gnu/cvs/source/feature/([0-9.]*)/ cvs-([0-9.]*)\.tar\.gz

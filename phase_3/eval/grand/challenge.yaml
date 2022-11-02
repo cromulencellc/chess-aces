@@ -1,0 +1,15 @@
+chess_challenge_metadata: '1.0.0'
+targets:
+  - name: 'grand'
+    compose_service: 'ta3_grand'
+    role: 'server'
+    runtime:
+      path: challenge_bin/httpd-2.4.51/httpd
+      container_path: /usr/local/apache2/bin/httpd
+      type: ELF
+    main_source:
+      path: challenge_src/httpd-2.4.51/server/main.c
+      container_path: /home/challenge/httpd-2.4.51/server/main.c
+      type: C
+poller:
+  compose_service: 'ta3_grand_sp_s1'

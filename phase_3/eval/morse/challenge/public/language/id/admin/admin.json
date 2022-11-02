@@ -1,0 +1,11 @@
+{
+	"alert.confirm-rebuild-and-restart": "Anda yakin ingin membangun ulang dan mulai ulang NodeBB?",
+	"alert.confirm-restart": "Anda yakin ingin mulai ulang NodeBB?",
+
+	"acp-title": "%1 | Kontrol Panel Admin NodeBB",
+	"settings-header-contents": "Konten",
+	"changes-saved": "Perubahan Disimpan",
+	"changes-saved-message": "Perubahan konfigurasi NodeBB Anda telah disimpan.",
+	"changes-not-saved": "Perubahan Tidak Disimpan",
+	"changes-not-saved-message": "NodeBB mengalami masalah saat menyimpan perubahan Anda. (%1)"
+}

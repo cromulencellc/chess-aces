@@ -1,0 +1,11 @@
+Document: cvs-doc-rcsfiles
+Title: RCS file format description
+Author: Jim Kingdon
+Abstract: This file attempts to document the RCS file format (which is
+ implemented by a great many tools, both free and non-free, both by
+ calling GNU RCS and by reimplementing access to RCS files) in some
+ standard separate from any one tool.
+Section: Programming
+
+Format: Text
+Files: /usr/share/doc/cvs/RCSFILES*

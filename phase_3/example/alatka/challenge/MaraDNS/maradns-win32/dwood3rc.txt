@@ -1,0 +1,57 @@
+# Lines with a '#' at the beginning are comments ignored by Deadwood's
+# text file parser.
+
+# If you wish to use this program to cache from other recursive servers
+# instead of the Quad9 servers, uncomment the following lines.
+# Replace the IPs if needed.
+#upstream_servers = {}
+#upstream_servers["."]="8.8.8.8, 8.8.4.4" # Servers we connect to
+
+# It is also possible to use ICANN root servers.  However, to do this, 
+# root_servers needs to be defined.  
+#root_servers = {}
+# ICANN DNS root servers 
+#root_servers["."]="198.41.0.4, 199.9.14.201, 192.33.4.12, 199.7.91.13,"
+#root_servers["."]+="192.203.230.10, 192.5.5.241, 192.112.36.4, "
+#root_servers["."]+="198.97.190.53, 192.36.148.17, 192.58.128.30, "
+#root_servers["."]+="193.0.14.129, 199.7.83.42, 202.12.27.33"
+
+# The IP this program has 
+bind_address="127.0.0.1"
+
+# The IPs allowed to connect and use the cache
+recursive_acl = "127.0.0.1/16"
+
+# This is the file Deadwood uses to read the cache to and from disk
+cache_file = "dw_cache_bin"
+
+# This is a list of IPs that, if we get them in a DNS reply, we convert
+# the reply in to a "not there" answer.  
+#ip_blocklist = "10.222.33.44, 10.222.3.55"
+
+# By default, for security reasons, Deadwood does not allow IPs in the
+# 192.168.x.x, 172.[16-31].x.x, 10.x.x.x, 127.x.x.x, 169.254.x.x,
+# 224.x.x.x, or 0.0.x.x range.  If using Deadwood to resolve names
+# on an internal network, uncomment the following line:
+#filter_rfc1918 = 0
+
+# We can have given names resolve to bogus IPv4 addresses.  Here, we
+# have the name "maradns.foo" resolve to "10.10.10.10" and "kabah.foo"
+# resolve to "10.11.11.11", regardless of what real values these DNS
+# records may have.  Note that a given name can only resolve to a
+# single IP, and that the records have a fixed TTL of 30 seconds.
+ip4 = {}
+ip4["maradns.foo."] = "10.10.10.10"
+ip4["kabah.foo."] = "10.11.11.11"
+# Blacklist a bad site; this blocks resolution for both IPv4 and IPv6
+ip4["phish.example.com."] = "X"
+
+# We can also use a similar syntax to have bogus IPv6 addresses.
+# We don't use standard notation for IPv6 addresses.  Instead, we
+# we use 32-character hex addresses (case insensitive); to make
+# it easier to count long strings of "0"s, the "_" acts like a 0.
+# We ignore "-" and " " (space) in ip6 strings.
+ip6 = {}
+ip6["maradns.foo."] = "20010db84d617261444e530000001234"
+ip6["kabah.foo."] = "2001-0DB8-4D61-7261 444E-5300-__00-2345"
+

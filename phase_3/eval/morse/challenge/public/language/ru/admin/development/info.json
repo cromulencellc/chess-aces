@@ -1,0 +1,25 @@
+{
+	"you-are-on": "Вы находитесь на %1:%2",
+	"ip": "IP <strong>%1</strong>",
+	"nodes-responded": "Узлов: %1. Время ответа %2мс!",
+	"host": "хост",
+	"primary": "первичный",
+	"pid": "pid",
+	"nodejs": "nodejs",
+	"online": "онлайн",
+	"git": "git",
+	"process-memory": "process memory",
+	"system-memory": "system memory",
+	"used-memory-process": "Used memory by process",
+	"used-memory-os": "Used system memory",
+	"total-memory-os": "Total system memory",
+	"load": "системная загрузка",
+	"cpu-usage": "загрузка процессора",
+	"uptime": "продолжительность работы",
+
+	"registered": "Авторизованных",
+	"sockets": "Сокеты",
+	"guests": "Гостей",
+
+	"info": "Сырые данные"
+}

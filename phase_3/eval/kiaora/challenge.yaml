@@ -1,0 +1,15 @@
+chess_challenge_metadata: '0.5.0'
+targets:
+  - name: 'kiaora'
+    compose_service: 'ta3_kiaora'
+    role: 'server'
+    runtime:
+      path: challenge_bin/DikuMUD3/vme/bin/vme
+      container_path: /home/challenge/DikuMUD3/vme/bin/vme
+      type: ELF
+    main_source:
+      path: challenge_src/DikuMUD3/vme/src/main.cpp
+      container_path: /home/challenge/DikuMUD3/vme/src/main.cpp
+      type: CPP
+poller:
+  compose_service: 'ta3_kiaora_sp_s1'

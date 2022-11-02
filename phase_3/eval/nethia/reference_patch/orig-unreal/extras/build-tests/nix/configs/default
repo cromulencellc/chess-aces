@@ -1,0 +1,30 @@
+# These are the settings saved from running './Config'.
+# Note that it is not recommended to edit config.settings by hand!
+# Chances are you misunderstand what a variable does or what the
+# supported values are. You better just re-run the ./Config script
+# and answer appropriately there, to get a correct config.settings
+# file.
+#
+BASEPATH=$HOME/unrealircd
+BINDIR=$HOME/unrealircd/bin
+DATADIR=$HOME/unrealircd/data
+CONFDIR=$HOME/unrealircd/conf
+MODULESDIR=$HOME/unrealircd/modules
+LOGDIR=$HOME/unrealircd/logs
+CACHEDIR=$HOME/unrealircd/cache
+DOCDIR=$HOME/unrealircd/doc
+TMPDIR=$HOME/unrealircd/tmp
+PRIVATELIBDIR=$HOME/unrealircd/lib
+MAXCONNECTIONS_REQUEST="auto"
+NICKNAMEHISTORYLENGTH="2000"
+GEOIP="classic"
+DEFPERM="0600"
+SSLDIR=""
+REMOTEINC=""
+CURLDIR=""
+NOOPEROVERRIDE=""
+OPEROVERRIDEVERIFY=""
+GENCERTIFICATE="0"
+SANITIZER="asan"
+EXTRAPARA="--enable-werror"
+ADVANCED=""

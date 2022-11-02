@@ -1,0 +1,11 @@
+{
+	"alert.confirm-rebuild-and-restart": "האם אתה בטוח שאתה רוצה לבנות מחדש ולאתחל את NodeBB?",
+	"alert.confirm-restart": "האם אתה בטוח שאתה רוצה לאתחל מחדש את NodeBB?",
+
+	"acp-title": "%1 | לוח בקרה למנהל NodeBB",
+	"settings-header-contents": "תוכן",
+	"changes-saved": "שינויים שנשמרו",
+	"changes-saved-message": "השינויים שלך בתצורת NodeBB נשמרו.",
+	"changes-not-saved": "השינויים לא נשמרו",
+	"changes-not-saved-message": "NodeBB נתקל בעיה בשמירת השינויים שלך. (%1)"
+}

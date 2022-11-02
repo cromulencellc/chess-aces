@@ -1,0 +1,9 @@
+# General access
+
+# Users
+user admin
+topic $SYS/#
+
+# All
+
+pattern readwrite chess/#

@@ -1,0 +1,22 @@
+{
+	"lead": "Alább láthatóak az összefoglalók kézbesítési statisztikáinak és idejeinek listája",
+	"disclaimer": "Kérjük vegye figyelembe, hogy az email kézbesítés nem garantált az email technológia természete miatt. Sok változó tényező befolyásolja, hogy egy email elküldése a címzettnek végül valóban sikeresen megérkezik-e a felhasználó postaládájába. Ide értendő a szerver ismertsége, a feketelistázott IP címek és hogy a DKIM/SPD/DMARC konfigurált-e.",
+	"disclaimer-continued": "A sikeres kézbesítést azt jelenti, hogy az üzenet elküldésre került a NodeBB által és a címzett szerver azt tudomásul vette. Azt nem jelenti, hogy az email megérkezett a felhasználó postafiókjába. A legjobb eredmény elérésének érdekében ajánljuk harmadik féltől származó email kézbesítő rendszer használatát, mint például a <a href=\"https://sendgrid.com/why-sendgrid/\">SendGrid</a>.",
+
+	"user": "Felhasználó",
+	"subscription": "Feliratkozás típusa",
+	"last-delivery": "Utolsó sikeres kézbesítés",
+	"default": "Rendszer alapértelmezés",
+	"default-help": "<em>Rendszer alapértelmezés</em> azt jelenti, hogy a felhasználó nem írta felül a globális fórum beállítást, ami jelenleg az alábbi: &quot;<strong>%1</strong>&quot;",
+	"resend": "Összefoglaló újra küldése",
+	"resend-all-confirm": "Biztosan szeretnéd manuálisan futtatni ezt az összefoglalást?",
+	"resent-single": "Manuális összefoglaló küldés sikeres",
+	"resent-day": "Napi összefoglaló újraküldés sikeres",
+	"resent-week": "Heti összefoglaló újraküldés sikeres",
+	"resent-biweek": "Bi-Weekly digest resent",
+	"resent-month": "Havi összefoglaló újraküldés sikeres",
+	"null": "<em>Soha</em>",
+	"manual-run": "Manuális összefoglaló futtatás:",
+
+	"no-delivery-data": "Nincs elérhető kézbesítési információ"
+}

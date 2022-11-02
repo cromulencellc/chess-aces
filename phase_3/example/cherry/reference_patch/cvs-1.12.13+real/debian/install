@@ -1,0 +1,11 @@
+#contrib/cvs_acls.html usr/share/cvs/contrib/
+contrib/descend.man usr/share/cvs/contrib/
+contrib/descend.sh usr/share/cvs/contrib/
+contrib/rcs2log.1 usr/share/cvs/contrib/
+contrib/rcs2sccs.sh usr/share/cvs/contrib/
+contrib/sandbox_status.man usr/share/cvs/contrib/
+debian/cvs-switchroot usr/bin/
+debian/lintian/cvs usr/share/lintian/overrides/
+debian/stagedir/usr/bin/cvs usr/bin/
+#debian/stagedir/usr/bin/cvsbug usr/bin/
+debian/stagedir/usr/share/cvs/contrib/* usr/share/cvs/contrib/

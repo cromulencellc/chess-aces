@@ -1,0 +1,11 @@
+{
+    "upload-file": "Subir archivo",
+    "filename": "Nombre del archivo",
+    "usage": "Uso de Publicaciones",
+    "orphaned": "Huérfano",
+    "size/filecount": "Tamaño / Recuento de archivos",
+    "confirm-delete": "¿Realmente quieres borrar este archivo?",
+    "filecount": "%1 archivos",
+    "new-folder": "New Folder",
+    "name-new-folder": "Enter a name for new the folder"
+}

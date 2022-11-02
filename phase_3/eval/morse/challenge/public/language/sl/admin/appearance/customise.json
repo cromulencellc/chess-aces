@@ -1,0 +1,16 @@
+{
+	"custom-css": "CSS/LESS po meri",
+	"custom-css.description": "Enter your own CSS/LESS declarations here, which will be applied after all other styles.",
+	"custom-css.enable": "Omogoči CSS/LESS po meri",
+
+	"custom-js": "Javascript po meri",
+	"custom-js.description": "Tukaj vnesite svoj javascript. Izveden bo, ko se stran popolnoma naloži.",
+	"custom-js.enable": "Omogoči Javascript po meri",
+
+	"custom-header": "Glava po meri",
+	"custom-header.description": "Tukaj vnesite HTML po meri (npr. meta oznake itd.), ki bo dodan v <code>& lt; head & gt;</code> razdelek oznak vašega foruma. Oznake skript so dovoljene, vendar niso priporočljive, saj je na voljo zavihek Javascript po meri.",
+	"custom-header.enable": "Omogoči glavo po meri",
+
+	"custom-css.livereload": "Omogoči ponovno nalaganje v živo",
+	"custom-css.livereload.description": "Omogočite to, da se vse seje na vsaki napravi v vašem računu osvežijo, ko kliknete shrani"
+}

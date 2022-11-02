@@ -1,0 +1,26 @@
+{
+	"reputation": "Hírnév beállítások",
+	"disable": "Hírnév rendszer kikapcsolása",
+	"disable-down-voting": "Leszavazás kikapcsolása",
+	"votes-are-public": "Minden szavazat nyilvános",
+	"thresholds": "Aktivitás küszöb értékek",
+	"min-rep-upvote": "Minimum reputation to upvote posts",
+	"upvotes-per-day": "Upvotes per day (set to 0 for unlimited upvotes)",
+	"upvotes-per-user-per-day": "Upvotes per user per day (set to 0 for unlimited upvotes)",
+	"min-rep-downvote": "Szükséges minimális hírnév a leszavazás használatához",
+	"downvotes-per-day": "Leszavazások naponta (adj meg 0-t, hogy ne legyen korlátozás)",
+	"downvotes-per-user-per-day": "Leszavazások felhasználónként naponta (adj meg 0-t, hogy ne legyen korlátozás)",
+	"min-rep-flag": "Szükséges minimális hírnév hozzászólások megjelöléséhez",
+	"min-rep-website": "Szükséges minimális hírnév \"weboldal\" megadásához a felhasználói profilon",
+	"min-rep-aboutme": "Szükséges minimális hírnév \"bemutatkozás\" megadásához a felhasználói profilon",
+	"min-rep-signature": "Szükséges minimális hírnév \"aláírás\" megadásához a felhasználói profilon",
+	"min-rep-profile-picture": "Szükséges minimális hírnév \"profilkép\" megadásához a felhasználói profilon",
+	"min-rep-cover-picture": "Szükséges minimális hírnév \"borítókép\" megadásához a felhasználói profilon",
+
+	"flags": "Megjelölés beállítások",
+	"flags.limit-per-target": "Bizonyos dolgokat legfeljebb hányszor lehessen megjelölni",
+	"flags.limit-per-target-placeholder": "Alapértelmezett: 0",
+	"flags.limit-per-target-help": "Amikor egy hozzászólás vagy felhasználó több megjelölést kap, akkor minden megjelölés &quot;jelentésnek&quot; számít és hozzáadódik az eredeti megjelöléshez. Adj meg 0-tól eltérő értéket egy maximális jelölési szám beállításához.",
+  	"flags.auto-flag-on-downvote-threshold": "Number of downvotes to auto flag posts (Set to 0 to disable, default: 0)",
+	"flags.auto-resolve-on-ban": "A felhasználó összes megjelölésének feloldása, amikor kitiltásra kerül"
+}

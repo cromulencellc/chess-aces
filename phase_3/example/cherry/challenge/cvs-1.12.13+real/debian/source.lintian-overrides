@@ -1,0 +1,16 @@
+# desired method of keeping changes is as VCS working tree
+cvs source: direct-changes-in-diff-but-no-patch-system *
+
+# not my fault
+cvs source: source-contains-cvs-control-dir zlib/CVS
+cvs source: source-contains-cvs-control-dir zlib/os2/CVS
+cvs source: deprecated-configure-filename
+
+# not part of the binary package, and not legally a problem
+cvs source: license-problem-gfdl-non-official-text doc/getdate-cvs.texi *
+
+# no, thanks
+cvs source: no-dep5-copyright
+
+# too complex for now, requires ssh and rsync to localhost
+cvs source: testsuite-autopkgtest-missing

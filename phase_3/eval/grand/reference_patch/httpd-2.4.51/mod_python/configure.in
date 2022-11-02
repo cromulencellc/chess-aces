@@ -1,0 +1,363 @@
+ # Copyright (C) 2000, 2001, 2013 Gregory Trubetskoy
+ # Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007 Apache Software Foundation
+ #
+ #  Licensed under the Apache License, Version 2.0 (the "License");
+ #  you may not use this file except in compliance with the License.
+ #  You may obtain a copy of the License at
+ #
+ #      http://www.apache.org/licenses/LICENSE-2.0
+ #
+ #  Unless required by applicable law or agreed to in writing, software
+ #  distributed under the License is distributed on an "AS IS" BASIS,
+ #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ #  See the License for the specific language governing permissions and
+ #  limitations under the License.
+ #
+ # Originally developed by Gregory Trubetskoy.
+ #
+
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(src/mod_python.c)
+
+# includes
+INCLUDES="-I`pwd`/src/include"
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_SUBST(AR)
+AC_CHECK_PROGS(AR, ar aal, ar)
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+
+dnl Replace `main' with a function in -lm:
+AC_CHECK_LIB(m, main)
+
+dnl Checks for header files.
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+
+### humor lowers blood pressure
+AC_MSG_CHECKING(your blood pressure)
+AC_MSG_RESULT([a bit high, but we can proceed])
+
+## The goal is to find apxs
+AC_CHECKING(whether apxs is available)
+AC_SUBST(APXS)
+AC_SUBST(DSO)
+AC_SUBST(ALL)
+
+# check for --with-apxs
+AC_ARG_WITH(apxs, AC_HELP_STRING([--with-apxs=NAME],
+            [name of the apxs executable [[apxs]]]),
+            [APXS="$with_apxs"])
+
+if test -z "${APXS}"; then
+    AC_PATH_PROGS(APXS, apxs2 apxs, [],
+                   [$PATH:/usr/local/apache/bin:/usr/sbin])
+fi
+
+# if apxs was still not found, then no DSO
+AC_SUBST(LIBEXECDIR)
+AC_SUBST(SYSCONFDIR)
+AC_SUBST(SOLARIS_HACKS)
+AC_SUBST(HTTPD)
+AC_SUBST(HTTPD_VERSION)
+AC_SUBST(APR_VERSION)
+if test -z "$APXS"; then
+  AC_MSG_WARN([**** apxs was not found, DSO compilation will not be available.])
+  AC_MSG_WARN([**** You can use --with-apxs to specify where your apxs is.])
+  DSO="no_dso"
+  ALL="static"
+else
+  DSO="do_dso"
+  ALL="dso"
+
+  # check Apache version
+  AC_MSG_CHECKING(Apache version)
+  HTTPD="`${APXS} -q SBINDIR`/`${APXS} -q TARGET`"
+  HTTPD_VERSION=`$HTTPD -v | awk '/version/ {print $3}' | awk -F/ '{print $2}' | awk '{print $1}'`
+  APR_VERSION=`${APXS} -q APR_VERSION`
+  AC_MSG_RESULT($HTTPD_VERSION)
+
+  # make sure version begins with 2
+  if test -z "`echo $HTTPD_VERSION | egrep \^2`"; then
+    AC_MSG_ERROR([This version of mod_python only works with Apache 2. The one we have ($HTTPD) seems to be $HTTPD_VERSION.])
+  fi
+
+  # determine LIBEXEC
+  AC_MSG_CHECKING(for Apache libexec directory)
+  LIBEXECDIR=`${APXS} -q LIBEXECDIR`
+  AC_MSG_RESULT($LIBEXECDIR)
+
+  # determine INCLUDES
+  AC_MSG_CHECKING([for Apache include directory])
+  AP_INCLUDES="-I`${APXS} -q INCLUDEDIR`"
+  AC_MSG_RESULT($AP_INCLUDES)
+
+  dnl Small hack to work around _eprintf.o problem on Solaris
+  if test "`uname`" = "SunOS"; then
+    AC_MSG_CHECKING([for gcc on Solaris possible missing _eprintf problem])
+    if test "$CC" = "gcc"; then
+      SOLARIS_HACKS="_eprintf.o _floatdidf.o _muldi3.o"
+    fi
+    AC_MSG_RESULT("done")
+  fi
+
+fi
+
+# check for --with-apache
+AC_SUBST(AP_SRC)
+AC_SUBST(AP_SRC_OWN)
+AC_SUBST(AP_SRC_GRP)
+## static is disabled, thus no --with-apache
+##AC_MSG_CHECKING(for --with-apache)
+AC_ARG_WITH(apache, [--with-apache=DIR 	Path to Apache sources],
+[
+
+  # temporarily disable static on 2.0 until I figure out how to
+  # do it right
+  AC_MSG_ERROR([Sorry, --with-apache (static compilation) is not supported at this time!])
+
+  AP_SRC=`cd $withval; pwd`
+
+  dnl  Make sure this looks like Apache source
+  if test ! -f "$AP_SRC/include/httpd.h"; then
+    AC_MSG_ERROR([$withval does not look like an Apache 2.0 source directory.])
+  fi
+
+  AC_MSG_RESULT($AP_SRC)
+  AP_INCLUDES="-I${AP_SRC}/src/include -I${AP_SRC}/src/os/unix"
+
+  # note who owns the apache source directory
+  AP_SRC_OWN="`ls -ld $AP_SRC | awk '{print $3}'`"
+  AP_SRC_GRP="`ls -ld $AP_SRC | awk '{print $4}'`"
+],)
+##AC_MSG_RESULT(no))
+
+AC_SUBST(STATIC)
+if test -z "$AP_SRC"; then
+##  AC_MSG_WARN([**** No apache sources specified, static compilation will not be available.])
+##  AC_MSG_WARN([**** You can use --with-apache to specify where your Apache sources are.])
+  STATIC="no_static"
+else
+  STATIC="do_static"
+fi
+
+if test "$STATIC" = "no_static" -a "$DSO" = "no_dso"; then
+  AC_MSG_ERROR([Neither static nor DSO option available, there is no point in continuing.])
+fi
+
+AC_SUBST(PYTHON_BIN)
+AC_MSG_CHECKING(for --with-python)
+AC_ARG_WITH(python, [--with-python=PATH	Path to specific Python binary],
+[
+  PYTHON_BIN="$withval"
+  AC_MSG_RESULT($PYTHON_BIN)
+],
+AC_MSG_RESULT(no))
+
+# check for Python executable
+if test -z "$PYTHON_BIN"; then
+  AC_PATH_PROG(PYTHON_BIN, python)
+  if test -z "$PYTHON_BIN"; then
+    AC_MSG_ERROR(python binary not found in path)
+  fi
+fi
+
+# find out python version
+AC_MSG_CHECKING(Python version)
+PyVERSION=`$PYTHON_BIN -c ['import sys; print(sys.version[:3])'`]
+PyMAJVERSION=`$PYTHON_BIN -c ['import sys; print(sys.version[:1])'`]
+PyMINVERSION=`$PYTHON_BIN -c ['import sys; print(sys.version.split(".")[1])'`]
+AC_MSG_RESULT($PyVERSION)
+
+# make sure Python version is >= 2.6 for 2 and >= 3.3 for 3
+if test "$PyMAJVERSION" -lt "2"; then
+  AC_MSG_ERROR([This version of mod_python only works with Python major version 2 or higher. The one you have seems to be $PyVERSION.])
+fi
+if test "$PyMAJVERSION" -eq "2"; then
+  if test "$PyMINVERSION" -lt "6"; then
+    AC_MSG_ERROR([This version of mod_python only works with Python 2.x version 2.6 or higher. The one you have seems to be $PyVERSION.])
+  fi
+fi
+if test "$PyMAJVERSION" -eq "3"; then
+  if test "$PyMINVERSION" -lt "3"; then
+    AC_MSG_ERROR([This version of mod_python only works with Python 3.x version 3.3 or higher. The one you have seems to be $PyVERSION.])
+  fi
+fi
+
+# calculate compiler options
+CPPFLAGS1=`${PYTHON_BIN} -c 'from distutils import sysconfig; \
+    print("-I" + sysconfig.get_config_var("INCLUDEPY"))'`
+
+CPPFLAGS2=`${PYTHON_BIN} -c 'from distutils import sysconfig; \
+    print(" ".join(filter(lambda x: x.startswith("-D"), \
+    sysconfig.get_config_var("CFLAGS").split())))'`
+
+CPPFLAGS="${CPPFLAGS1} ${CPPFLAGS2}"
+
+AC_SUBST(CPPFLAGS)
+
+PYTHONFRAMEWORKDIR=`${PYTHON_BIN} -c 'from distutils import sysconfig; \
+    print(sysconfig.get_config_var("PYTHONFRAMEWORKDIR"))'`
+PYTHONFRAMEWORKPREFIX=`${PYTHON_BIN} -c 'from distutils import sysconfig; \
+    print(sysconfig.get_config_var("PYTHONFRAMEWORKPREFIX"))'`
+PYTHONFRAMEWORK=`${PYTHON_BIN} -c 'from distutils import sysconfig; \
+    print(sysconfig.get_config_var("PYTHONFRAMEWORK"))'`
+
+if test "${PYTHONFRAMEWORKDIR}" = "no-framework"; then
+    # this directory may contain the .so library, our preference, list 1st
+    LDFLAGS1=`${PYTHON_BIN} -c 'import distutils.sysconfig; \
+        print("-L" + distutils.sysconfig.get_config_var("LIBDIR"))'`
+    LDFLAGS2=`${PYTHON_BIN} -c 'import distutils.sysconfig; \
+        print("-L" + distutils.sysconfig.get_python_lib(plat_specific=1, \
+        standard_lib=1) +"/config")'`
+    LDFLAGS="${LDFLAGS1} ${LDFLAGS2}"
+
+    PYTHON_CODE=$(cat <<END
+import distutils.sysconfig
+lookingFor = "-lpython"
+ret = str(distutils.sysconfig.get_config_var("BLDLIBRARY"))
+if lookingFor not in ret:
+    cfg = distutils.sysconfig.get_config_vars()
+    for key in cfg:
+        if isinstance(cfg@<:@key@:>@, str) and lookingFor in cfg@<:@key@:>@:
+            ret = cfg@<:@key@:>@
+            break
+print(ret@<:@ret.find(lookingFor) if ret.find(lookingFor) != -1 else 0:@:>@)
+END
+)
+
+    LDLIBS1=`${PYTHON_BIN} -c "$PYTHON_CODE"`
+    LDLIBS2=`${PYTHON_BIN} -c 'from distutils import sysconfig; \
+        print(sysconfig.get_config_var("LIBS"))'`
+
+    LDLIBS="${LDLIBS1} ${LDLIBS2}"
+else
+    LDFLAGS1="-Wl,-F${PYTHONFRAMEWORKPREFIX} -framework ${PYTHONFRAMEWORK}"
+
+    STRING="${PYTHONFRAMEWORKDIR}/Versions/${PyVERSION}/${PYTHONFRAMEWORK}"
+    LDFLAGS2=`${PYTHON_BIN} -c "from distutils import sysconfig; \
+        print(sysconfig.get_config_var(\"LINKFORSHARED\").replace( \
+        \"${STRING}\", ''))"`
+
+    LDFLAGS="${LDFLAGS1} ${LDFLAGS2}"
+
+    LDLIBS=`${PYTHON_BIN} -c 'from distutils import sysconfig; \
+        print(sysconfig.get_config_var("LIBS"))'`
+fi
+
+CFLAGS=""
+ARCHFLAGS=""
+if test -x /usr/bin/lipo; then
+    LDFLAGS3=""
+    ARCHITECTURES=`/usr/bin/lipo -info $HTTPD | sed -e 's/.*://'`
+    for ARCH in $ARCHITECTURES; do
+        CFLAGS="${CFLAGS} -Wc,'-arch ${ARCH}'"
+        LDFLAGS3="${LDFLAGS3} -arch ${ARCH}"
+        ARCHFLAGS="${ARCHFLAGS} -arch ${ARCH}"
+    done
+    LDFLAGS="${LDFLAGS3} ${LDFLAGS}"
+fi
+
+AC_SUBST(CFLAGS)
+AC_SUBST(LDFLAGS)
+AC_SUBST(LDLIBS)
+
+AC_SUBST(INCLUDES)
+
+AC_SUBST(ARCHFLAGS)
+
+# this for the test.py script
+AC_SUBST(TEST_SERVER_ROOT)
+TEST_SERVER_ROOT="`pwd`/test"
+AC_SUBST(TEST_MOD_PYTHON_SO)
+TEST_MOD_PYTHON_SO="`pwd`/src/mod_python.so"
+
+# configure the MUTEX_DIR for location of mutex locks
+AC_SUBST(MUTEX_DIR)
+AC_MSG_CHECKING(for --with-mutex-dir)
+AC_ARG_WITH(mutex-dir, [--with-mutex-dir=DIR	Mutex directory],
+[
+  MUTEX_DIR="$withval"
+  AC_MSG_RESULT($MUTEX_DIR)
+],
+AC_MSG_RESULT(no))
+
+if test -z "$MUTEX_DIR"; then
+  MUTEX_DIR="/tmp"
+fi
+# TODO - check if MUTEX_DIR is an absolute path
+AC_MSG_RESULT([Using MUTEX_DIR $MUTEX_DIR])
+
+# configure the MAX_LOCKS for number of mutex locks
+AC_SUBST(MAX_LOCKS)
+AC_MSG_CHECKING(for --with-max-locks)
+AC_ARG_WITH(max-locks, [--with-max-locks=INTEGER	Maximum number of locks],
+[
+  MAX_LOCKS="$withval"
+  AC_MSG_RESULT($MAX_LOCKS)
+],
+AC_MSG_RESULT(no))
+
+if test -z "$MAX_LOCKS"; then
+  MAX_LOCKS="8"
+fi
+AC_MSG_RESULT([Using $MAX_LOCKS MAX_LOCKS.])
+
+# Check for correct flex version
+# Requires flex 2.5.31 for reentrant support
+# See README for more details
+AC_SUBST(LEX)
+
+AC_MSG_CHECKING(for --with-flex)
+AC_ARG_WITH(flex, [--with-flex=PATH	Path to specific flex binary.
+	Flex Version 2.5.31 or greater is required to regenerate psp_parser.c
+	from psp_parse.l. A prepared psp_parser.c file is included with the
+	source, so you will only need flex if you make changes to psp_parser.l
+    	See the README for more information.],
+[
+  LEX="$withval"
+  AC_MSG_RESULT($LEX)
+],
+AC_MSG_RESULT(no))
+
+# check for flex executable
+if test -z "$LEX"; then
+  AC_PATH_PROG(LEX, flex)
+fi
+
+if test "$LEX" && test -x "$LEX"; then
+  AC_MSG_RESULT([found $LEX, we'll use this. Use --with-flex to specify another.])
+
+  AC_MSG_CHECKING(flex version)
+  FlexVERSION=`$LEX --version | sed 's/version//g' | awk '/flex/ {print $2}'`
+  Flex_MAJOR=`echo $FlexVERSION| awk -F.  '{print $1}'`
+  Flex_MINOR=`echo $FlexVERSION| awk -F.  '{print $2}'`
+  Flex_PATCH=`echo $FlexVERSION| awk -F.  '{print $3}'`
+
+  if test "$Flex_MAJOR" -eq "2" && test "$Flex_MINOR" -eq "5" && test "$Flex_PATCH" -ge "31"; then
+    AC_MSG_RESULT([$FlexVERSION. Good])
+  else
+    AC_MSG_WARN([Flex version $FlexVERSION found.
+    Version 2.5.31 or greater is required.  You can generally ignore this
+    warning unless you need to regenerate psp_parser.c from psp_parse.l.
+    If you do need regenerate psp_parser.c, use --with-flex to specify the
+    location of the correct flex version. See the README for more information.])
+  fi
+
+else
+  AC_MSG_WARN([flex $LEX not found
+  You can generally ignore this warning unless you need to regenerate
+  psp_parser.c from psp_parse.l.  If you do need regenerate psp_parser.c,
+  use --with-flex to specify the location of flex.
+  See the README for more information.])
+fi
+
+AC_CONFIG_FILES([Makefile src/Makefile Doc/Makefile \
+                   src/include/mod_python.h test/Makefile \
+                   dist/setup.py dist/Makefile scripts/Makefile])
+AC_CONFIG_FILES([scripts/mod_python], [chmod +x scripts/mod_python])
+
+AC_OUTPUT

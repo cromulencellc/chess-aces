@@ -1,0 +1,6 @@
+objs
+Makefile
+.DS_Store
+.hg_archival.txt
+.hgtags
+

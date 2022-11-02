@@ -1,0 +1,73 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	2021.08.18.17.11.50;	author vagrant;	state Exp;
+branches;
+next	1.3;
+commitid	100611D3F5222464567;
+
+1.3
+date	2021.08.18.17.11.10;	author vagrant;	state Exp;
+branches;
+next	1.2;
+commitid	100611D3F2B22384567;
+
+1.2
+date	2021.08.18.17.10.59;	author vagrant;	state Exp;
+branches;
+next	1.1;
+commitid	100611D3EAE21D74567;
+
+1.1
+date	2021.08.14.13.23.13;	author vagrant;	state Exp;
+branches;
+next	;
+commitid	1006117C3BF37F54567;
+
+
+desc
+@@
+
+
+1.4
+log
+@adding test
+@
+text
+@eebepqlkyqkbuiyb vkd@
+
+
+1.3
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+ormrjqdi mmvuzkkdjmj@
+
+
+1.2
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+gfzxecdkldaidzpcekfx@
+
+
+1.1
+log
+@adding test
+@
+text
+@d1 1
+a1 1
+yjwjbbpiybfpgs xvktc@
+

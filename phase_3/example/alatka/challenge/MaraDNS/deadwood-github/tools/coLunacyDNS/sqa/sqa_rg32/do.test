@@ -1,0 +1,21 @@
+#!/bin/sh
+
+PROG="../../coLunacyDNS"
+
+echo Running coLunacyDNS rg32 test
+
+cat Input | awk '{print "'${PROG}\ \''" $0 "'\'' | head -1"}' | sh | \
+        tr -d '\015' > output.test
+
+if ! cmp output.success output.test > /dev/null 2>&1 ; then
+        echo Test failed
+        if cmp output.8859-1 output.test > /dev/null 2>&1 ; then
+                echo The script is converting UTF-8 strings in to
+                echo ISO 8859-1 strings.  It is otherwise generating
+                echo correct RadioGatun[32] hashes.
+        fi
+        exit 255
+fi
+
+echo Success
+rm output.test

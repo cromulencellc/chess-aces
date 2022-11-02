@@ -1,0 +1,274 @@
+# coLunacyDNS ############################################################
+
+coLunacyDNS is a simple IPv4 and IPv6 forwarding DNS server controlled
+by a Lua script.  It allows a lot of flexibility because it uses
+a combination of C for high performance and Lua for maximum
+flexibility.
+
+# Getting started ########################################################
+
+Run the following commands as an administrator to start the coLunacyDNS 
+service:
+
+	coLunacyDNS.exe --install
+	net start coLunacyDNS
+
+Here, we use coLunacyDNS.lua as the configuration file.
+
+# Configration file examples #############################################
+
+In this example, we listen on 127.0.0.1, and, for any IPv4 query,
+we return the IP of that query as reported by 9.9.9.9.
+--------------------------------------------------------------------------
+bindIp = "127.0.0.1" -- We bind the server to the IP 127.0.0.1
+function processQuery(Q) -- Called for every DNS query received
+   -- Connect to 9.9.9.9 for the query given to this routine
+   local t = coDNS.solve({name=Q.coQuery, type="A", upstreamIp4="9.9.9.9"})
+   -- Return a "server fail" if we did not get an answer
+   if(t.error or t.status ~= 1) then return {co1Type = "serverFail"} end
+   -- Otherwise, return the answer
+   return {co1Type = "A", co1Data = t.answer}
+end
+--------------------------------------------------------------------------
+
+
+As an even simpler example, we always return "10.1.1.1" for any DNS
+query given to us:
+--------------------------------------------------------------------------
+bindIp = "127.0.0.1" -- We bind the server to the IP 127.0.0.1
+function processQuery(Q) -- Called for every DNS query received
+  return {co1Type = "A", co1Data = "10.1.1.1"}
+end
+--------------------------------------------------------------------------
+
+
+We can also set the AA (authoritative answer) flag, the RA 
+(recursion available) flag, and the TTL (time to live) for our 
+answer.  In this example, both the AA and RA flags are set, and
+the answer is given a time to live of one hour (3600 seconds).
+--------------------------------------------------------------------------
+bindIp = "127.0.0.1" -- We bind the server to the IP 127.0.0.1
+function processQuery(Q) -- Called for every DNS query received
+  return {co1Type = "A", co1Data = "10.1.1.1", 
+          co1AA = 1, co1RA = 1, co1TTL = 3600}
+end
+--------------------------------------------------------------------------
+
+
+In this example, we return 10.1.1.1 for all IPv4 A queries, 
+2001:db8:4d61:7261:444e:5300::1234 for all IPv6 AAAA queries,
+and "not there" for all other query types:
+--------------------------------------------------------------------------
+bindIp = "127.0.0.1" -- We bind the server to the IP 127.0.0.1
+bindIp6 = "::1" -- As well as the IPv6 IP ::1 (IP6 localhost)
+function processQuery(Q) -- Called for every DNS query received
+  if Q.coQtype == 28 then
+    return {co1Type = "ip6",co1Data="2001-0db8-4d61-7261 444e-5300-0000-1234"}
+  elseif Q.coQtype == 1 then
+    return {co1Type = "A", co1Data = "10.1.1.1"}
+  else
+    return {co1Type = "notThere"}
+  end
+end
+--------------------------------------------------------------------------
+
+
+In the same vein, in this example, we contact the DNS server 9.9.9.9 for 
+IPv4 queries, and 149.112.112.112 for IPv6 queries:
+--------------------------------------------------------------------------
+bindIp = "127.0.0.1" -- We bind the server to the IP 127.0.0.1
+bindIp6 = "::1" -- And the IP ::1 on IPv6
+function processQuery(Q) -- Called for every DNS query received
+  local t
+  if Q.coQtype == 28 then -- Request for IPv6 IP
+    t = coDNS.solve({name=Q.coQuery,type="ip6", upstreamIp4="149.112.112.112"})
+  elseif Q.coQtype == 1 then -- Request for IPv4 IP
+    t = coDNS.solve({name=Q.coQuery, type="A", upstreamIp4="9.9.9.9"})
+  else
+    return {co1Type = "notThere"}
+  end
+  if t.error then
+    return {co1Type = "serverFail"}
+  end
+  if t.status == 28 then
+    return {co1Type = "ip6", co1Data = t.answer}
+  elseif t.status == 1 then
+    return {co1Type = "A", co1Data = t.answer}
+  else
+    return {co1Type = "notThere"}
+  end 
+end
+--------------------------------------------------------------------------
+
+Here is an example where we can synthesize any IP given to us:
+--------------------------------------------------------------------------
+-- This script takes a query like 10.1.2.3.ip4.internal. and returns the
+-- corresponding IP (e.g. 10.1.2.3 here)
+-- We use "internal" because this is the fourth-most commonly used
+-- bogus TLD (#1 is "local", #2 is "home", and #3 is "dhcp")
+
+-- Change this is a different top level domain as desired.  So, if this
+-- becomes "test", the this configuration script will resolve 
+-- "10.1.2.3.ip4.test." names to their IP.
+TLD="internal"
+-- Change these IPs to the actual IPs the DNS server will run on
+bindIp = "127.0.0.1" -- We bind the server to the IP 127.0.0.1
+bindIp6 = "::1" -- Localhost for IPv6
+
+function processQuery(Q) -- Called for every DNS query received
+  if Q.coQtype == 1 then
+    local query = Q.coQuery
+    if query:match("^%d+%.%d+%.%d+%.%d+%.ip4%." .. TLD .. "%.$") then
+      local ip = query:gsub("%.ip4%." .. TLD .. "%.$","")
+      return {co1Type = "A", co1Data = ip}
+    end
+  else
+    return {co1Type = "notThere"}
+  end
+  return {co1Type = "notThere"}
+end
+--------------------------------------------------------------------------
+
+Here is a more complicated example:
+--------------------------------------------------------------------------
+-- coLunacyDNS configuration
+bindIp = "127.0.0.1" -- We bind the server to the IP 127.0.0.1
+
+-- Examples of three API calls we have: timestamp, rand32, and rand16
+coDNS.log(string.format("Timestamp: %.1f",coDNS.timestamp())) -- timestamp
+coDNS.log(string.format("Random32: %08x",coDNS.rand32())) -- random 32-bit num
+coDNS.log(string.format("Random16: %04x",coDNS.rand16())) -- random 16-bit num
+-- Note that it is *not* possible to use coDNS.solve here; if we attempt
+-- to do so, we will get an error with the message
+-- "attempt to yield across metamethod/C-call boundary".  
+
+function processQuery(Q) -- Called for every DNS query received
+  -- Because this code uses multiple co-routines, always use "local"
+  -- variables
+  local returnIP = nil
+  local upstream = "9.9.9.9"
+
+  -- Log query
+  coDNS.log("Got IPv4 query for " .. Q.coQuery .. " from " ..
+            Q.coFromIP .. " type " ..  Q.coFromIPtype) 
+
+  -- We will use 8.8.8.8 as the upstream server if the query ends in ".tj"
+  if string.match(Q.coQuery,'%.tj%.$') then
+    upstream = "8.8.8.8"
+  end
+
+  -- We will use 4.2.2.1 as the upstream server if the query comes from 
+  -- 192.168.99.X
+  if string.match(Q.coFromIP,'^192%.168%.99%.') then
+    upstream = "4.2.2.1"
+  end
+
+  -- Right now, coLunacyDNS can *only* process "A" (IPv4 IP) queries
+  if Q.coQtype ~= 1 then -- If it is not an A (ipv4) query
+    -- return {co1Type = "ignoreMe"} -- Ignore the query
+    return {co1Type = "notThere"} -- Send "not there" (like NXDOMAIN)
+  end
+
+  -- Contact another DNS server to get our answer
+  t = coDNS.solve({name=Q.coQuery, type="A", upstreamIp4=upstream})
+
+  -- If coDNS.solve returns an error, the entire processQuery routine is
+  -- "on probation" and unable to run coDNS.solve() again (if an attempt
+  -- is made, the thread will be aborted and no DNS response sent 
+  -- downstream).  
+  if t.error then	
+    coDNS.log(t.error)
+    return {co1Type = "serverFail"} 
+  end
+
+  -- Status is 1 when we get an IP from the upstream DNS server, otherwise 0
+  if t.status == 1 and t.answer then
+    returnIP = t.answer
+  end
+
+  if string.match(Q.coQuery,'%.invalid%.$') then
+    return {co1Type = "A", co1Data = "10.1.1.1"} -- Answer for anything.invalid
+  end
+  if returnIP then
+    return {co1Type = "A", co1Data = returnIP} 
+  end
+  return {co1Type = "notThere"} 
+end
+--------------------------------------------------------------------------
+
+# Security considerations ################################################
+
+Since the Lua file is executed as admin, some effort is made to restrict
+what it can do:
+
+* Only the "math", "string", and "bit32" libraries are loaded from
+  Lua's standard libs.  (bit32 actually is another Bit library, but with a
+  "bit32" interface.)
+* A special "coDNS" library is also loaded.
+
+# Reading files #########################################################
+
+We have an API which can be used to read files.  For example:
+
+-------------------------------------------------------------------------
+if not coDNS.open1("filename.txt") then
+  return {co1Type = "serverFail"}
+end
+local line = ""
+while line do
+  if line then coDNS.log("Line: " .. line) end
+  line = coDNS.read1()
+end
+-------------------------------------------------------------------------
+    
+The calls are: coDNS.open1(filename), coDNS.read1(), and coDNS.close1().
+    
+Only a single file can be open at a time.  If coDNS.open1() is called
+when a file is open, the currently open file is closed before we attempt
+to open the new file.  If coDNS.solve() is called while a file is open,
+the file is closed before we attempt to solve the DNS query.  If we exit
+processQuery() while a file is open, the file is closed as we exit the
+function.  Files are also closed when we finish parsing the Lua
+configuration file used by coLunacyDNS, before listening to DNS queries.
+    
+The filename must start with an ASCII letter, number, or the "_"
+(underscore) character.  The filename may contain only ASCII letters,
+numbers, instances of "." (the dot character), or the "_" character.
+In particular, the filename may not contain "/", "\", or any other
+commonly used directory separator.
+
+If the file is not present, or the filename contains an illegal
+character, or the file can not be opened, coDNS.open1() will return
+a false boolean value.  Otherwise, "open1" returns true.
+    
+The file has to be in the same directory that coLunacyDNS is run
+from.  The file may only be read; writing to the file is not possible.
+    
+coDNS.read1() reads a single line from the file.  Any newline is
+stripped from the end (unlike Perl, coLunacyDNS does not require a 
+chop); NUL characters in the line also truncate the string read.  If 
+a line is read from the file, coDNS.read1() returns the line which 
+was read.  Otherwise, coDNS.read1() returns the `false` Lua boolean 
+value.
+
+coDNS.read1() assumes that a single line will be under 500 bytes 
+in size.  Behavior is undefined when trying to read a longer line.
+    
+coDNS.close1() closes an open file; a file is also closed when
+opening another file, ending processQuery(), or calling coDNS.solve().
+It is mainly here to give programmers trained to close open files
+a function which does so.
+
+# Limitations ###########################################################
+
+coLunacyDNS, at this time, only processes requests for DNS A queries
+and DNS AAAA queries -- queries for IPv4 and IPv6 IP addresses.
+Information about other query types is not available to coLunacyDNS,
+and it can only return A queries, AAAA queries, “server fail”,
+or “this name is not here” in its replies.
+
+coLunacyDNS, likewise, can only send A (IPv4 IP) and AAAA (IPv6 IP)
+requests to upstream servers.  While coLunacyDNS can bind to an IPv6
+IP and process IPv6 AAAA records, coLunacyDNS can not contact upstream
+DNS servers via IPv6.
+

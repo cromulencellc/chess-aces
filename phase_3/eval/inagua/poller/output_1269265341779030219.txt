@@ -1,0 +1,179 @@
+[INFO] Poller for the Smith Challenge Binary
+[INFO] SEED: 1269265341779030219
+:irc.example.net 001 uwfcnsvm :Welcome to the Internet Relay Network uwfcnsvm!~qhhcofoy@localhost
+:irc.example.net 002 uwfcnsvm :Your host is irc.example.net, running version ngircd-26.1 (x86_64/pc/linux-gnu)
+:irc.example.net 003 uwfcnsvm :This server has been started Thu Nov 11 2021 at 13:30:33 (UTC)
+:irc.example.net 004 uwfcnsvm irc.example.net ngircd-26.1 abBcCFiIoqrRswx abehiIklmMnoOPqQrRstvVz
+:irc.example.net 005 uwfcnsvm RFC2812 IRCD=ngIRCd CHARSET=UTF-8 CASEMAPPING=ascii PREFIX=(qaohv)~&@%+ CHANTYPES=#&+ CHANMODES=beI,k,l,imMnOPQRstVz CHANLIMIT=#&+:10 :are supported on this server
+:irc.example.net 005 uwfcnsvm CHANNELLEN=50 NICKLEN=9 TOPICLEN=490 AWAYLEN=127 KICKLEN=400 MODES=5 MAXLIST=beI:50 EXCEPTS=e INVEX=I PENALTY FNC :are supported on this server
+:irc.example.net 251 uwfcnsvm :There are 1 users and 0 services on 1 servers
+:irc.example.net 254 uwfcnsvm 1 :channels formed
+:irc.example.net 255 uwfcnsvm :I have 1 users, 0 services and 0 servers
+:irc.example.net 265 uwfcnsvm 1 1 :Current local users: 1, Max: 1
+:irc.example.net 266 uwfcnsvm 1 1 :Current global users: 1, Max: 1
+:irc.example.net 250 uwfcnsvm :Highest connection count: 1 (1 connections received)
+:irc.example.net 422 uwfcnsvm :MOTD file is missing
+[INFO] Login successful. Received server info and MOTD
+[INFO] Logging in second user
+:irc.example.net 001 iwshfxwv :Welcome to the Internet Relay Network iwshfxwv!~opbdelfk@localhost
+:irc.example.net 002 iwshfxwv :Your host is irc.example.net, running version ngircd-26.1 (x86_64/pc/linux-gnu)
+:irc.example.net 003 iwshfxwv :This server has been started Thu Nov 11 2021 at 13:30:33 (UTC)
+:irc.example.net 004 iwshfxwv irc.example.net ngircd-26.1 abBcCFiIoqrRswx abehiIklmMnoOPqQrRstvVz
+:irc.example.net 005 iwshfxwv RFC2812 IRCD=ngIRCd CHARSET=UTF-8 CASEMAPPING=ascii PREFIX=(qaohv)~&@%+ CHANTYPES=#&+ CHANMODES=beI,k,l,imMnOPQRstVz CHANLIMIT=#&+:10 :are supported on this server
+:irc.example.net 005 iwshfxwv CHANNELLEN=50 NICKLEN=9 TOPICLEN=490 AWAYLEN=127 KICKLEN=400 MODES=5 MAXLIST=beI:50 EXCEPTS=e INVEX=I PENALTY FNC :are supported on this server
+:irc.example.net 251 iwshfxwv :There are 2 users and 0 services on 1 servers
+:irc.example.net 254 iwshfxwv 1 :channels formed
+:irc.example.net 255 iwshfxwv :I have 2 users, 0 services and 0 servers
+:irc.example.net 265 iwshfxwv 2 2 :Current local users: 2, Max: 2
+:irc.example.net 266 iwshfxwv 2 2 :Current global users: 2, Max: 2
+:irc.example.net 250 iwshfxwv :Highest connection count: 2 (2 connections received)
+:irc.example.net 422 iwshfxwv :MOTD file is missing
+[INFO] Second user logged in
+[TEST] send_privmsg
+:iwshfxwv!~opbdelfk@localhost PRIVMSG uwfcnsvm :ayyiherblrvnvg
+[SUCCESS] send_privmsg
+[TEST] kickemout
+[INFO] uwfcnsvm Joined #bwoasdw
+:iwshfxwv!~opbdelfk@localhost JOIN :#bwoasdw
+:iwshfxwv!~opbdelfk@localhost JOIN :#bwoasdw
+:irc.example.net 353 iwshfxwv = #bwoasdw :iwshfxwv @uwfcnsvm
+:irc.example.net 366 iwshfxwv #bwoasdw :End of NAMES list
+:uwfcnsvm!~qhhcofoy@localhost KICK #bwoasdw iwshfxwv :zoojzcequfsv
+:uwfcnsvm!~qhhcofoy@localhost KICK #bwoasdw iwshfxwv :zoojzcequfsv
+[SUCCESS] kickemout
+[TEST] set_key
+[INFO] uwfcnsvm Joined #gxtnohszk
+[INFO] Joined #gxtnohszk
+:uwfcnsvm!~qhhcofoy@localhost MODE #gxtnohszk +k rfirzbt
+:irc.example.net 475 iwshfxwv #gxtnohszk :Cannot join channel (+k) -- Wrong channel key
+:iwshfxwv!~opbdelfk@localhost JOIN :#gxtnohszk
+:iwshfxwv!~opbdelfk@localhost JOIN :#gxtnohszk
+:irc.example.net 353 iwshfxwv = #gxtnohszk :iwshfxwv @uwfcnsvm
+:irc.example.net 366 iwshfxwv #gxtnohszk :End of NAMES list
+:iwshfxwv!~opbdelfk@localhost PART #gxtnohszk :ocvykj
+:iwshfxwv!~opbdelfk@localhost PART #gxtnohszk :ocvykj
+:uwfcnsvm!~qhhcofoy@localhost MODE #gxtnohszk -k *
+[SUCCESS] set_key
+[TEST] set_topic
+[INFO] uwfcnsvm Joined #nikfdjffw
+[INFO] Joined #nikfdjffw
+:iwshfxwv!~opbdelfk@localhost JOIN :#nikfdjffw
+:iwshfxwv!~opbdelfk@localhost JOIN :#nikfdjffw
+:irc.example.net 353 iwshfxwv = #nikfdjffw :iwshfxwv @uwfcnsvm
+:irc.example.net 366 iwshfxwv #nikfdjffw :End of NAMES list
+:iwshfxwv!~opbdelfk@localhost TOPIC #nikfdjffw :gzbhaujoyqtbia
+:iwshfxwv!~opbdelfk@localhost TOPIC #nikfdjffw :gzbhaujoyqtbia
+:uwfcnsvm!~qhhcofoy@localhost MODE #nikfdjffw +o iwshfxwv
+:iwshfxwv!~opbdelfk@localhost TOPIC #nikfdjffw :gzbhaujoyqtbia
+:uwfcnsvm!~qhhcofoy@localhost MODE #nikfdjffw +o iwshfxwv
+:uwfcnsvm!~qhhcofoy@localhost MODE #nikfdjffw -o iwshfxwv
+:uwfcnsvm!~qhhcofoy@localhost MODE #nikfdjffw -o iwshfxwv
+:iwshfxwv!~opbdelfk@localhost PART #nikfdjffw :lyqaaeutibxx
+:iwshfxwv!~opbdelfk@localhost PART #nikfdjffw :lyqaaeutibxx
+[SUCCESS] set_topic
+[TEST] sendison
+:irc.example.net 303 uwfcnsvm :uwfcnsvm iwshfxwv
+[SUCCESS] sendison
+[TEST] setaway
+:irc.example.net 306 uwfcnsvm :You have been marked as being away
+:irc.example.net 301 iwshfxwv uwfcnsvm :ibwewxacshwdptgm
+:iwshfxwv!~opbdelfk@localhost PRIVMSG uwfcnsvm :toqkixzrcjmgvqljj
+:irc.example.net 305 uwfcnsvm :You are no longer marked as being away
+[SUCCESS] setaway
+[TEST] set_secret
+[INFO] uwfcnsvm Joined #ujtevlt
+:uwfcnsvm!~qhhcofoy@localhost MODE #ujtevlt +s
+:irc.example.net 352 iwshfxwv * ~qhhcofoy localhost irc.example.net uwfcnsvm H :0 zwldwxtl
+:irc.example.net 315 iwshfxwv uwfcnsvm :End of WHO list
+:uwfcnsvm!~qhhcofoy@localhost MODE #ujtevlt -s
+[SUCCESS] set_secret
+[TEST] sendnames
+[INFO] uwfcnsvm Joined #jznqkq
+[INFO] uwfcnsvm Joined #lygouvwy
+:iwshfxwv!~opbdelfk@localhost JOIN :#lygouvwy
+:iwshfxwv!~opbdelfk@localhost JOIN :#lygouvwy
+:irc.example.net 353 iwshfxwv = #lygouvwy :iwshfxwv @uwfcnsvm
+:irc.example.net 366 iwshfxwv #lygouvwy :End of NAMES list
+:irc.example.net 353 iwshfxwv = #lygouvwy :iwshfxwv @uwfcnsvm
+:irc.example.net 353 iwshfxwv = #jznqkq :@uwfcnsvm
+:irc.example.net 353 iwshfxwv = #ujtevlt :@uwfcnsvm
+:irc.example.net 353 iwshfxwv = #nikfdjffw :@uwfcnsvm
+:irc.example.net 353 iwshfxwv = #gxtnohszk :@uwfcnsvm
+:irc.example.net 353 iwshfxwv = #bwoasdw :@uwfcnsvm
+:irc.example.net 366 iwshfxwv * :End of NAMES list
+:iwshfxwv!~opbdelfk@localhost PART #lygouvwy :erxufjroppn
+:iwshfxwv!~opbdelfk@localhost PART #lygouvwy :erxufjroppn
+[SUCCESS] sendnames
+[TEST] set_membersonly
+[TEST] set_maxusers
+[INFO] uwfcnsvm Joined #bceycxcj
+[INFO] Joined #bceycxcj
+:uwfcnsvm!~qhhcofoy@localhost MODE #bceycxcj +l 1
+:irc.example.net 471 iwshfxwv #bceycxcj :Cannot join channel (+l) -- Channel is full, try later
+:uwfcnsvm!~qhhcofoy@localhost MODE #bceycxcj +l 2
+:iwshfxwv!~opbdelfk@localhost JOIN :#bceycxcj
+:iwshfxwv!~opbdelfk@localhost JOIN :#bceycxcj
+:irc.example.net 366 iwshfxwv #bceycxcj :End of NAMES list
+:iwshfxwv!~opbdelfk@localhost PART #bceycxcj :laurxmv
+:iwshfxwv!~opbdelfk@localhost PART #bceycxcj :laurxmv
+:uwfcnsvm!~qhhcofoy@localhost MODE #bceycxcj -l
+[SUCCESS] set_maxusers
+[TEST] sendlist
+:irc.example.net 321 uwfcnsvm Channel :Users  Name
+:irc.example.net 322 uwfcnsvm #bceycxcj 1 :
+:irc.example.net 322 uwfcnsvm #lygouvwy 1 :
+:irc.example.net 322 uwfcnsvm #jznqkq 1 :
+:irc.example.net 322 uwfcnsvm #ujtevlt 1 :
+:irc.example.net 322 uwfcnsvm #nikfdjffw 1 :gzbhaujoyqtbia
+:irc.example.net 322 uwfcnsvm #gxtnohszk 1 :
+:irc.example.net 322 uwfcnsvm #bwoasdw 1 :
+:irc.example.net 322 uwfcnsvm &SERVER 0 :Server Messages
+:irc.example.net 323 uwfcnsvm :End of LIST
+:irc.example.net 321 iwshfxwv Channel :Users  Name
+:irc.example.net 322 iwshfxwv #bceycxcj 1 :
+:irc.example.net 322 iwshfxwv #lygouvwy 1 :
+:irc.example.net 322 iwshfxwv #jznqkq 1 :
+:irc.example.net 322 iwshfxwv #ujtevlt 1 :
+:irc.example.net 322 iwshfxwv #nikfdjffw 1 :gzbhaujoyqtbia
+:irc.example.net 322 iwshfxwv #gxtnohszk 1 :
+:irc.example.net 322 iwshfxwv #bwoasdw 1 :
+:irc.example.net 322 iwshfxwv &SERVER 0 :Server Messages
+:irc.example.net 323 iwshfxwv :End of LIST
+[SUCCESS] sendlist
+[TEST] sendnotice
+:iwshfxwv!~opbdelfk@localhost NOTICE uwfcnsvm :xxptgkibvtazhkh
+[SUCCESS] sendnotice
+[TEST] set_moderated
+[INFO] uwfcnsvm Joined #yngfdunqr
+[INFO] Joined #yngfdunqr
+:uwfcnsvm!~qhhcofoy@localhost MODE #yngfdunqr +m
+:iwshfxwv!~opbdelfk@localhost JOIN :#yngfdunqr
+:iwshfxwv!~opbdelfk@localhost JOIN :#yngfdunqr
+:irc.example.net 353 iwshfxwv = #yngfdunqr :iwshfxwv @uwfcnsvm
+:irc.example.net 366 iwshfxwv #yngfdunqr :End of NAMES list
+:irc.example.net 404 iwshfxwv #yngfdunqr :Cannot send to channel
+:uwfcnsvm!~qhhcofoy@localhost MODE #yngfdunqr +v iwshfxwv
+:uwfcnsvm!~qhhcofoy@localhost MODE #yngfdunqr +v iwshfxwv
+:iwshfxwv!~opbdelfk@localhost PRIVMSG #yngfdunqr :btjkp
+:uwfcnsvm!~qhhcofoy@localhost MODE #yngfdunqr -v iwshfxwv
+:uwfcnsvm!~qhhcofoy@localhost MODE #yngfdunqr -v iwshfxwv
+:uwfcnsvm!~qhhcofoy@localhost MODE #yngfdunqr -m
+:uwfcnsvm!~qhhcofoy@localhost MODE #yngfdunqr -m
+:iwshfxwv!~opbdelfk@localhost PART #yngfdunqr :btjkp
+:iwshfxwv!~opbdelfk@localhost PART #yngfdunqr :btjkp
+[SUCCESS] set_moderated
+[TEST] set_invite
+[INFO] uwfcnsvm Joined #rtbeje
+:uwfcnsvm!~qhhcofoy@localhost MODE #rtbeje +i
+:irc.example.net 473 iwshfxwv #rtbeje :Cannot join channel (+i) -- Invited users only
+:iwshfxwv!~opbdelfk@localhost 341 uwfcnsvm iwshfxwv #rtbeje
+:uwfcnsvm!~qhhcofoy@localhost INVITE iwshfxwv #rtbeje
+:iwshfxwv!~opbdelfk@localhost JOIN :#rtbeje
+:iwshfxwv!~opbdelfk@localhost JOIN :#rtbeje
+:irc.example.net 353 iwshfxwv = #rtbeje :iwshfxwv @uwfcnsvm
+:irc.example.net 366 iwshfxwv #rtbeje :End of NAMES list
+:iwshfxwv!~opbdelfk@localhost PART #rtbeje :fzqsjdgatvaolr
+:iwshfxwv!~opbdelfk@localhost PART #rtbeje :fzqsjdgatvaolr
+:uwfcnsvm!~qhhcofoy@localhost MODE #rtbeje -i
+[SUCCESS] set_invite
+[SUCCESS] All tests succeeded

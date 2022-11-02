@@ -1,0 +1,21 @@
+
+{
+	"post-queue": "Innleggskø",
+	"description": "There are no posts in the post queue. <br> To enable this feature, go to <a href=\"%1\">Settings &rarr; Post &rarr; Post Queue</a> and enable <strong>Post Queue</strong>.",
+	"user": "Bruker",
+	"category": "Kategori",
+	"title": "Tittel",
+	"content": "Innhold",
+	"posted": "Postet",
+	"reply-to": "Svar til \"%1\"",
+	"content-editable": "Klikk på innhold for å redigere",
+	"category-editable": "Klikk på kategori for å redigere",
+	"title-editable": "Klikk på tittel for å redigere ",
+	"reply": "Svare",
+	"topic": "Emne",
+	"accept": "Aksepter ",
+	"reject": "Avvis",
+	"remove": "Remove",
+	"notify": "Notify",
+	"notify-user": "Notify User"
+}

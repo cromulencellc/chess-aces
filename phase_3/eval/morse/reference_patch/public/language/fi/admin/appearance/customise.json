@@ -1,0 +1,16 @@
+{
+	"custom-css": "Kustomoi CSS/LESS -tiedostoja",
+	"custom-css.description": "Syötä haluamasi CSS/LESS -määritykset tähän. Nämä määritykset menevät kaikkien muiden tyylimäärittelyjen edelle.",
+	"custom-css.enable": "Salli CSS/LESS -kustomoinnit",
+
+	"custom-js": "Kustomoi Javascriptiä",
+	"custom-js.description": "Syötä Javascript-sisältö tähän. Se suoritetaan, kun sivu on latautunut valmiiksi.",
+	"custom-js.enable": "Salli Javascript-kustomoinnit",
+
+	"custom-header": "Kustomoi ylätunnistetta",
+	"custom-header.description": "Syötä ylätunnisteeseen eli <code>&lt;head&gt;</code>-osioon tulevat HTML-määrittelyt tähän (esim. meta-tagit ym.). Myös script-tagien käyttö on mahdollista, mutta ei suositeltavaa, sillä <a href=\"#custom-js\" data-toggle=\"tab\">Kustomoi Javascriptiä</a>-välilehti on saatavilla.",
+	"custom-header.enable": "Salli ylätunnisteen kustomointi",
+
+	"custom-css.livereload": "Salli sivun päivitys livenä",
+	"custom-css.livereload.description": "Salli tämä, jos haluat mahdollistaa kaikkien tililläsi olevien laitteiden istuntojen päivittymisen, kun tallennat tekemäsi muutokset."
+}
